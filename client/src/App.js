@@ -40,8 +40,8 @@ class App extends React.Component {
         this.setState({ userId: user.userId, user: user.username, role: user.roleId, name: user.name }); })
       .catch(() => this.setState({ user: null }));
   }
+
   checkNotification(){
-  
         API.isAuthenticated()
         .then((user) => { //console.log(user);
         if(user.roleId == 2)//if it's a teacher check if there are some lecture notification to send
