@@ -16,7 +16,7 @@ const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR
 
 app = new express();
 
-app.use(morgan('combined')); //to print log as Standard Apache combined log output.
+//app.use(morgan('combined')); //to print log as Standard Apache combined log output.
 app.use(express.json()); //method inbuilt in express to recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
 
@@ -75,6 +75,7 @@ app.get(BASEURI + '/user', (req, res) => {
         .then((user) => res.status(200).json({ userId: user.UserId, username: user.Username, roleId: user.RolId, name: user.Name + " " + user.LastName }))
         .catch(() => res.status(503).json(dbErrorObj));
 });
+
 
 app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
     dao.getStudentCurrentCourses(req.params.userId)
@@ -140,5 +141,29 @@ app.put('/api/cancelReservation/:bookingId', (req, res) => {
             errors: [{ 'param': 'Server', 'msg': err }],
         }));
 });
+
+app.get(BASEURI + '/teacher/:userId/notification', (req,res)=>{  
+    dao.checkNotification(req.params.userId)
+        .then(()=>{
+            dao.updateLecture(req.params.userId)
+            .then(()=>{
+                dao.getNotification(req.params.userId)
+                .then((notifications)=>{res.json(notifications);})
+                .catch(()=>{res.status(500).json({ 'error': 'there are no notifications' }); });
+            })
+            .catch(()=>{});
+            
+        })
+        .catch(()=>{res.status(500).json({ 'error': 'problems during notification check' }); });
+
+});
+
+app.put(BASEURI + '/teacher/:userId/updatenotification', (req, res) => {
+   
+    dao.updateNotification(req.params.userId)
+        .then(()=>{res.status(200);})
+        .catch(()=>{console.log("here");res.status(500).json({ 'error': 'error while updating notification' }); });
+  });
+
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));

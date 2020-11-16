@@ -1,8 +1,10 @@
 'use strict' //strict mode - prevent using undeclared variables
+
 const StudentCourse = require('./Entities/StudentCourse');
 const LecturesSchedule = require('./Entities/LecturesSchedule');
 const BookingHistory = require('./Entities/BookingHistory');
 
+const moment = require('moment');
 const sqlite = require('sqlite3');
 const bcrypt = require('bcrypt');
 
@@ -11,6 +13,7 @@ const db = new sqlite.Database('db/PULSeBS.db', (err) => {
         throw err;
     }
 });
+
 
 const createStudentCourse = function (row) {
     return new StudentCourse(row.CourseId, row.Name, row.Description, row.Semester, row.StudentId);
@@ -25,14 +28,124 @@ const createBookingHistory = function (row) {
         row.CancelDate, row.ReserveDate, row.BookDate, row.Name, row.BookingDeadline, row.TeacherName);
 }
 
+exports.checkNotification = function (userId){
+    return new Promise((resolve, reject) => {
+        
+        const sql = 
+       `INSERT INTO teachernotification 
+                (teacherid, 
+                lectureid, 
+                date, 
+                sentstatus) 
+        SELECT teacherid, 
+        lectureid, 
+        schedule, 
+        0
+        FROM   lecture 
+        WHERE  teacherid = ?
+        AND notificationadded = 0
+        AND Date(notificationdeadline) = Date('now');
+        `;
+        
+        db.run(sql, [userId], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }else{
+                resolve();
+            }
+            
+        });
+    });
+}
+
+exports.updateLecture = function (userId){
+    return new Promise((resolve, reject) => {
+        const sql = 
+       `UPDATE Lecture
+        SET NotificationAdded = 1
+        WHERE TeacherId = ?
+        AND Date(notificationdeadline) = Date('now')
+        `;
+
+        db.run(sql, [userId], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }else{
+                resolve();
+            }
+            
+        });
+    });
+}
+
+exports.updateNotification = function (userId){
+    return new Promise((resolve, reject) => {
+        const sql = 
+       `UPDATE TeacherNotification
+        SET SentStatus = 1
+        WHERE TeacherId = ?;
+        `;
+
+        db.run(sql, [userId], (err, rows) => {
+            if (err) {
+                reject(err);
+                return;
+            }else{
+                resolve();
+            }
+            
+        });
+    });
+}
+
+exports.getNotification = function (userId) {
+    
+    return new Promise((resolve, reject) => { //promise is an object used to deal with asynchronous operations
+        const sql = `
+        SELECT schedule, 
+            NAME, 
+            Count(*),
+            TN.SentStatus
+        FROM   teachernotification TN, 
+            lecture L, 
+            course C, 
+            booking B 
+        WHERE  TN.lectureid = L.lectureid 
+            AND L.courseid = C.courseid 
+            AND L.lectureid = B.lectureid 
+            AND TN.teacherid = ? 
+        GROUP  BY NAME; `;
+
+        db.all(sql, [userId], (err, rows) => {
+            if (err) {
+                reject(err);
+            } else {
+                const notifications = rows.map((notification) => ({
+                    Name: notification.Name,
+                    Schedule: notification.Schedule,
+                    nStudents: notification['Count(*)'],
+                    SentStatus: notification.SentStatus
+                    
+                }));
+                //console.log(notifications)
+                resolve(notifications);
+            }
+        });
+    });
+};
 
 exports.getUserById = function (username) {
+    //console.log(username);
+
     return new Promise((resolve, reject) => { //promise is an object used to deal with asynchronous operations
         const sql = 'SELECT * FROM User WHERE Username = ?';
         db.get(sql, [username], (err, user) => {
             if (err) {
                 reject(err);
             } else {
+                //console.log(user);
                 resolve(user);
             }
         });
@@ -50,11 +163,14 @@ exports.login = function (username, password) {
                 if (res.count == 0) {
                     reject(err); //return null error
                 } else { //username exist
+                    //console.log(res);
                     bcrypt.compare(password, res.Password, function (err, result) {
                         if (err) {
                             reject(err);
                         } else {
+
                             resolve({ userId: res.UserId, passRes: result, roleId: res.RolId, name: res.Name + " " + res.LastName }); //return true if equals, false if not equals
+
                         }
                     });
                 }
