@@ -62,11 +62,13 @@ class App extends React.Component {
 
     API.login(username, password)
       .then((obj) => {
-        this.setState({ loginError: null, user: obj.username, authUser: obj, role: obj.roleId, name: obj.name, userId: obj.userId })
-        if(this.state.role === 2)
+        if(obj.roleId)
         {
+          console.log("teacher!");
           this.checkNotification();
         }
+        
+        this.setState({ loginError: null, user: obj.username, authUser: obj, role: obj.roleId, name: obj.name, userId: obj.userId })
       })
       .catch((err) => this.setState({ loginError: err.code }));
   }

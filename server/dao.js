@@ -44,6 +44,7 @@ exports.checkNotification = function (userId){
         FROM   lecture 
         WHERE  teacherid = ?
         AND notificationadded = 0
+        AND Canceled = 0
         AND Date(notificationdeadline) = Date('now');
         `;
         
@@ -65,6 +66,7 @@ exports.updateLecture = function (userId){
        `UPDATE Lecture
         SET NotificationAdded = 1
         WHERE TeacherId = ?
+        AND Canceled = 0
         AND Date(notificationdeadline) = Date('now')
         `;
 
