@@ -34,7 +34,7 @@ app.post(BASEURI + '/login', (req, res) => {
             } else {
                 const token = jsonwebtoken.sign({ username: username }, jwtSecret, { expiresIn: expireTime }); //create token
                 res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
-                res.status(200).json({ username: username, roleId: result.roleId, name: result.name});
+                res.status(200).json({ userId: result.userId, username: username, roleId: result.roleId, name: result.name });
             }
         })
         .catch((err) => {
@@ -53,7 +53,7 @@ app.post(BASEURI + '/logout', (req, res) => {
 
 //all next APIs require authentication (express-jwt)
 //app.use is executed everytime that app receives a request
-app.use( 
+app.use(
     jwt({
         secret: jwtSecret,
         getToken: req => req.cookies.token,
@@ -72,8 +72,73 @@ app.use(function (err, req, res, next) { //used when i call isAuthenticated (cli
 app.get(BASEURI + '/user', (req, res) => {
     const username = req.user.username;
     dao.getUserById(username)
-        .then((user) => res.status(200).json({ username: user.Username, roleId: user.RolId, name: user.Name + " " + user.LastName }))
+        .then((user) => res.status(200).json({ userId: user.UserId, username: user.Username, roleId: user.RolId, name: user.Name + " " + user.LastName }))
         .catch(() => res.status(503).json(dbErrorObj));
+});
+
+app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
+    dao.getStudentCurrentCourses(req.params.userId)
+        .then((row) => {
+            if (!row) {
+                res.status(404).send();
+            } else {
+                res.json(row);
+            }
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.get('/api/getAvailableLectures/:courseId', (req, res) => {
+    dao.getAvailableLectures(req.params.courseId)
+        .then((row) => {
+            if (!row) {
+                res.status(404).send();
+            } else {
+                res.json(row);
+            }
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.post('/api/bookLecture', (req, res) => {
+    dao.bookLecture(req.body.lectureId, req.body.userId, req.body.scheduleDate)
+        .then((result) => res.status(200).end())
+        .catch((err) => res.status(500).json({
+            errors: [{ 'param': 'Server', 'msg': err }],
+        }));
+});
+
+app.get('/api/bookingHistory/:userId', (req, res) => {
+    dao.getBookingHistory(req.params.userId)
+        .then((rows) => {
+            if (!rows) {
+                res.status(404).send();
+            } else {
+                res.json(rows);
+            }
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+//PUT /cancelReservation/<bookingId>
+app.put('/api/cancelReservation/:bookingId', (req, res) => {
+    dao.cancelReservation(req.params.bookingId)
+        .then((result) => res.status(200).end())
+        .catch((err) => res.status(500).json({
+            errors: [{ 'param': 'Server', 'msg': err }],
+        }));
 });
 
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}/`));

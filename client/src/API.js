@@ -1,3 +1,7 @@
+import StudentCourse from './Entities/StudentCourse';
+import LectureSchedule from './Entities/LectureSchedule';
+import BookingHistory from './Entities/BookingHistory';
+
 const APIURL = 'api';
 
 async function isAuthenticated() {
@@ -6,7 +10,6 @@ async function isAuthenticated() {
 
     const response = await fetch(url);
     const user = await response.json();
-
     if (response.ok) {
         return user;
     } else {
@@ -49,4 +52,83 @@ async function logout() {
     }
 }
 
-export default { isAuthenticated, login, logout };
+async function getStudentCurrentCourses(userId) {
+    let url = "/getStudentCurrentCourses";
+    const queryParams = "/" + userId;
+    url += queryParams;
+    const response = await fetch(APIURL + url);
+    const json = await response.json();
+    if (response.ok) {
+        return json.map((row) => new StudentCourse(row.courseId, row.name, row.desc, row.semester, row.studentId));
+    } else {
+        let err = { status: response.status, errObj: json };
+        throw err;
+    }
+}
+
+async function getAvailableLectures(courseId) {
+    let url = "/getAvailableLectures";
+    const queryParams = "/" + courseId;
+    url += queryParams;
+    const response = await fetch(APIURL + url);
+    const json = await response.json();
+    if (response.ok) {
+        return json.map((row) => new LectureSchedule(row.lectureId, row.schedule, row.classNumber, row.teacherName, row.courseName, row.userId, row.classId));
+    } else {
+        let err = { status: response.status, errObj: json };
+        throw err;
+    }
+}
+
+async function bookLecture(lectureId, userId, scheduleDate) {
+    return new Promise((resolve, reject) => {
+        fetch(APIURL + "/bookLecture", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: `{"lectureId": "${lectureId}", "userId": "${userId}", "scheduleDate": "${scheduleDate}"}`,
+        }).then((response) => {
+            if (response.ok) {
+                resolve(true);
+            } else {
+                let err = { status: response.status, errObj: response };
+                throw err;
+            }
+        }).catch((err) => { reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+async function getBookingHistory(userId) {
+    let url = "/bookingHistory";
+    const queryParams = "/" + userId;
+    url += queryParams;
+    const response = await fetch(APIURL + url);
+    const json = await response.json();
+    if (response.ok) {
+        return json.map((row) => new BookingHistory(row.bookingId, row.studentId, row.lectureId, row.presence, row.canceled, row.reserved, 
+            row.cancelDate, row.reserveDate, row.bookDate, row.courseName, row.bookingDeadline, row.teacherName));
+    } else {
+        let err = { status: response.status, errObj: json };
+        throw err;  // An object with the error coming from the server
+    }
+}
+
+async function cancelReservation(id) {
+    return new Promise((resolve, reject) => {
+        fetch(APIURL + "/cancelReservation/" + id, {
+            method: 'PUT'
+        }).then( (response) => {
+            if(response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);} ) // error msg in the response body
+                .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation };
