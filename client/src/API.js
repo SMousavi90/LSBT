@@ -4,6 +4,39 @@ import BookingHistory from './Entities/BookingHistory';
 
 const APIURL = 'api';
 
+
+async function getNotification(userId){
+    return new Promise((resolve,reject)=>{     
+        fetch(APIURL + `/teacher/${userId}/notification`).then((response)=>{
+            if(response.ok){
+                response.json()
+                    .then((notifications)=> resolve(notifications))
+                    .catch((err) => { reject({ errors: [{ param: 'Application', msg: 'Cannot parse server response' }] }) });
+            }   
+        })
+    });
+
+
+}
+
+async function updateNotificationStatus(userId){
+    return new Promise((resolve,reject)=>{
+        fetch(APIURL + `/teacher/${userId}/updatenotification`,{
+            method: 'PUT'
+        })
+        .then((response)=>{
+                if (response.ok) {
+                    resolve(null);
+                } else {
+                    response.json()
+                        .then((obj) => { reject(obj); })
+                        .catch((err) => { reject({ errors: [{ param: 'Application', msg: 'Cannot parse server response' }] }) });
+                }  
+        })
+    });
+
+
+}
 async function isAuthenticated() {
 
     let url = APIURL + '/user';
@@ -51,6 +84,7 @@ async function logout() {
         throw response.status;
     }
 }
+
 
 async function getStudentCurrentCourses(userId) {
     let url = "/getStudentCurrentCourses";
@@ -131,4 +165,7 @@ async function cancelReservation(id) {
     });
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation };
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus };
+
+
+

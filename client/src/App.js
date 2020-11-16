@@ -5,6 +5,8 @@ import LoginForm from './components/LoginForm.js';
 import BookingBody from './components/BookingBody.js';
 import DashboardBody from './components/DashboardBody.js';
 import { AuthContext } from './auth/AuthContext';
+import NotificationTable from './components/NotificationTable.js';
+
 import {
   BrowserRouter as Router,
   Switch,
@@ -24,20 +26,48 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { loginError: null };
+    this.state = { loginError: null, notification_list:[] };
   }
 
   componentDidMount() {
     //check if the user is authenticated
     API.isAuthenticated()
-      .then((user) => { console.log(user); this.setState({ user: user.username, role: user.roleId, name: user.name, userId: user.userId }); })
+      .then((user) => { //console.log(user);
+        if(user.roleId == 2)//if it's a teacher check if there are some lecture notification to send
+        {
+          this.checkNotification();
+        }
+        this.setState({ userId: user.userId, user: user.username, role: user.roleId, name: user.name }); })
       .catch(() => this.setState({ user: null }));
   }
+  checkNotification(){
+  
+        API.isAuthenticated()
+        .then((user) => { //console.log(user);
+        if(user.roleId == 2)//if it's a teacher check if there are some lecture notification to send
+        {
+          API.getNotification(user.userId).then((notifications)=>{
+            this.setState({notification_list:notifications });
+            API.updateNotificationStatus(user.userId)
+              .then(()=>{console.log("ok")})
+              .catch(()=>{}); 
+            console.log(this.state.notification_list);
+          }).catch(()=>{}); 
+        }
+      });
+  }
+  
 
   login = (username, password) => {
 
     API.login(username, password)
-      .then((obj) => this.setState({ loginError: null, user: obj.username, authUser: obj, role: obj.roleId, name: obj.name, userId: obj.userId }))
+      .then((obj) => {
+        this.setState({ loginError: null, user: obj.username, authUser: obj, role: obj.roleId, name: obj.name, userId: obj.userId })
+        if(this.state.role === 2)
+        {
+          this.checkNotification();
+        }
+      })
       .catch((err) => this.setState({ loginError: err.code }));
   }
 
@@ -59,12 +89,19 @@ class App extends React.Component {
       <AuthContext.Provider value={value}>
         <div className="App">
           <Router>
-            <NavBar user={this.state.user} role={this.state.role} name={this.state.name} logout={this.logout} />
+          <NavBar user={this.state.user} role={this.state.role} name={this.state.name} notifications = {this.state.notification_list} logout={this.logout} />
             <Switch>
+            <Route path="/notification">
+              <Container className="login-container">
+                  <h2>Notifications</h2>
+                  <NotificationTable notifications = {this.state.notification_list}/>
+              </Container>
+            </Route>
               <Route path="/login">
                 <Container className="login-container">
                   <h2>Login</h2>
                   <LoginForm onLogin={this.login} loginError={this.state.loginError} logged={this.state.user} ></LoginForm>
+
                 </Container>
               </Route>
               <Route path="/BookingHistory">
@@ -94,7 +131,6 @@ class App extends React.Component {
                     </Container>
                   }
                 }
-
               }}>
               </Route>
             </Switch>
