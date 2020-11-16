@@ -1,5 +1,5 @@
 class LectureSchedule {    
-    constructor(lectureId, schedule, classNumber, teacherName, courseName, userId, classId) {
+    constructor(lectureId, schedule, classNumber, teacherName, courseName, userId, classId, bookingId) {
         if (lectureId) {
             this.lectureId = lectureId;
         }
@@ -10,6 +10,7 @@ class LectureSchedule {
         this.courseName = courseName;
         this.userId = userId;
         this.classId = classId;
+        this.bookingId = bookingId;
     }
 }
 

@@ -30,7 +30,7 @@ class App extends React.Component {
   componentDidMount() {
     //check if the user is authenticated
     API.isAuthenticated()
-      .then((user) => { console.log(user); this.setState({ user: user.username, role: user.roleId, name: user.name }); })
+      .then((user) => { console.log(user); this.setState({ user: user.username, role: user.roleId, name: user.name, userId: user.userId }); })
       .catch(() => this.setState({ user: null }));
   }
 

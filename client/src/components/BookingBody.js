@@ -11,7 +11,7 @@ class BookingBody extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { courses: [], selectedCourse: "", scheduleVisibility: "none", lectures: [] };
+        this.state = { courses: [], selectedCourse: "", selectedCourseId: -1, scheduleVisibility: "none", lectures: [] };
     }
 
     componentDidMount() {
@@ -32,13 +32,13 @@ class BookingBody extends React.Component {
     }
 
     getAvailableLectures = (id, ev) => {
-        API.getAvailableLectures(id)
+        API.getAvailableLectures(id, this.state.authUser.userId)
             .then((data) => {
                 // show the list of available lectures
                 if (data.length > 0) {
-                    this.setState(() => ({ scheduleVisibility: "", selectedCourse: data[0].courseName, lectures: data })); // todo change selectedCourse
+                    this.setState(() => ({ scheduleVisibility: "", selectedCourse: data[0].courseName, selectedCourseId: id, lectures: data })); // todo change selectedCourse
                 } else {
-                    this.setState(() => ({ scheduleVisibility: "none", selectedCourse: "", lectures: [] }));
+                    this.setState(() => ({ scheduleVisibility: "none", selectedCourse: "", selectedCourseId: -1, lectures: [] }));
                 }
             })
             .catch((errorObj) => {
@@ -62,6 +62,8 @@ class BookingBody extends React.Component {
                             );
                         }
                     });
+
+                    this.getAvailableLectures(this.state.selectedCourseId);
                 }
                 console.log(data);
             })
@@ -99,13 +101,15 @@ class BookingBody extends React.Component {
     }
 
     createLectureRows = (r) => {
+        console.log(r.bookingId);
         return (
             <tr>
                 <td>{r.schedule}</td>
                 <td>{r.classNumber}</td>
                 <td>{r.teacherName}</td>
                 <td>{
-                    <Button variant="success" className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>Book</Button>
+                    (r.bookingId === undefined || r.bookingId === null) ? <Button variant="success" className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>Book</Button>
+                    : <Button variant="secondary" disabled>Already Booked</Button>
                 }</td>
             </tr>
         );
@@ -136,7 +140,7 @@ class BookingBody extends React.Component {
                             <Table striped bordered hover variant="white">
                                 <thead>
                                     <tr style={{ backgroundColor: '#c3c3c3' }}>
-                                        <th className="col-md-2">Schedule</th>
+                                        <th className="col-md-1">Schedule</th>
                                         <th>Class Number</th>
                                         <th>Teacher Name</th>
                                         <th className="col-md-1 text-center"></th>

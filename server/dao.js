@@ -17,7 +17,7 @@ const createStudentCourse = function (row) {
 }
 
 const createAvailableLectures = function (row) {
-    return new LecturesSchedule(row.LectureId, row.Schedule, row.ClassNumber, row.TeacherName, row.CourseName, row.UserId, row.ClassId);
+    return new LecturesSchedule(row.LectureId, row.Schedule, row.ClassNumber, row.TeacherName, row.CourseName, row.UserId, row.ClassId, row.BookingId);
 }
 
 const createBookingHistory = function (row) {
@@ -28,7 +28,7 @@ const createBookingHistory = function (row) {
 
 exports.getUserById = function (username) {
     return new Promise((resolve, reject) => { //promise is an object used to deal with asynchronous operations
-        const sql = 'SELECT * FROM User WHERE Username = ?';
+        const sql = 'SELECT * FROM User WHERE UserId = ?';
         db.get(sql, [username], (err, user) => {
             if (err) {
                 reject(err);
@@ -87,21 +87,22 @@ exports.getStudentCurrentCourses = function (id) {
 /**
  * Get Available Lectures 
  */
-exports.getAvailableLectures = function (id) {
+exports.getAvailableLectures = function (id, userId) {
     return new Promise((resolve, reject) => {
         var currentDate = new Date; // get current date
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
         var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
 
-        const sql = `Select U.UserId, C.ClassId, LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, cr.Name, cr.Name as CourseName
+        const sql = `Select U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, cr.Name, cr.Name as CourseName, BookingId
         from Lecture L inner join Class C on l.ClassId=C.ClassId
         Inner join User U on U.UserId=L.TeacherId
         inner join Course cr on cr.CourseId = L.CourseId
+        left join Booking b on b.LectureId = L.LectureId and (b.Canceled = 0 or b.Canceled IS NULL) and b.StudentId = ?
         where l.CourseId=?
         And l.Bookable=1 and l.Canceled=0
         And Schedule between ? and ?`;
 
-        db.all(sql, [id, firstDay.slice(0, 10), lastDay.slice(0, 10)], (err, rows) => {
+        db.all(sql, [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10)], (err, rows) => {
             if (err)
                 reject(err);
             else if (rows.length === 0)

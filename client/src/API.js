@@ -73,7 +73,7 @@ async function getAvailableLectures(courseId) {
     const response = await fetch(APIURL + url);
     const json = await response.json();
     if (response.ok) {
-        return json.map((row) => new LectureSchedule(row.lectureId, row.schedule, row.classNumber, row.teacherName, row.courseName, row.userId, row.classId));
+        return json.map((row) => new LectureSchedule(row.lectureId, row.schedule, row.classNumber, row.teacherName, row.courseName, row.userId, row.classId, row.bookingId));
     } else {
         let err = { status: response.status, errObj: json };
         throw err;

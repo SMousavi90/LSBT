@@ -32,7 +32,7 @@ app.post(BASEURI + '/login', (req, res) => {
             if (result.passRes == false) {
                 res.status(500).json({ param: 'Server', code: 2, msg: 'wrong password' });
             } else {
-                const token = jsonwebtoken.sign({ username: username }, jwtSecret, { expiresIn: expireTime }); //create token
+                const token = jsonwebtoken.sign({ username: result.userId }, jwtSecret, { expiresIn: expireTime }); //create token
                 res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: 1000 * expireTime });
                 res.status(200).json({ userId: result.userId, username: username, roleId: result.roleId, name: result.name });
             }
@@ -93,7 +93,7 @@ app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
 });
 
 app.get('/api/getAvailableLectures/:courseId', (req, res) => {
-    dao.getAvailableLectures(req.params.courseId)
+    dao.getAvailableLectures(req.params.courseId, req.user.username)
         .then((row) => {
             if (!row) {
                 res.status(404).send();
