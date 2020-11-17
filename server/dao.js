@@ -327,3 +327,25 @@ exports.cancelReservation = function (id) {
         })
     });
 }
+
+/**
+ * Get all lectures
+ */
+exports.getAllLectures = function () {
+    return new Promise((resolve, reject) => {
+        const sql = `select Schedule, BookingDeadline, U.Name || " " || U.LastName as Name, U.Email, C.Name as CourseName, COUNT(StudentId) AS nStudents from Lecture L 
+        inner join User U on U.UserId=L.TeacherId
+        inner join Course C on C.CourseId = L.CourseId
+        left join Booking B on B.LectureId = L.LectureId and B.Canceled IS NULL 
+        where Schedule > datetime('now', 'localtime') and BookingDeadline > datetime('now', 'localtime')
+        and L.Canceled = 0
+        GROUP BY L.LectureId`;
+        db.all(sql, [], (err, rows) => {
+            if (err)
+                reject(err);
+            else {
+                resolve(rows);
+            }
+        });
+    });
+}
