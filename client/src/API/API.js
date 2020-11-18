@@ -195,7 +195,33 @@ async function getTeacherCourses() {
     }
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses };
+async function getCourseLectures(courseId) {
+    const url = `/getCourseLectures/${courseId}`;
+    const response = await fetch(APIURL + url);
+    const lectures = await response.json();
+    if (response.ok) {
+        return lectures;
+
+    } else {
+        let err = { status: response.status, errObj: lectures };
+        throw err;
+    }
+}
+
+async function getLectureStudents(lectureId) {
+    const url = `/getLectureStudents/${lectureId}`;
+    const response = await fetch(APIURL + url);
+    const lectures = await response.json();
+    if (response.ok) {
+        return lectures;
+
+    } else {
+        let err = { status: response.status, errObj: lectures };
+        throw err;
+    }
+}
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents };
 
 
 

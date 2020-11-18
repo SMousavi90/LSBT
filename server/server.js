@@ -202,6 +202,31 @@ app.get(BASEURI + '/getTeacherCourses', (req, res) => {
         });
 });
 
+app.get(BASEURI + '/getCourseLectures/:courseId', (req, res) => {
+    dao.getCourseLectures(req.params.courseId)
+        .then((lectures) => {
+            res.json(lectures);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.get(BASEURI + '/getLectureStudents/:lectureId', (req, res) => {
+    dao.getLectureStudents(req.params.lectureId)
+        .then((lectures) => {
+            res.json(lectures);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);

@@ -263,7 +263,7 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
                             else {
                                 let bookedCount = rows[0].BookedCount;
                                 if (bookedCount < capacity) {
-                                    const sqlBook = `Insert into Booking(StudentId, LectureId, BookDate) Values (?, ?, ?)`;
+                                    const sqlBook = `Insert into Booking(StudentId, LectureId, BookDate, ReserveDate) Values (?, ?, ?, datetime('now','localtime'))`;
                                     db.run(sqlBook, [userId, lectureId, scheduleDate], (err, rows) => {
                                         if (err)
                                             reject(err);
@@ -384,3 +384,36 @@ exports.getTeacherCourses = function (id) {
     });
 }
 
+exports.getCourseLectures = function (id) {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable FROM Lecture L
+        INNER JOIN 'Class' C ON C.ClassId = L.ClassId
+        WHERE L.CourseId = ?
+        AND datetime(L.Schedule) > datetime('now','localtime')
+        ORDER BY L.Schedule`;
+        db.all(sql, [id], (err, rows) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(rows);
+            }
+        });
+    });
+}
+
+exports.getLectureStudents = function (id) {
+    return new Promise((resolve, reject) => {
+        const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.ReserveDate FROM Booking B
+        INNER JOIN 'User' U ON U.UserId = B.StudentId
+        WHERE B.LectureId = ?
+        AND (Canceled IS NULL OR Canceled = 0)
+        ORDER BY Name`;
+        db.all(sql, [id], (err, rows) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(rows);
+            }
+        });
+    });
+}
