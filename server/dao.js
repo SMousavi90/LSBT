@@ -4,16 +4,17 @@ const StudentCourse = require('./Entities/StudentCourse');
 const LecturesSchedule = require('./Entities/LecturesSchedule');
 const BookingHistory = require('./Entities/BookingHistory');
 
-const moment = require('moment');
 const sqlite = require('sqlite3');
 const bcrypt = require('bcrypt');
 
-const db = new sqlite.Database('db/PULSeBS.db', (err) => {
-    if (err) {
-        throw err;
-    }
-});
+let db;
 
+exports.setDb = function(dbname){
+    db = new sqlite.Database(dbname, (err) => {
+        if (err)
+            throw err;
+    });
+}
 
 const createStudentCourse = function (row) {
     return new StudentCourse(row.CourseId, row.Name, row.Description, row.Semester, row.StudentId);
@@ -331,7 +332,7 @@ exports.cancelReservation = function (id) {
 /**
  * Get all lectures
  */
-exports.getAllLectures = function () {
+exports.getAllLectures = function () {//getAllLectures scheduled for today or later
     return new Promise((resolve, reject) => {
         const sql = `select Schedule, BookingDeadline, U.Name || " " || U.LastName as Name, U.Email, C.Name as CourseName, COUNT(StudentId) AS nStudents from Lecture L 
         inner join User U on U.UserId=L.TeacherId

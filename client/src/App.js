@@ -1,5 +1,5 @@
 import React from 'react';
-import API from './API.js';
+import API from './API/API.js';
 import NavBar from './components/NavBar.js';
 import LoginForm from './components/LoginForm.js';
 import BookingBody from './components/BookingBody.js';

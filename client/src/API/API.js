@@ -1,6 +1,6 @@
-import StudentCourse from './Entities/StudentCourse';
-import LectureSchedule from './Entities/LectureSchedule';
-import BookingHistory from './Entities/BookingHistory';
+import StudentCourse from '../Entities/StudentCourse';
+import LectureSchedule from '../Entities/LectureSchedule';
+import BookingHistory from '../Entities/BookingHistory';
 
 const APIURL = 'api';
 

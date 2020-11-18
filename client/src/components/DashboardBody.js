@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API from '../API';
+import API from '../API/API';
 
 function DashboardBody(props) {
 

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testExecutions version="1">
+  <file path="C:\Users\peppe\Documents\seatbooking\Software-Engineering-2-team10\server\tests\dao.test.js">
+    <testCase name="test getUserById" duration="18"/>
+    <testCase name="test getAllLectures" duration="5"/>
+  </file>
+</testExecutions>

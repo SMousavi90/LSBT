@@ -1,7 +1,7 @@
 import React from 'react';
 import { AuthContext } from '../auth/AuthContext'
 import Table from 'react-bootstrap/Table';
-import API from "../API"
+import API from '../API/API';
 import Button from 'react-bootstrap/Button';
 import { confirmAlert } from 'react-confirm-alert'; 
 import 'react-confirm-alert/src/react-confirm-alert.css' 

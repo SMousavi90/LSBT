@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import API from '../API';
+import API from '../API/API';
 import StudentCurrentCourses from './StudentCurrentCourses'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
