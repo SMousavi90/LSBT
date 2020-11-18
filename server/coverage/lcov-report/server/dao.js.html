@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22% </span>
+                <span class="strong">21.38% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>33/150</span>
+                <span class='fraction'>34/159</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6% </span>
+                <span class="strong">5.77% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/50</span>
+                <span class='fraction'>3/52</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">16.33% </span>
+                <span class="strong">15.38% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/49</span>
+                <span class='fraction'>8/52</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">22.6% </span>
+                <span class="strong">21.94% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>33/146</span>
+                <span class='fraction'>34/155</span>
             </div>
         
             
@@ -408,7 +408,31 @@
 <a name='L349'></a><a href='#L349'>349</a>
 <a name='L350'></a><a href='#L350'>350</a>
 <a name='L351'></a><a href='#L351'>351</a>
-<a name='L352'></a><a href='#L352'>352</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -756,6 +780,30 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -880,7 +928,7 @@ exports.getNotification = <span class="fstat-no" title="function not covered" >f
             AND L.courseid = C.courseid 
             AND L.lectureid = B.lectureid 
             AND TN.teacherid = ? 
-        GROUP  BY NAME; `;
+        GROUP  BY NAME, L.Schedule; `;
 &nbsp;
 <span class="cstat-no" title="statement not covered" >        db.all(sql, [userId], <span class="fstat-no" title="function not covered" >(e</span>rr, rows) =&gt; {</span>
 <span class="cstat-no" title="statement not covered" >            if (err) {</span>
@@ -1110,14 +1158,38 @@ exports.getAllLectures = function () {//getAllLectures scheduled for today or la
             }
         });
     });
-}</pre></td></tr></table></pre>
+}
+&nbsp;
+&nbsp;
+exports.getStudentsPerLecturePerProfessor = <span class="fstat-no" title="function not covered" >fu</span>nction (id)  {
+<span class="cstat-no" title="statement not covered" >    return new Promise(<span class="fstat-no" title="function not covered" >(r</span>esolve, reject) =&gt; {</span>
+        const sql = <span class="cstat-no" title="statement not covered" >`select StudentId ,U.LastName,  U.Name, C.Name as CourseName, Schedule, L.LectureId  from Booking B</span>
+        inner join Lecture L on B.LectureId = L.LectureId
+        inner join Course C on C.CourseId = L.CourseId
+        left join User U on U.UserId = B.StudentId and B.Canceled IS NULL 
+        where TeacherId = ? and L.Canceled = 0 and StudentId is not NULL`;
+<span class="cstat-no" title="statement not covered" >        db.all(sql, [id], <span class="fstat-no" title="function not covered" >(e</span>rr, rows) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            if (err)</span>
+<span class="cstat-no" title="statement not covered" >                reject(err);</span>
+            else {
+<span class="cstat-no" title="statement not covered" >                resolve(rows);</span>
+<span class="cstat-no" title="statement not covered" >                console.log("Dao Rows::");</span>
+<span class="cstat-no" title="statement not covered" >                console.log(rows);</span>
+            }
+        });
+    });
+    
+&nbsp;
+}
+&nbsp;
+&nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Wed Nov 18 2020 01:29:43 GMT+0100 (GMT+01:00)
+                at Wed Nov 18 2020 12:22:04 GMT+0100 (Central European Standard Time)
             </div>
         </div>
         <script src="../prettify.js"></script>
