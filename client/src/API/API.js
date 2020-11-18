@@ -182,7 +182,20 @@ async function getStudentsPerLecturePerProfessor(userId) {
     }
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor };
+async function getTeacherCourses() {
+    const url = "/getTeacherCourses";
+    const response = await fetch(APIURL + url);
+    const courses = await response.json();
+    if (response.ok) {
+        return courses;
+
+    } else {
+        let err = { status: response.status, errObj: courses };
+        throw err;
+    }
+}
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses };
 
 
 

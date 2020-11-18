@@ -113,7 +113,7 @@ app.get('/api/getStudentsPerLecturePerProfessor/:userId', (req, res) => {
                 errors: [{ 'param': 'Server', 'msg': err }],
             });
         });
-    
+
 });
 
 
@@ -166,28 +166,40 @@ app.put('/api/cancelReservation/:bookingId', (req, res) => {
         }));
 });
 
-app.get(BASEURI + '/teacher/:userId/notification', (req,res)=>{  
+app.get(BASEURI + '/teacher/:userId/notification', (req, res) => {
     dao.checkNotification(req.params.userId)
-        .then(()=>{
+        .then(() => {
             dao.updateLecture(req.params.userId)
-            .then(()=>{
-                dao.getNotification(req.params.userId)
-                .then((notifications)=>{res.json(notifications);})
-                .catch(()=>{res.status(500).json({ 'error': 'there are no notifications' }); });
-            })
-            .catch(()=>{});
-            
+                .then(() => {
+                    dao.getNotification(req.params.userId)
+                        .then((notifications) => { res.json(notifications); })
+                        .catch(() => { res.status(500).json({ 'error': 'there are no notifications' }); });
+                })
+                .catch(() => { });
+
         })
-        .catch(()=>{res.status(500).json({ 'error': 'problems during notification check' }); });
+        .catch(() => { res.status(500).json({ 'error': 'problems during notification check' }); });
 
 });
 
 app.put(BASEURI + '/teacher/:userId/updatenotification', (req, res) => {
-   
+
     dao.updateNotification(req.params.userId)
-        .then(()=>{res.status(200);})
-        .catch(()=>res.status(500).json({ 'error': 'error while updating notification' }));
-  });
+        .then(() => { res.status(200); })
+        .catch(() => res.status(500).json({ 'error': 'error while updating notification' }));
+});
+
+app.get(BASEURI + '/getTeacherCourses', (req, res) => {
+    dao.getTeacherCourses(req.user.username)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
 
 
 app.listen(PORT, () => {
@@ -195,16 +207,16 @@ app.listen(PORT, () => {
 
     //send mail to teachers once a course deadline expires
     dao.getAllLectures()
-    .then((res) =>{
+        .then((res) => {
 
-        res.forEach(function(e) {
-            setTimer(e.BookingDeadline, insertNotification, e);
-        });
-    })
-    .catch((err) => console.log(err));
+            res.forEach(function (e) {
+                setTimer(e.BookingDeadline, insertNotification, e);
+            });
+        })
+        .catch((err) => console.log(err));
 });
 
-function setTimer(date, func, lecture){
+function setTimer(date, func, lecture) {
 
     const d = moment(date);
     var now = moment();
@@ -212,36 +224,36 @@ function setTimer(date, func, lecture){
 
     var diff = Math.max(delay, 0);
     if (diff > 0x7FFFFFFF) //setTimeout limit is MAX_INT32=(2^31-1)
-        setTimeout(function() {setTimer(date, func, lecture);}, 0x7FFFFFFF);
+        setTimeout(function () { setTimer(date, func, lecture); }, 0x7FFFFFFF);
     else
         setTimeout(func, diff, lecture);
 }
 
-function insertNotification(lecture){
+function insertNotification(lecture) {
     var transporter = nodemailer.createTransport({
         host: "smtp.mailtrap.io",
         port: 2525,
         auth: {
-          user: "d0cee37bf32ad9",
-          pass: "8b786f1dc70862"
+            user: "d0cee37bf32ad9",
+            pass: "8b786f1dc70862"
         }
-      });
+    });
 
-      var subject = `Bookings of lecture ${lecture.CourseName} scheduled on ${lecture.Schedule}`;
-      var body = `The lecture of the course ${lecture.CourseName} scheduled on ${lecture.Schedule} has been booked by ${lecture.nStudents} students.`;
-      
-      var mailOptions = {
+    var subject = `Bookings of lecture ${lecture.CourseName} scheduled on ${lecture.Schedule}`;
+    var body = `The lecture of the course ${lecture.CourseName} scheduled on ${lecture.Schedule} has been booked by ${lecture.nStudents} students.`;
+
+    var mailOptions = {
         from: 'no-reply@pulsebs.com',
         to: lecture.Email,
         subject: subject,
         text: body
-      };
-      
-      transporter.sendMail(mailOptions, function(error, info){
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
-          console.log(error);
+            console.log(error);
         } else {
-          console.log('Email sent: ' + info.response);
+            console.log('Email sent: ' + info.response);
         }
-      });
+    });
 }

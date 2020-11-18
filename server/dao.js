@@ -320,7 +320,6 @@ exports.cancelReservation = function (id) {
         const sql = 'UPDATE Booking SET canceled=1, CancelDate=? WHERE BookingId = ?';
         db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
             if (err) {
-                console.log(err);
                 reject(err);
             }
             else
@@ -364,12 +363,24 @@ exports.getStudentsPerLecturePerProfessor = function (id)  {
                 reject(err);
             else {
                 resolve(rows);
-                console.log("Dao Rows::");
-                console.log(rows);
             }
         });
     });
-    
+}
 
+exports.getTeacherCourses = function (id) {
+    return new Promise((resolve, reject) => {
+        const sql = `select C.CourseId, Name FROM Lecture L 
+        inner join Course C on C.CourseId = L.CourseId
+        WHERE TeacherId = ?
+        GROUP BY C.CourseId`;
+        db.all(sql, [id], (err, rows) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(rows);
+            }
+        });
+    });
 }
 
