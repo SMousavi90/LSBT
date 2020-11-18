@@ -54,7 +54,7 @@ exports.checkNotification = function (userId){
                 reject(err);
                 return;
             }else{
-                resolve();
+                resolve(userId);
             }
             
         });
@@ -76,7 +76,7 @@ exports.updateLecture = function (userId){
                 reject(err);
                 return;
             }else{
-                resolve();
+                resolve(userId);
             }
             
         });
@@ -96,7 +96,7 @@ exports.updateNotification = function (userId){
                 reject(err);
                 return;
             }else{
-                resolve();
+                resolve(userId);
             }
             
         });
@@ -356,7 +356,7 @@ exports.getStudentsPerLecturePerProfessor = function (id)  {
         const sql = `select StudentId ,U.LastName,  U.Name, C.Name as CourseName, Schedule, L.LectureId  from Booking B
         inner join Lecture L on B.LectureId = L.LectureId
         inner join Course C on C.CourseId = L.CourseId
-        left join User U on U.UserId = B.StudentId and B.Canceled IS NULL 
+        inner join User U on U.UserId = B.StudentId and B.Canceled IS NULL 
         where TeacherId = ? and L.Canceled = 0 and StudentId is not NULL`;
         db.all(sql, [id], (err, rows) => {
             if (err)
