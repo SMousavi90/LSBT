@@ -119,7 +119,7 @@ exports.getNotification = function (userId) {
             AND L.courseid = C.courseid 
             AND L.lectureid = B.lectureid 
             AND TN.teacherid = ? 
-        GROUP  BY NAME; `;
+        GROUP  BY NAME, L.Schedule; `;
 
         db.all(sql, [userId], (err, rows) => {
             if (err) {

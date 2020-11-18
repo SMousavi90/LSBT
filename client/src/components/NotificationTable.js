@@ -14,7 +14,7 @@ const NotificationTable = (props) =>{
     </thead>
     <tbody>
       {props.notifications.sort((a, b) => { 
-       return moment(a.schedule).diff(moment(b.schedule))
+       return moment(a.Schedule).diff(moment(b.Schedule))
   }).map((notification,index)=><NotificationItem key = {index} schedule ={notification.Schedule} name = {notification.Name} nStudents = {notification.nStudents} alreadyShown = {notification.SentStatus} />)}
     </tbody>
   </Table>
