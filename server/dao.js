@@ -54,7 +54,7 @@ exports.checkNotification = function (userId){
                 reject(err);
                 return;
             }else{
-                resolve();
+                resolve(userId);
             }
             
         });
@@ -76,7 +76,7 @@ exports.updateLecture = function (userId){
                 reject(err);
                 return;
             }else{
-                resolve();
+                resolve(userId);
             }
             
         });
@@ -96,7 +96,7 @@ exports.updateNotification = function (userId){
                 reject(err);
                 return;
             }else{
-                resolve();
+                resolve(userId);
             }
             
         });

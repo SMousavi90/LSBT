@@ -16,6 +16,7 @@ const authErrorObj = { 'param': 'Server', 'msg': 'Authorization error' };
 
 const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR0Zm";
 
+// dao.setDb("db/PULSeBS_test.db");
 dao.setDb("db/PULSeBS.db");
 
 app = new express();
