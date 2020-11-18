@@ -62,7 +62,7 @@ class App extends React.Component {
 
     API.login(username, password)
       .then((obj) => {
-        if(obj.roleId)
+        if(obj.roleId == 2)
         {
           console.log("teacher!");
           this.checkNotification();
@@ -75,7 +75,7 @@ class App extends React.Component {
 
   logout = () => {
     API.logout().then(() => {
-      setTimeout(() => this.setState({ user: null }), 300); //short delay to avoid immediate page reloading
+      setTimeout(() => this.setState({ user: null, authUser: null }), 300); //short delay to avoid immediate page reloading
     });
   }
 
