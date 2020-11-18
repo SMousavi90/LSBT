@@ -1,7 +1,7 @@
 import StudentCourse from '../Entities/StudentCourse';
 import LectureSchedule from '../Entities/LectureSchedule';
 import BookingHistory from '../Entities/BookingHistory';
-
+import ProfessorCourse from '../Entities/ProfessorCourse'
 const APIURL = 'api';
 
 
@@ -165,7 +165,24 @@ async function cancelReservation(id) {
     });
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus };
+async function getStudentsPerLecturePerProfessor(userId) {
+    let url = "/getStudentsPerLecturePerProfessor";
+    const queryParams = "/" + userId;
+    url += queryParams;
+    const response = await fetch(APIURL + url);
+    const json = await response.json();
+    console.log("API function, getting ID " + userId);
+    //console.log(response);
+    if (response.ok) {
+        return json.map((row) => new ProfessorCourse(row.StudentId,row.LastName,row.Name,row.CourseName,row.Schedule, row.LectureId));
+        //return json.map((row) => new StudentCourse(row.courseId, row.name, row.desc, row.semester, row.studentId));
+    } else {
+        let err = { status: response.status, errObj: json };
+        throw err;
+    }
+}
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor };
 
 
 

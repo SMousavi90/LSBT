@@ -128,7 +128,7 @@ class App extends React.Component {
                   } else {
                     return <Container className="custom-container">
                       <Row>
-                        <DashboardBody name={this.state.name}></DashboardBody>
+                        <DashboardBody name={this.state.name} id ={this.state.userId}></DashboardBody>
                       </Row>
                     </Container>
                   }

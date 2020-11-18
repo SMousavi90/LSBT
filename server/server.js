@@ -97,6 +97,26 @@ app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
         });
 });
 
+app.get('/api/getStudentsPerLecturePerProfessor/:userId', (req, res) => {
+    dao.getStudentsPerLecturePerProfessor(req.params.userId)
+        .then((row) => {
+            if (!row) {
+                res.status(404).send();
+            } else {
+                console.log("Server:: ");
+                console.log(row);
+                res.json(row);
+            }
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+    
+});
+
+
 app.get('/api/getAvailableLectures/:courseId', (req, res) => {
     dao.getAvailableLectures(req.params.courseId, req.user.username)
         .then((row) => {
