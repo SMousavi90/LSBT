@@ -119,6 +119,7 @@ exports.getNotification = function (userId) {
             AND L.courseid = C.courseid 
             AND L.lectureid = B.lectureid 
             AND TN.teacherid = ? 
+            AND B.Canceled IS NULL
         GROUP  BY NAME, L.Schedule; `;
 
         db.all(sql, [userId], (err, rows) => {
@@ -406,6 +407,23 @@ exports.getLectureStudents = function (id) {
         AND (Canceled IS NULL OR Canceled = 0)
         ORDER BY Name`;
         db.all(sql, [id], (err, rows) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(rows);
+            }
+        });
+    });
+}
+
+exports.getBookingDetails = function(lectureId, userId){
+    return new Promise((resolve, reject) => {
+        const sql = `select Schedule, U.Name || " " || U.LastName as 'Name', U.Email, C.Name as CourseName from Lecture L
+        inner join Course C on C.CourseId = L.CourseId
+        inner join StudentCourse SC on SC.CourseId = L.CourseId
+        inner join User U on U.UserId = SC.StudentId
+        where L.LectureId = ? and SC.StudentId = ?`;
+        db.get(sql, [lectureId, userId], (err, rows) => {
             if (err){
                 reject(err);
             }else{

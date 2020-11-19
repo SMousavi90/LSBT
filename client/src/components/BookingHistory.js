@@ -71,7 +71,7 @@ class BookingHistory extends React.Component {
                 <td>{r.bookDate}</td>
                 <td>{r.bookingDeadline}</td>
                 <td>{r.reserved == null ? "No" : "Yes"}</td>
-                <td>{r.canceled == null ? "No" : (<div><span>Canceled at: </span><span className="badge badge-danger">{r.cancelDate}</span></div>)}</td>
+                <td>{r.canceled == null ? "No" : (<div><span>You canceled at: </span><span className="badge badge-danger">{r.cancelDate}</span></div>)}</td>
                 <td>{r.presence == null ? "N/A" : "Yes"}</td>
                 <td>{r.reserveDate == null ? "N/A" : r.reserveDate}</td>
                 <td>{

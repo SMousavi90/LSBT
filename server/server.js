@@ -136,9 +136,22 @@ app.get('/api/getAvailableLectures/:courseId', (req, res) => {
 
 app.post('/api/bookLecture', (req, res) => {
     dao.bookLecture(req.body.lectureId, req.body.userId, req.body.scheduleDate)
-        .then((result) => res.status(200).end())
+        .then((result) => {
+            
+            dao.getBookingDetails(req.body.lectureId, req.body.userId)
+                .then((book) => {
+                    sendMailToStudent(book);
+                    res.status(200).end();
+                })
+                .catch((err) => res.status(500).json({
+                    errors: [{ 'param': 'Server', 'msg': err }]
+                }));
+
+          
+            
+        })
         .catch((err) => res.status(500).json({
-            errors: [{ 'param': 'Server', 'msg': err }],
+            errors: [{ 'param': 'Server', 'msg': err }]
         }));
 });
 
@@ -271,6 +284,35 @@ function insertNotification(lecture) {
     var mailOptions = {
         from: 'no-reply@pulsebs.com',
         to: lecture.Email,
+        subject: subject,
+        text: body
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
+function sendMailToStudent(book) {
+    var transporter = nodemailer.createTransport({
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: "d0cee37bf32ad9",
+            pass: "8b786f1dc70862"
+        }
+    });
+
+    var subject = `Booking confirmation of lecture ${book.CourseName} scheduled on ${book.Schedule}`;
+    var body = `Dear ${book.Name}, your booking for lecture of ${book.CourseName} scheduled on ${book.Schedule} has been confirmed.`;
+
+    var mailOptions = {
+        from: 'no-reply@pulsebs.com',
+        to: book.Email,
         subject: subject,
         text: body
     };
