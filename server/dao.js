@@ -29,7 +29,7 @@ const createBookingHistory = function (row) {
         row.CancelDate, row.ReserveDate, row.BookDate, row.Name, row.BookingDeadline, row.TeacherName);
 }
 
-exports.checkNotification = function (userId){
+exports.checkNotification = function (userId){ //X
     return new Promise((resolve, reject) => {
         
         const sql = 
@@ -61,7 +61,7 @@ exports.checkNotification = function (userId){
     });
 }
 
-exports.updateLecture = function (userId){
+exports.updateLecture = function (userId){ //X
     return new Promise((resolve, reject) => {
         const sql = 
        `UPDATE Lecture
@@ -83,7 +83,7 @@ exports.updateLecture = function (userId){
     });
 }
 
-exports.updateNotification = function (userId){
+exports.updateNotification = function (userId){ //X
     return new Promise((resolve, reject) => {
         const sql = 
        `UPDATE TeacherNotification
@@ -139,7 +139,7 @@ exports.getNotification = function (userId) {
     });
 };
 
-exports.getUserById = function (username) {
+exports.getUserById = function (username) { //X
     //console.log(username);
 
     return new Promise((resolve, reject) => { //promise is an object used to deal with asynchronous operations
@@ -156,7 +156,6 @@ exports.getUserById = function (username) {
 };
 
 exports.login = function (username, password) {
-
     return new Promise((resolve, reject) => {
         const sql = 'SELECT UserId, Name, LastName, Password, RolId, COUNT(*) AS count FROM User WHERE Username = ?';
         db.get(sql, [username], (err, res) => {
@@ -171,9 +170,7 @@ exports.login = function (username, password) {
                         if (err) {
                             reject(err);
                         } else {
-
                             resolve({ userId: res.UserId, passRes: result, roleId: res.RolId, name: res.Name + " " + res.LastName }); //return true if equals, false if not equals
-
                         }
                     });
                 }
@@ -206,7 +203,7 @@ exports.getStudentCurrentCourses = function (id) {
 /**
  * Get Available Lectures 
  */
-exports.getAvailableLectures = function (id, userId) {
+exports.getAvailableLectures = function (id, userId) { //X
     return new Promise((resolve, reject) => {
         var currentDate = new Date; // get current date
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
@@ -237,7 +234,7 @@ exports.getAvailableLectures = function (id, userId) {
 /**
  * Book a Lecture 
  */
-exports.bookLecture = function (lectureId, userId, scheduleDate) {
+exports.bookLecture = function (lectureId, userId, scheduleDate) { //X
     return new Promise((resolve, reject) => {
         const sqlAlreadyBooked = `select BookingId from Booking where LectureId = ? and StudentId = ? and BookDate is not null and Canceled is null`;
         db.all(sqlAlreadyBooked, [lectureId, userId], (err, rows) => {
@@ -287,7 +284,7 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
 /**
  * Get all reservations 
  */
-exports.getBookingHistory = function (id) {
+exports.getBookingHistory = function (id) { //X
     return new Promise((resolve, reject) => {
         var currentDate = new Date; // get current date
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
@@ -315,7 +312,7 @@ exports.getBookingHistory = function (id) {
 /**
  * Cancel an existing reservation with a given id.
  */
-exports.cancelReservation = function (id) {
+exports.cancelReservation = function (id) { //X
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE Booking SET canceled=1, CancelDate=? WHERE BookingId = ?';
         db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
@@ -331,7 +328,7 @@ exports.cancelReservation = function (id) {
 /**
  * Get all lectures
  */
-exports.getAllLectures = function () {//getAllLectures scheduled for today or later
+exports.getAllLectures = function () {//getAllLectures scheduled for today or later //X
     return new Promise((resolve, reject) => {
         const sql = `select Schedule, BookingDeadline, U.Name || " " || U.LastName as Name, U.Email, C.Name as CourseName, COUNT(StudentId) AS nStudents from Lecture L 
         inner join User U on U.UserId=L.TeacherId
@@ -351,7 +348,7 @@ exports.getAllLectures = function () {//getAllLectures scheduled for today or la
 }
 
 
-exports.getStudentsPerLecturePerProfessor = function (id)  {
+/*exports.getStudentsPerLecturePerProfessor = function (id)  {
     return new Promise((resolve, reject) => {
         const sql = `select StudentId ,U.LastName,  U.Name, C.Name as CourseName, Schedule, L.LectureId  from Booking B
         inner join Lecture L on B.LectureId = L.LectureId
@@ -366,7 +363,7 @@ exports.getStudentsPerLecturePerProfessor = function (id)  {
             }
         });
     });
-}
+}*/
 
 exports.getTeacherCourses = function (id) {
     return new Promise((resolve, reject) => {

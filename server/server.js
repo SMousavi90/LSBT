@@ -98,7 +98,7 @@ app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
         });
 });
 
-app.get('/api/getStudentsPerLecturePerProfessor/:userId', (req, res) => {
+/*app.get('/api/getStudentsPerLecturePerProfessor/:userId', (req, res) => {
     dao.getStudentsPerLecturePerProfessor(req.params.userId)
         .then((row) => {
             if (!row) {
@@ -115,7 +115,7 @@ app.get('/api/getStudentsPerLecturePerProfessor/:userId', (req, res) => {
             });
         });
 
-});
+});*/
 
 
 app.get('/api/getAvailableLectures/:courseId', (req, res) => {

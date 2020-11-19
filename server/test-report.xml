@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="C:\Users\peppe\Documents\seatbooking\Software-Engineering-2-team10\server\tests\dao.test.js">
-    <testCase name="test getUserById" duration="8"/>
-    <testCase name="test getAllLectures" duration="1"/>
-    <testCase name="check Notifications test check Notification" duration="4"/>
-    <testCase name="check Notifications test update Lecture Notification Added field" duration="3"/>
-    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="4"/>
-    <testCase name="check Notifications test getAvailableLectures" duration="1"/>
-    <testCase name="check Courses test getStudentCurrentCourses" duration="2"/>
+    <testCase name="test login ok" duration="144"/>
+    <testCase name="test login user does not exists" duration="2"/>
+    <testCase name="test getUserById" duration="1"/>
+    <testCase name="check Notifications test check Notification" duration="9"/>
+    <testCase name="check Notifications test update Lecture Notification Added field" duration="9"/>
+    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="8"/>
+    <testCase name="check Notifications test getAvailableLectures" duration="4"/>
+    <testCase name="check Notifications test getAllLectures" duration="1"/>
+    <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
+    <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
     <testCase name="check BookingAndHistory test bookLecture" duration="5"/>
     <testCase name="check BookingAndHistory test bookingHistory" duration="1"/>
-    <testCase name="check BookingAndHistory test cancelReservation" duration="1"/>
+    <testCase name="check BookingAndHistory test cancelReservation" duration="0"/>
+    <testCase name="check teacher dashboard test getTeacherCourses" duration="0"/>
+    <testCase name="check teacher dashboard test getCourseLectures" duration="0"/>
+    <testCase name="check teacher dashboard test getLectureStudents" duration="1"/>
   </file>
 </testExecutions>

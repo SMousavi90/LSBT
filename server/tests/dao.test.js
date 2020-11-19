@@ -8,7 +8,15 @@ let db = new sqlite.Database("db/PULSeBS_test.db", (err) => {
     throw err;
 });
 
+test('test login ok', () => {
+  return dao.login("student1", "pass").then(data => {
+    expect(data).toEqual(expect.objectContaining({ userId: 1 }));
+  });
+});
 
+test('test login user does not exists', () => {
+  return expect(dao.login('usernotexist', 'pass')).rejects.toEqual(null);
+});
 
 test('test getUserById', () => {
   return dao.getUserById(1).then(data => {
@@ -16,14 +24,9 @@ test('test getUserById', () => {
   });
 });
 
-test('test getAllLectures', () => {
-  return dao.getAllLectures().then(data => {
-    expect(data).toHaveLength(3);
-  });
-});
-
 describe('check Notifications', () => {
   beforeAll(() => {
+    clearLectures();
     return initLectures();
   });
   afterAll(() => {
@@ -51,6 +54,12 @@ describe('check Notifications', () => {
 
   test('test getAvailableLectures', () => {
     return dao.getAvailableLectures(2).then(data => {
+      expect(data).toHaveLength(1);
+    });
+  });
+
+  test('test getAllLectures', () => {
+    return dao.getAllLectures().then(data => {
       expect(data).toHaveLength(1);
     });
   });
@@ -94,14 +103,6 @@ clearLectures = () => {
     const sql =
       `DELETE FROM Lecture
    WHERE CourseId = 2
-   AND	Schedule = "2020-11-30 15:20"
-   AND	ClassId = 1 
-   AND	BookingDeadline = "2020-11-30 15:20"
-   AND	NotificationDeadline = date("now")
-   AND	Bookable = 1 
-   AND	Canceled = 0
-   AND	TeacherId = 2
-   AND	NotificationAdded = 1
     `;
 
     db.run(sql, (err, rows) => {
@@ -148,6 +149,12 @@ describe('check Courses', () => {
   test('test getStudentCurrentCourses', () => {
     return dao.getStudentCurrentCourses(2).then(data => {
       expect(data).toHaveLength(1);
+    });
+  });
+
+  test('test getStudentCurrentCourses', () => {
+    return dao.getStudentCurrentCourses(1010).then(data => {
+      expect(data).toEqual(undefined);
     });
   });
 });
@@ -198,19 +205,22 @@ clearCourses = () => {
 
 describe('check BookingAndHistory', () => {
   beforeAll(() => {
+    clearLectures();
+    initLectures();
     return initBooking();
   });
   afterAll(() => {
+    clearLectures();
     return clearBooking();
   });
 
-  test('test bookLecture', () => {
-    return dao.bookLecture(2, 2, "2020-11-30 15:20").then(data => {
+  test('test bookLecture', () => { 
+    return dao.bookLecture(1, 2, "2020-11-30 15:20").then(data => {
       expect(data).toEqual(true);
     });
   });
 
-  test('test bookingHistory', () => {
+  test('test bookingHistory', () => { 
     return dao.getBookingHistory(2).then(data => {
       expect(data).toHaveLength(2);
     });
@@ -223,6 +233,31 @@ describe('check BookingAndHistory', () => {
   });
 });
 
+describe('check teacher dashboard', () => {
+  beforeAll(() => {
+    clearLectures();
+    return initLectures();
+  });
+  afterAll(() => {
+    return clearLectures();
+  });
+
+  test('test getTeacherCourses', () => { 
+    return dao.getTeacherCourses(2).then(data => {
+      expect(data).toHaveLength(1);
+    });
+  });
+  test('test getCourseLectures', () => { 
+    return dao.getCourseLectures(2).then(data => {
+      expect(data).toHaveLength(1);
+    });
+  });
+  test('test getLectureStudents', () => { 
+    return dao.getLectureStudents(2).then(data => {
+      expect(data).toHaveLength(0);
+    });
+  });
+});
 
 initBooking = () => {
   return new Promise((resolve, reject) => {
