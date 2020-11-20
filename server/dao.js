@@ -217,7 +217,7 @@ exports.getAvailableLectures = function (id, userId) { //X
         left join Booking b on b.LectureId = L.LectureId and (b.Canceled = 0 or b.Canceled IS NULL) and b.StudentId = ?
         where l.CourseId=?
         And l.Bookable=1 and l.Canceled=0
-        And Schedule between ? and ?`;
+        And BookingDeadline between ? and ?`;
 
         db.all(sql, [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10)], (err, rows) => {
             if (err)

@@ -93,12 +93,12 @@ class BookingHistory extends React.Component {
                             <tr>
                                 <th>Course</th>
                                 <th>Teacher</th>
-                                <th>Book Date</th>
+                                <th>Schedule</th>
                                 <th>Booking Deadline</th>
                                 <th>Reserved</th>
                                 <th>Canceled</th>
                                 <th>Presence</th>
-                                <th>Reservation Date</th>
+                                <th>Booking Date</th>
                                 <th></th>
                             </tr>
                         </thead>
