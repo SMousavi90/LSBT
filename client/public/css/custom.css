@@ -1,0 +1,232 @@
+.navbar {
+    background-color: #ff6f00;
+}
+
+.navbar svg {
+    margin-right: 0.3em;
+}
+
+
+/* Custom orange button */
+.btn-orange{
+    background-color: #ff6f00 !important;
+    color:#FFF;
+    border-color: #c43e00; 
+}
+ 
+.btn-orange:hover, .btn-orange:focus, .btn-orange:active, .btn-orange.active {
+    background-color: #c43e00 !important;
+    color:#FFF;
+    border-color: #c43e00;
+}
+ 
+.custom-container>.row {
+    padding-top: 60px;
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    height: 100vh;
+}
+
+.custom-container>.row h2 {
+    margin-top: 10px;
+}
+
+.custom-container>.row td {
+    vertical-align: middle !important;
+}
+
+.custom-container>.row .spinner-border {
+    align-self: center;
+    margin-top: 10em;
+    width: 3rem;
+    height: 3rem
+}
+
+.custom-container .card {
+    width: 100%;
+}
+
+.custom-container>.row .title-row {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.custom-container>.row .title-row .custom-switch {
+    align-self: center;
+}
+
+.table-wrapper {
+    overflow: auto;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.full-width {
+    margin-top: 10px;
+    width: 100%;
+}
+
+.login-container {
+    padding-top: 60px;
+    margin-top: 2em;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+}
+
+.login-container>.card {
+    margin-top: 1.5em;
+}
+
+.login-container .btn {
+    width: 100%;
+}
+
+#configCard {
+    margin-top: 1em;
+}
+
+.config-container>.row {
+    padding-top: 60px;
+    display: flex;
+    flex-flow: column;
+    align-items: flex-start;
+    height: 100vh;
+}
+
+.config-container>.row h2 {
+    margin-top: 10px;
+}
+
+.config-container>.row .spinner-border {
+    align-self: center;
+    margin-top: 5em;
+    width: 3rem;
+    height: 3rem
+}
+
+.config-container .card {
+    width: 100%;
+}
+
+.custom-footer {
+    justify-content: space-between !important;
+}
+
+.custom-footer p {
+    font-weight: bold;
+}
+
+/* to align dropdown account menu */
+
+.dropdown-menu {
+    right: 0 !important;
+    left: auto !important;
+}
+
+.custom-alert-message {
+    align-items: center;
+    margin-top: 4em;
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+}
+
+.custom-alert-message p {
+    margin-top: 10px;
+    color: grey;
+}
+
+.reservation-table {
+    margin-top: 15px;
+    align-self: center;
+}
+
+.reservation-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.dropdown-menu {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175) !important;
+}
+
+/*date picker custom style*/
+
+.react-datepicker-wrapper {
+    width: 100%;
+    flex: 1 1 0%;
+}
+
+.react-datepicker-wrapper .form-control {
+    border-radius: 0em;
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+}
+
+.react-datepicker {
+    border: 1px solid #ced4da !important;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, .175) !important;
+}
+
+.react-datepicker__month-container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+}
+
+.react-datepicker__header {
+    background-color: white !important;
+    border-bottom: 0px !important;
+}
+
+.react-datepicker__day-names {
+    font-weight: bold !important;
+}
+
+.custom-ui-success {
+    text-align: center;
+    width: 500px;
+    padding: 40px;
+    background: #0c9736;
+    box-shadow: 0 20px 75px rgba(0, 0, 0, 0.23);
+    color: #fff;
+}
+
+.custom-ui-success > h1 {
+    margin-top: 0;
+}
+  
+.custom-ui-success > button {
+    width: 160px;
+    padding: 10px;
+    border: 1px solid #fff;
+    margin: 10px;
+    cursor: pointer;
+    background: none;
+    color: #fff;
+    font-size: 14px;
+}
+
+.custom-ui-danger {
+    text-align: center;
+    width: 500px;
+    padding: 40px;
+    background: #c21313;
+    box-shadow: 0 20px 75px rgba(0, 0, 0, 0.23);
+    color: #fff;
+}
+ 
+.custom-ui-danger > h1 {
+    margin-top: 0;
+}
+
+.custom-ui-danger > button {
+    width: 160px;
+    padding: 10px;
+    border: 1px solid #fff;
+    margin: 10px;
+    cursor: pointer;
+    background: none;
+    color: #fff;
+    font-size: 14px;
+}
