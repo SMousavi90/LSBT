@@ -313,7 +313,7 @@ exports.getBookingHistory = function (id) { //X
 /**
  * Cancel an existing reservation with a given id.
  */
-exports.cancelReservation = function (id) { //X
+exports.cancelReservation = function (id) {
     return new Promise((resolve, reject) => {
         const sql = 'UPDATE Booking SET canceled=1, CancelDate=? WHERE BookingId = ?';
         db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
@@ -384,7 +384,7 @@ exports.getTeacherCourses = function (id) {
 
 exports.getCourseLectures = function (id) {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable FROM Lecture L
+        const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable, L.Canceled, strftime("%Y-%m-%d", L.CancelDate) as CancelDate FROM Lecture L
         INNER JOIN 'Class' C ON C.ClassId = L.ClassId
         WHERE L.CourseId = ?
         AND datetime(L.Schedule) > datetime('now','localtime')
@@ -430,5 +430,18 @@ exports.getBookingDetails = function(lectureId, userId){
                 resolve(rows);
             }
         });
+    });
+}
+
+exports.cancelLecture = function (lectureId) {
+    return new Promise((resolve, reject) => {
+        const sql = `UPDATE Lecture SET Canceled=1, CancelDate=datetime('now','localtime') WHERE LectureId = ?`;
+        db.run(sql, [lectureId], (err) => {
+            if (err) {
+                reject(err);
+            }
+            else
+                resolve(null);
+        })
     });
 }

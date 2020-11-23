@@ -239,6 +239,18 @@ app.get(BASEURI + '/getLectureStudents/:lectureId', (req, res) => {
         });
 });
 
+app.post(BASEURI + '/cancelLecture/:lectureId', (req, res) => {
+    dao.cancelLecture(req.params.lectureId)
+        .then(() => {
+            res.status(200).end();
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
 
 
 app.listen(PORT, () => {
