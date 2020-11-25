@@ -107,7 +107,8 @@ async function getAvailableLectures(courseId) {
     const response = await fetch(APIURL + url);
     const json = await response.json();
     if (response.ok) {
-        return json.map((row) => new LectureSchedule(row.lectureId, row.schedule, row.classNumber, row.teacherName, row.courseName, row.userId, row.classId, row.bookingId));
+        return json; 
+        // return json.map((row) => new LectureSchedule(row.lectureId, row.schedule, row.classNumber, row.teacherName, row.courseName, row.userId, row.classId, row.bookingId, row.bookCanceled));
     } else {
         let err = { status: response.status, errObj: json };
         throw err;
@@ -140,8 +141,10 @@ async function getBookingHistory(userId) {
     const response = await fetch(APIURL + url);
     const json = await response.json();
     if (response.ok) {
-        return json.map((row) => new BookingHistory(row.bookingId, row.studentId, row.lectureId, row.presence, row.canceled, row.reserved, 
-            row.cancelDate, row.reserveDate, row.bookDate, row.courseName, row.bookingDeadline, row.teacherName));
+        
+        return json; 
+        
+        // return json.map((row) => new BookingHistory(row.schedule,row.endTime,row.bookable, row.courseName,row.classNumber,row.teacherName,row.bookingId));
     } else {
         let err = { status: response.status, errObj: json };
         throw err;  // An object with the error coming from the server

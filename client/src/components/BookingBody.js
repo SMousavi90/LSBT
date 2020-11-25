@@ -101,14 +101,14 @@ class BookingBody extends React.Component {
     }
 
     createLectureRows = (r) => {
-        console.log(r.bookingId);
+        console.log(r);
         return (
             <tr>
                 <td>{r.schedule}</td>
                 <td>{r.classNumber}</td>
                 <td>{r.teacherName}</td>
                 <td>{
-                    (r.bookingId === undefined || r.bookingId === null) ? <Button variant="success" className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>Book</Button>
+                    (r.bookCanceled === 1) ? <Button variant="success" className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>Book</Button>
                     : <Button variant="secondary" disabled>Already Booked</Button>
                 }</td>
             </tr>

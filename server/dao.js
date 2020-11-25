@@ -21,12 +21,11 @@ const createStudentCourse = function (row) {
 }
 
 const createAvailableLectures = function (row) {
-    return new LecturesSchedule(row.LectureId, row.Schedule, row.ClassNumber, row.TeacherName, row.CourseName, row.UserId, row.ClassId, row.BookingId);
+    return new LecturesSchedule(row.LectureId, row.Schedule, row.ClassNumber, row.TeacherName, row.CourseName, row.UserId, row.ClassId, row.BookingId, row.BookCanceled);
 }
 
 const createBookingHistory = function (row) {
-    return new BookingHistory(row.BookingId, row.StudentId, row.LectureId, row.Presence, row.Canceled, row.Reserved, 
-        row.CancelDate, row.ReserveDate, row.BookDate, row.Name, row.BookingDeadline, row.TeacherName);
+    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId);
 }
 
 exports.checkNotification = function (userId){ //X
@@ -210,20 +209,40 @@ exports.getAvailableLectures = function (id, userId) { //X
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
         var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
 
-        const sql = `Select U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, cr.Name, cr.Name as CourseName, BookingId
-        from Lecture L inner join Class C on l.ClassId=C.ClassId
-        Inner join User U on U.UserId=L.TeacherId
-        inner join Course cr on cr.CourseId = L.CourseId
-        left join Booking b on b.LectureId = L.LectureId and (b.Canceled = 0 or b.Canceled IS NULL) and b.StudentId = ?
-        where l.CourseId=?
-        And l.Bookable=1 and l.Canceled=0
-        And BookingDeadline between ? and ?`;
+        const sql = `Select U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, 
+        cr.Name, cr.Name as CourseName, b.BookingId, case when b.canceled is null then 0 else 1 end as BookCanceled
+                from Lecture L inner join Class C on l.ClassId=C.ClassId
+                Inner join User U on U.UserId=L.TeacherId
+                inner join Course cr on cr.CourseId = L.CourseId
+                inner join StudentCourse sc on sc.CourseId = L.CourseId
+                left join 
+          
+          (select b.StudentId,b.Canceled ,b.LectureId,b.BookingId
+             from booking 
+          b inner join 
+          (select max(BookingId) maxBookingId,StudentId ,LectureId
+          from Booking GROUP by StudentId,LectureId)maxtbl 
+          on b.BookingId=maxtbl.maxBookingId) b on 
+          b.LectureId=l.LectureId and b.StudentId=sc.StudentId
+          
+          
+                where 
+          l.CourseId=? and
+                 l.Bookable=1 and l.Canceled=0
+                And BookingDeadline between ? and ?
+               And sc.StudentId = ?
+        `;
 
-        db.all(sql, [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10)], (err, rows) => {
+        db.all(sql, [id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId], (err, rows) => {
             if (err)
+            {
+                
                 reject(err);
+            }
             else if (rows.length === 0)
+            {
                 resolve(undefined);
+            }
             else {
                 let data = rows.map((row) => createAvailableLectures(row));
                 resolve(data);
@@ -291,15 +310,24 @@ exports.getBookingHistory = function (id) { //X
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
         var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
 
-        const sql = `select B.*, C.Name, L.BookingDeadline, U.Name || ' ' || U.LastName as TeacherName from 
-        Booking B 
-        left outer join Lecture L on L.LectureId = B.LectureId
-        left outer join Course C on C.CourseId = L.CourseId
-        left outer join User U on U.UserId = L.TeacherId
-        where StudentId = ? and BookDate is not null and BookDate between ? and ? order by L.BookingDeadline asc`;
-        db.all(sql, [id, firstDay.slice(0, 10), lastDay.slice(0, 10)], (err, rows) => {
-            if (err)
+        const sql = `select Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
+        c.Name as CourseName,ST.Name || ' ' || ST.LastName as StudentName,ClassNumber,
+        T.Name || ' ' || T.LastName as TeacherName,
+        b.BookingId,BookDate,ReserveDate,l.Canceled as LectureCanceled
+         from booking b inner join user u on u.userid=b.StudentId 
+        inner join lecture l on l.LectureId=b.LectureId
+        inner join  Course c on l.CourseId=c.CourseId
+        inner join  User  ST on St.UserId=b.StudentId
+        inner join Class Cl on Cl.ClassId=l.ClassId
+        inner join User T on T.UserId=L.TeacherId
+        where b.BookDate is not null and b.Canceled is null  and Schedule >=date()
+        and b.StudentId = ?`;
+        db.all(sql, [id], (err, rows) => {
+            if (err){
+                console.log(err);
                 reject(err);
+                
+            }
             else if (rows.length === 0)
                 resolve(undefined);
             else {
