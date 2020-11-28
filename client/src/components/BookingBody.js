@@ -35,6 +35,7 @@ class BookingBody extends React.Component {
         API.getAvailableLectures(id, this.state.authUser.userId)
             .then((data) => {
                 // show the list of available lectures
+                console.log(data);
                 if (data.length > 0) {
                     this.setState(() => ({ scheduleVisibility: "", selectedCourse: data[0].courseName, selectedCourseId: id, lectures: data })); // todo change selectedCourse
                 } else {

@@ -6,7 +6,8 @@ import Button from "react-bootstrap/Button";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import MyCalendar from "./MyCalendar.js";
-import moment from 'moment'
+import moment from "moment";
+import { faRetweet } from "@fortawesome/free-solid-svg-icons";
 
 class BookingHistory extends React.Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class BookingHistory extends React.Component {
         this.setState((state) => ({ authUser: user }));
         API.getBookingHistory(this.state.authUser.userId)
           .then((r) => {
-            console.log(r);
+            // console.log(r);
             this.setState({ resHistory: r });
           })
           .catch((errorObj) => {
@@ -51,7 +52,7 @@ class BookingHistory extends React.Component {
   cancelReservationConfirm = (id) => {
     confirmAlert({
       title: "Warning",
-      message: `Continue to cancel reservatino for this lecture?`,
+      message: `Do you want to cancel the reservation for this lecture?`,
       buttons: [
         {
           label: "Yes",
@@ -110,17 +111,17 @@ class BookingHistory extends React.Component {
       <AuthContext.Consumer>
         {(context) => (
           <MyCalendar
-          reservations=
-          {this.state.resHistory.map((res) => ({
-            id: res.bookingId,
-            title: res.courseName,
-            start: moment(res.schedule).toDate(),
-            end: moment(res.endTime),
-            allDay: false
-
-          }))}
-          cancelBooking = {this.cancelReservationConfirm}
-        />
+            reservations={this.state.resHistory.map((res) => ({
+              id: res.bookingId,
+              title: res.courseName,
+              start: moment(res.schedule).toDate(),
+              end: moment(res.endTime),
+              allDay: false,
+              color: moment().diff(res.bookingDeadline) > 0 ? "#006666" : "",
+            }))}
+            cancelBooking = {this.cancelReservationConfirm}
+            resHistory = {this.state.resHistory}
+          />
         )}
       </AuthContext.Consumer>
     );

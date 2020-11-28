@@ -25,7 +25,7 @@ const createAvailableLectures = function (row) {
 }
 
 const createBookingHistory = function (row) {
-    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId);
+    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId, row.BookingDeadline);
 }
 
 exports.checkNotification = function (userId){ //X
