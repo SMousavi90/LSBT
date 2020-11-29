@@ -14,7 +14,7 @@ class DashboardBody extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { courses: [], lectures: [], students: [], selectedCourse: null, selectedLecture: null };
+        this.state = { courses: [], lectures: [], students: [], selectedCourse: null, selectedLecture: null, userId: props.id };
     }
 
     componentDidMount() {
@@ -38,7 +38,7 @@ class DashboardBody extends React.Component {
     }
 
     getCourseLectures = (course) => {
-        API.getCourseLectures(course.CourseId)
+        API.getCourseLectures(course.CourseId, this.state.userId)
             .then((data) => {
                 data.forEach(element => {
                     const diff = new Date(element.Schedule).getTime() - new Date().getTime();

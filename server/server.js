@@ -215,8 +215,8 @@ app.get(BASEURI + '/getTeacherCourses', (req, res) => {
         });
 });
 
-app.get(BASEURI + '/getCourseLectures/:courseId', (req, res) => {
-    dao.getCourseLectures(req.params.courseId)
+app.get(BASEURI + '/getCourseLectures/:courseId/:userId', (req, res) => {
+    dao.getCourseLectures(req.params.courseId, req.params.userId)
         .then((lectures) => {
             res.json(lectures);
         })
@@ -242,7 +242,16 @@ app.get(BASEURI + '/getLectureStudents/:lectureId', (req, res) => {
 app.post(BASEURI + '/cancelLecture/:lectureId', (req, res) => {
     dao.cancelLecture(req.params.lectureId)
         .then(() => {
-            res.status(200).end();
+            dao.getStudentlistOfLecture(req.params.lectureId)
+                .then((lecture) => {
+                    sendCancelationMailToStudent(lecture);
+                    res.status(200).end();
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        errors: [{ 'param': 'Server', 'msg': err }],
+                    });
+                });
         })
         .catch((err) => {
             res.status(500).json({
@@ -325,6 +334,37 @@ function sendMailToStudent(book) {
     var mailOptions = {
         from: 'no-reply@pulsebs.com',
         to: book.Email,
+        subject: subject,
+        text: body
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
+
+function sendCancelationMailToStudent(lecture) {
+    var transporter = nodemailer.createTransport({
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: "d0cee37bf32ad9",
+            pass: "8b786f1dc70862"
+        }
+    });
+
+    var subject = `Cancelation of the lecture ${lecture.CourseName} scheduled on ${lecture.Schedule}`;
+    var body = `Dear Student, the lecture of ${lecture.CourseName}, presented by 
+    Professor ${lecture.TeacherName}, that was scheduled on ${lecture.Schedule} is canceled.`;
+
+    var mailOptions = {
+        from: 'no-reply@pulsebs.com',
+        to: lecture.Emails_List,
         subject: subject,
         text: body
     };

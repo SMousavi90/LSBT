@@ -410,14 +410,15 @@ exports.getTeacherCourses = function (id) {
     });
 }
 
-exports.getCourseLectures = function (id) {
+exports.getCourseLectures = function (id, teacherId) {
     return new Promise((resolve, reject) => {
         const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable, L.Canceled, strftime("%Y-%m-%d", L.CancelDate) as CancelDate FROM Lecture L
         INNER JOIN 'Class' C ON C.ClassId = L.ClassId
         WHERE L.CourseId = ?
         AND datetime(L.Schedule) > datetime('now','localtime')
+        AND l.TeacherId=?
         ORDER BY L.Schedule`;
-        db.all(sql, [id], (err, rows) => {
+        db.all(sql, [id, teacherId], (err, rows) => {
             if (err){
                 reject(err);
             }else{
@@ -471,5 +472,26 @@ exports.cancelLecture = function (lectureId) {
             else
                 resolve(null);
         })
+    });
+}
+
+exports.getStudentlistOfLecture = function(lectureId){
+    return new Promise((resolve, reject) => {
+        const sql = `select t.Name || ' ' || t.LastName as TeacherName,c.Name as CourseName,
+        l.Schedule,(SELECT group_concat(Email, ', ')
+                        FROM User u inner join StudentFinalBooking s on u.UserId=s.StudentId
+                        WHERE s.LectureId = l.LectureId
+                       ) AS Emails_List
+        from Lecture l
+        inner join user T on t.UserId=l.TeacherId
+        inner join course c on c.CourseId=l.CourseId
+        where l.LectureId=?`;
+        db.get(sql, [lectureId], (err, rows) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(rows);
+            }
+        });
     });
 }

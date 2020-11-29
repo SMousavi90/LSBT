@@ -198,8 +198,8 @@ async function getTeacherCourses() {
     }
 }
 
-async function getCourseLectures(courseId) {
-    const url = `/getCourseLectures/${courseId}`;
+async function getCourseLectures(courseId, userId) {
+    const url = `/getCourseLectures/${courseId}/${userId}`;
     const response = await fetch(APIURL + url);
     const lectures = await response.json();
     if (response.ok) {
