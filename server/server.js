@@ -260,6 +260,16 @@ app.post(BASEURI + '/cancelLecture/:lectureId', (req, res) => {
         });
 });
 
+app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
+    dao.makelectureonline(req.params.lectureId)
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+
 
 
 app.listen(PORT, () => {

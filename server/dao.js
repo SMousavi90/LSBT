@@ -486,3 +486,18 @@ exports.getStudentlistOfLecture = function(lectureId){
         });
     });
 }
+
+exports.makelectureonline = function (lectureId) {
+    return new Promise((resolve, reject) => {
+        const sql = `UPDATE Lecture SET Bookable=0 WHERE LectureId = ?`;
+        db.run(sql, [lectureId], (err) => {
+            if (err) {
+                reject(err);
+            }
+            else
+                resolve(null);
+        })
+    });
+}
+
+
