@@ -38,8 +38,9 @@ class DashboardBody extends React.Component {
     }
 
     getCourseLectures = (course) => {
-        API.getCourseLectures(course.CourseId, this.state.userId)
+        API.getCourseLectures(course.CourseId)
             .then((data) => {
+                console.log(data);
                 data.forEach(element => {
                     const diff = new Date(element.Schedule).getTime() - new Date().getTime();
                     element.Cancelable = diff >= 3600000 ? 1 : 0;
@@ -222,7 +223,7 @@ function LectureRow(props) {
         <td className="text-center">
             <div class="d-inline-flex">
                 <DropdownButton title="Actions" id="bg-nested-dropdown" variant="primary" disabled={props.lecture.Canceled === 1}>
-                    <Dropdown.Item eventKey="1" onClick={() => props.makeLectureOnlineConfirm(props.lecture)} ><FontAwesomeIcon icon={faLaptop} />&nbsp;Turn into distance</Dropdown.Item>
+                    <Dropdown.Item eventKey="1" onClick={() => props.makeLectureOnlineConfirm(props.lecture)} disabled={props.lecture.Bookable === 0}><FontAwesomeIcon icon={faLaptop} />&nbsp;Turn into distance</Dropdown.Item>
                     <Dropdown.Item eventKey="2" onClick={() => props.deleteLectureConfirm(props.lecture)} disabled={props.lecture.Cancelable === 0}><FontAwesomeIcon icon={faTrashAlt} />&nbsp;&nbsp;Cancel</Dropdown.Item>
                 </DropdownButton>
                 <Button variant="primary" onClick={() => props.getLectureStudents(props.lecture)}>View Students <FontAwesomeIcon icon={faArrowRight} /></Button>
@@ -248,7 +249,7 @@ function StudentTable(props) {
 function StudentRow(props) {
     return <tr>
         <td>{props.student.Name}</td>
-        <td>{props.student.ReserveDate}</td>
+        <td>{props.student.BookDate}</td>
     </tr>
 }
 

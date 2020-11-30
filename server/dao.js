@@ -422,7 +422,7 @@ exports.getCourseLectures = function (id, teacherId) {
 
 exports.getLectureStudents = function (id) {
     return new Promise((resolve, reject) => {
-        const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.ReserveDate FROM Booking B
+        const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.BookDate FROM Booking B
         INNER JOIN 'User' U ON U.UserId = B.StudentId
         WHERE B.LectureId = ?
         AND (Canceled IS NULL OR Canceled = 0)

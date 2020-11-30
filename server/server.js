@@ -215,8 +215,8 @@ app.get(BASEURI + '/getTeacherCourses', (req, res) => {
         });
 });
 
-app.get(BASEURI + '/getCourseLectures/:courseId/:userId', (req, res) => {
-    dao.getCourseLectures(req.params.courseId, req.params.userId)
+app.get(BASEURI + '/getCourseLectures/:courseId', (req, res) => {
+    dao.getCourseLectures(req.params.courseId, req.user.username)
         .then((lectures) => {
             res.json(lectures);
         })
