@@ -25,7 +25,7 @@ const createAvailableLectures = function (row) {
 }
 
 const createBookingHistory = function (row) {
-    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId);
+    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId, row.BookingDeadline, row.CourseId);
 }
 
 exports.checkNotification = function (userId){ //X
@@ -209,31 +209,21 @@ exports.getAvailableLectures = function (id, userId) { //X
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
         var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
 
-        const sql = `Select U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, 
-        cr.Name, cr.Name as CourseName, b.BookingId, case when b.canceled is null then 0 else 1 end as BookCanceled
-                from Lecture L inner join Class C on l.ClassId=C.ClassId
-                Inner join User U on U.UserId=L.TeacherId
-                inner join Course cr on cr.CourseId = L.CourseId
-                inner join StudentCourse sc on sc.CourseId = L.CourseId
-                left join 
-          
-          (select b.StudentId,b.Canceled ,b.LectureId,b.BookingId
-             from booking 
-          b inner join 
-          (select max(BookingId) maxBookingId,StudentId ,LectureId
-          from Booking GROUP by StudentId,LectureId)maxtbl 
-          on b.BookingId=maxtbl.maxBookingId) b on 
-          b.LectureId=l.LectureId and b.StudentId=sc.StudentId
-          
-          
-                where 
-          l.CourseId=? and
-                 l.Bookable=1 and l.Canceled=0
-                And BookingDeadline between ? and ?
-               And sc.StudentId = ?
+        const sql = `Select BookingDeadline,U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, 
+        cr.Name, cr.Name as CourseName
+        from Lecture L inner join Class C on l.ClassId=C.ClassId
+        Inner join User U on U.UserId=L.TeacherId
+        inner join Course cr on cr.CourseId = L.CourseId
+        inner join StudentCourse sc on sc.CourseId = L.CourseId
+        where 
+        LectureId not in(select LectureId from StudentFinalBooking where StudentId=? and BookDate is not null and Canceled is null)
+        and  l.CourseId=? and
+        l.Bookable=1 and l.Canceled=0
+        And BookingDeadline between ? and ?
+        And sc.StudentId = ?
         `;
 
-        db.all(sql, [id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId], (err, rows) => {
+        db.all(sql, [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId], (err, rows) => {
             if (err)
             {
                 
@@ -244,6 +234,7 @@ exports.getAvailableLectures = function (id, userId) { //X
                 resolve(undefined);
             }
             else {
+                console.log(rows)
                 let data = rows.map((row) => createAvailableLectures(row));
                 resolve(data);
             }
@@ -310,17 +301,18 @@ exports.getBookingHistory = function (id) { //X
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
         var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
 
-        const sql = `select Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
+        const sql = `select  c.CourseId,b.Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
         c.Name as CourseName,ST.Name || ' ' || ST.LastName as StudentName,ClassNumber,
         T.Name || ' ' || T.LastName as TeacherName,
         b.BookingId,BookDate,ReserveDate,l.Canceled as LectureCanceled
-         from booking b inner join user u on u.userid=b.StudentId 
+         from StudentFinalBooking b inner join user u on u.userid=b.StudentId 
         inner join lecture l on l.LectureId=b.LectureId
         inner join  Course c on l.CourseId=c.CourseId
         inner join  User  ST on St.UserId=b.StudentId
         inner join Class Cl on Cl.ClassId=l.ClassId
         inner join User T on T.UserId=L.TeacherId
-        where b.BookDate is not null and b.Canceled is null  and Schedule >=date()
+        where b.BookDate is not null and b.Canceled is null  and b.Schedule >=date()
+        and L.Canceled = 0 
         and b.StudentId = ?`;
         db.all(sql, [id], (err, rows) => {
             if (err){
@@ -410,14 +402,15 @@ exports.getTeacherCourses = function (id) {
     });
 }
 
-exports.getCourseLectures = function (id) {
+exports.getCourseLectures = function (id, teacherId) {
     return new Promise((resolve, reject) => {
         const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable, L.Canceled, strftime("%Y-%m-%d", L.CancelDate) as CancelDate FROM Lecture L
         INNER JOIN 'Class' C ON C.ClassId = L.ClassId
         WHERE L.CourseId = ?
         AND datetime(L.Schedule) > datetime('now','localtime')
+        AND l.TeacherId=?
         ORDER BY L.Schedule`;
-        db.all(sql, [id], (err, rows) => {
+        db.all(sql, [id, teacherId], (err, rows) => {
             if (err){
                 reject(err);
             }else{
@@ -473,3 +466,39 @@ exports.cancelLecture = function (lectureId) {
         })
     });
 }
+
+exports.getStudentlistOfLecture = function(lectureId){
+    return new Promise((resolve, reject) => {
+        const sql = `select t.Name || ' ' || t.LastName as TeacherName,c.Name as CourseName,
+        l.Schedule,(SELECT group_concat(Email, ', ')
+                        FROM User u inner join StudentFinalBooking s on u.UserId=s.StudentId
+                        WHERE s.LectureId = l.LectureId
+                       ) AS Emails_List
+        from Lecture l
+        inner join user T on t.UserId=l.TeacherId
+        inner join course c on c.CourseId=l.CourseId
+        where l.LectureId=?`;
+        db.get(sql, [lectureId], (err, rows) => {
+            if (err){
+                reject(err);
+            }else{
+                resolve(rows);
+            }
+        });
+    });
+}
+
+exports.makelectureonline = function (lectureId) {
+    return new Promise((resolve, reject) => {
+        const sql = `UPDATE Lecture SET Bookable=0 WHERE LectureId = ?`;
+        db.run(sql, [lectureId], (err) => {
+            if (err) {
+                reject(err);
+            }
+            else
+                resolve(null);
+        })
+    });
+}
+
+
