@@ -243,7 +243,7 @@ async function cancelLecture(id) {
 
 async function makeLectureOnline(id) {
     return new Promise((resolve, reject) => {
-        fetch(APIURL + "/cancelLecture/" + id, {
+        fetch(APIURL + "/makelectureonline/" + id, {
             method: 'POST'
         }).then( (response) => {
             if(response.ok) {
