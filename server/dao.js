@@ -25,7 +25,7 @@ const createAvailableLectures = function (row) {
 }
 
 const createBookingHistory = function (row) {
-    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId, row.BookingDeadline);
+    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId, row.BookingDeadline, row.CourseId);
 }
 
 exports.checkNotification = function (userId){ //X
@@ -301,7 +301,7 @@ exports.getBookingHistory = function (id) { //X
         var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
         var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
 
-        const sql = `select b.Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
+        const sql = `select  c.CourseId,b.Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
         c.Name as CourseName,ST.Name || ' ' || ST.LastName as StudentName,ClassNumber,
         T.Name || ' ' || T.LastName as TeacherName,
         b.BookingId,BookDate,ReserveDate,l.Canceled as LectureCanceled
@@ -312,6 +312,7 @@ exports.getBookingHistory = function (id) { //X
         inner join Class Cl on Cl.ClassId=l.ClassId
         inner join User T on T.UserId=L.TeacherId
         where b.BookDate is not null and b.Canceled is null  and b.Schedule >=date()
+        and L.Canceled = 0 
         and b.StudentId = ?`;
         db.all(sql, [id], (err, rows) => {
             if (err){

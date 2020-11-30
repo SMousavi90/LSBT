@@ -26,11 +26,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import moment from "moment";
 
 const MyCalendar = (props) => {
-  // console.log(props.reservations);
-  var min = props.reservations.map((r)=>(moment(r.start).hour()))
-
-  min = min.sort((a,b) => {return a-b})[0]
-  console.log(min)
+  
+ 
   return (
     <FullCalendar
       plugins={[momentPlugin, timeGridPlugin]}
@@ -48,7 +45,7 @@ const MyCalendar = (props) => {
       }}
       eventDidMount={function (info) {
         // console.log(info.event.id);
-        console.log(info.el.firstElementChild.firstElementChild.children[1]);
+        // console.log(info.el.firstElementChild.firstElementChild.children[1]);
         
         var res = props.resHistory.filter((v) => {
           return v.bookingId == info.event.id;

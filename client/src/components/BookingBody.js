@@ -35,7 +35,7 @@ class BookingBody extends React.Component {
         API.getAvailableLectures(id, this.state.authUser.userId)
             .then((data) => {
                 // show the list of available lectures
-                console.log(data);
+                // console.log(data);
                 if (data.length > 0) {
                     this.setState(() => ({ scheduleVisibility: "", selectedCourse: data[0].courseName, selectedCourseId: id, lectures: data })); // todo change selectedCourse
                 } else {
@@ -43,7 +43,7 @@ class BookingBody extends React.Component {
                 }
             })
             .catch((errorObj) => {
-                console.log(errorObj);
+                // console.log(errorObj);
                 this.setState(() => ({ scheduleVisibility: "none", selectedCourse: "", lectures: [] }));
             });
     }
@@ -66,7 +66,7 @@ class BookingBody extends React.Component {
 
                     this.getAvailableLectures(this.state.selectedCourseId);
                 }
-                console.log(data);
+                // console.log(data);
             })
             .catch((errorObj) => {
                 confirmAlert({
@@ -102,15 +102,16 @@ class BookingBody extends React.Component {
     }
 
     createLectureRows = (r) => {
-        console.log(r);
+        
         return (
             <tr>
                 <td>{r.schedule}</td>
                 <td>{r.classNumber}</td>
                 <td>{r.teacherName}</td>
                 <td>{
-                    (r.bookCanceled === 1) ? <Button variant="success" className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>Book</Button>
-                    : <Button variant="secondary" disabled>Already Booked</Button>
+                    //(r.bookCanceled === 1) ? 
+                    <Button variant="success" className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>Book</Button>
+                    //: <Button variant="secondary" disabled>Already Booked</Button>
                 }</td>
             </tr>
         );

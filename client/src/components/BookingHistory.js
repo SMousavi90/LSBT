@@ -25,7 +25,7 @@ class BookingHistory extends React.Component {
             this.setState({ resHistory: r });
           })
           .catch((errorObj) => {
-            console.log(errorObj);
+            
           });
       })
       .catch((err) => {
@@ -41,11 +41,11 @@ class BookingHistory extends React.Component {
             this.setState({ resHistory: r });
           })
           .catch((errorObj) => {
-            console.log(errorObj);
+            
           });
       })
       .catch((errorObj) => {
-        console.log(errorObj);
+      
       });
   };
 
@@ -107,6 +107,9 @@ class BookingHistory extends React.Component {
     );
   };
   render() {
+    console.log(this.state.resHistory)
+    var color = ["#ff6600", "#00cc66", "#0099cc","#006666", "#0066cc"]
+    
     return (
       <AuthContext.Consumer>
         {(context) => (
@@ -117,7 +120,7 @@ class BookingHistory extends React.Component {
               start: moment(res.schedule).toDate(),
               end: moment(res.endTime).toDate(),
               allDay: false,
-              color: moment().diff(res.bookingDeadline) > 0 ? "#006666" : "",
+              color: color[res.courseId-1]
             }))}
             cancelBooking = {this.cancelReservationConfirm}
             resHistory = {this.state.resHistory}

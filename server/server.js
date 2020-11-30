@@ -159,7 +159,7 @@ app.get('/api/bookingHistory/:userId', (req, res) => {
     dao.getBookingHistory(req.params.userId)
         .then((rows) => {
             if (!rows) {
-                res.status(404).send();
+                res.json([]); //if its the last element, then return an empty array
             } else {
                 res.json(rows);
             }
