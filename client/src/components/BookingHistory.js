@@ -115,7 +115,7 @@ class BookingHistory extends React.Component {
               id: res.bookingId,
               title: res.courseName,
               start: moment(res.schedule).toDate(),
-              end: moment(res.endTime),
+              end: moment(res.endTime).toDate(),
               allDay: false,
               color: moment().diff(res.bookingDeadline) > 0 ? "#006666" : "",
             }))}
