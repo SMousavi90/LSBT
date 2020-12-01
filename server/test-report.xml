@@ -1,35 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-  <file path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js">
-    <testCase name="test login ok" duration="104"/>
-    <testCase name="test login user does not exists" duration="2"/>
-    <testCase name="test getUserById" duration="0"/>
-    <testCase name="check Notifications test check Notification" duration="6"/>
-    <testCase name="check Notifications test update Lecture Notification Added field" duration="9"/>
-    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="12"/>
-    <testCase name="check Notifications test getAvailableLectures" duration="3">
-      <failure message="Error: SQLITE_ERROR: no such table: StudentFinalBooking"><![CDATA[Error: SQLITE_ERROR: no such table: StudentFinalBooking]]></failure>
-    </testCase>
-    <testCase name="check Notifications test getAllLectures" duration="3">
-      <failure message="Error: expect(received).toHaveLength(expected)"><![CDATA[Error: expect(received).toHaveLength(expected)
-
-Expected length: 1
-Received length: 0
-Received array:  []
-    at C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js:63:20]]></failure>
-    </testCase>
-    <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
-    <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
-    <testCase name="check BookingAndHistory test bookLecture" duration="8"/>
-    <testCase name="check BookingAndHistory test bookingHistory" duration="43">
-      <failure message="Error: SQLITE_ERROR: no such table: StudentFinalBooking"><![CDATA[Error: SQLITE_ERROR: no such table: StudentFinalBooking]]></failure>
-    </testCase>
+  <file path="C:\Users\peppe\Documents\seatbooking\Software-Engineering-2-team10\server\tests\dao.test.js">
+    <testCase name="test login ok" duration="60"/>
+    <testCase name="test login user does not exists" duration="1"/>
+    <testCase name="test getUserById" duration="1"/>
+    <testCase name="check Notifications test check Notification" duration="4"/>
+    <testCase name="check Notifications test update Lecture Notification Added field" duration="4"/>
+    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="3"/>
+    <testCase name="check Notifications test getAvailableLectures" duration="2"/>
+    <testCase name="check Notifications test getAvailableLectures undef" duration="1"/>
+    <testCase name="check Notifications test getAllLectures" duration="0"/>
+    <testCase name="check Courses test getStudentCurrentCourses" duration="0"/>
+    <testCase name="check Courses test getStudentCurrentCourses" duration="0"/>
+    <testCase name="check BookingAndHistory test bookLecture" duration="4"/>
+    <testCase name="check BookingAndHistory test bookLecture false" duration="1"/>
+    <testCase name="check BookingAndHistory test bookingHistory" duration="1"/>
     <testCase name="check BookingAndHistory test cancelReservation" duration="0"/>
-    <testCase name="check teacher dashboard test getTeacherCourses" duration="1"/>
-    <testCase name="check teacher dashboard test getCourseLectures" duration="1">
-      <failure message="Error: SQLITE_ERROR: no such column: L.CancelDate"><![CDATA[Error: SQLITE_ERROR: no such column: L.CancelDate]]></failure>
-    </testCase>
-    <testCase name="check teacher dashboard test getLectureStudents" duration="0"/>
-    <testCase name="check teacher dashboard Test makelectureonline" duration="1"/>
+    <testCase name="check BookingAndHistory test getBookingDetails" duration="0"/>
+    <testCase name="check Teacher Dashboard test getTeacherCourses" duration="0"/>
+    <testCase name="check Teacher Dashboard test getCourseLectures" duration="1"/>
+    <testCase name="check Teacher Dashboard test getLectureStudents" duration="0"/>
+    <testCase name="check Teacher Dashboard test getStudentlistOfLecture" duration="1"/>
+    <testCase name="check Teacher Dashboard Test makeLectureOnline" duration="3"/>
+    <testCase name="check Teacher Dashboard test getNotification" duration="0"/>
+    <testCase name="check Teacher Dashboard test cancelLecture" duration="3"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats1" duration="27"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats2" duration="2"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats5" duration="2"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats3" duration="1"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats4" duration="2"/>
   </file>
 </testExecutions>

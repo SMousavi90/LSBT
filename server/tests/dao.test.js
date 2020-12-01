@@ -52,8 +52,13 @@ describe("check Notifications", () => {
 
   test("test getAvailableLectures", () => {
     return dao.getAvailableLectures(4, 1).then((data) => {
-      console.log(data);
       expect(data.length > 0);
+    });
+  });
+
+  test("test getAvailableLectures undef", () => {
+    return dao.getAvailableLectures(4, 100).then((data) => {
+      expect(data).toEqual(undefined);
     });
   });
 
@@ -103,6 +108,12 @@ describe("check BookingAndHistory", () => {
     });
   });
 
+  test("test bookLecture false", () => {
+    return dao.bookLecture(1, 5, "2020-12-30 15:20").then((data) => {
+      expect(data).toEqual(false);
+    });
+  });
+
   test("test bookingHistory", () => {
     return dao.getBookingHistory(4).then((data) => {
       expect(data.length > 0);
@@ -147,6 +158,12 @@ describe("check Teacher Dashboard", () => {
     });
   });
 
+  test("test getStudentlistOfLecture", () => {
+    return dao.getStudentlistOfLecture(2).then((data) => {
+      expect(data.length > 0);
+    });
+  });
+
   // Make the lecture unbookable, then count the unbookable lectures
   test("Test makeLectureOnline", () => {
     
@@ -170,13 +187,38 @@ describe("check Teacher Dashboard", () => {
       expect(data).toEqual(true);
     });
   });
+
+  test("test getTeacherStats1", () => {
+    return dao.getTeacherStats("M", 8, "2020-12-01", "2020-12-18", "null").then((data) => {
+      expect(data.length>0);
+    });
+  });
+
+  test("test getTeacherStats2", () => {
+    return dao.getTeacherStats("W", 8, "2020-12-01", "2020-12-18", "All").then((data) => {
+      expect(data.length>0);
+    });
+  });
+
+  test("test getTeacherStats5", () => {
+    return dao.getTeacherStats("W", 8, "2020-12-01", "2020-12-18", 4).then((data) => {
+      expect(data.length>0);
+    });
+  });
+
+  test("test getTeacherStats3", () => {
+    return dao.getTeacherStats("D", 8, "2020-12-01", "2020-12-18", "All").then((data) => {
+      expect(data.length>0);
+    });
+  });
+
+  test("test getTeacherStats4", () => {
+    return dao.getTeacherStats("D", 8, "2020-12-01", "2020-12-18", 4).then((data) => {
+      expect(data.length>0);
+    });
+  });
+
 });
-
-
-
-
-
-test("test getStudentlistOfLecture", () => {});
 
 initLectures = () => {
   return new Promise((resolve, reject) => {

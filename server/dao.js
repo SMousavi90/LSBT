@@ -75,7 +75,6 @@ exports.checkNotification = function (userId) {
     db.run(sql, [userId], (err, rows) => {
       if (err) {
         reject(err);
-        return;
       } else {
         resolve(userId);
       }
@@ -96,7 +95,6 @@ exports.updateLecture = function (userId) {
     db.run(sql, [userId], (err, rows) => {
       if (err) {
         reject(err);
-        return;
       } else {
         resolve(userId);
       }
@@ -109,13 +107,11 @@ exports.updateNotification = function (userId) {
   return new Promise((resolve, reject) => {
     const sql = `UPDATE TeacherNotification
         SET SentStatus = 1
-        WHERE TeacherId = ?;
-        `;
+        WHERE TeacherId = ?;`;
 
     db.run(sql, [userId], (err, rows) => {
       if (err) {
         reject(err);
-        return;
       } else {
         resolve(userId);
       }
@@ -170,7 +166,6 @@ exports.getUserById = function (username) {
       if (err) {
         reject(err);
       } else {
-        //console.log(user);
         resolve(user);
       }
     });
@@ -497,34 +492,8 @@ exports.cancelLecture = function (lectureId) {
   });
 };
 
-exports.getStudentlistOfLecture = function(lectureId){
-  return new Promise((resolve, reject) => {
-      const sql = `select t.Name || ' ' || t.LastName as TeacherName,c.Name as CourseName,
-      l.Schedule,(SELECT group_concat(Email, ', ')
-                      FROM User u inner join StudentFinalBooking s on u.UserId=s.StudentId
-                      WHERE s.LectureId = l.LectureId
-                     ) AS Emails_List
-      from Lecture l
-      inner join user T on t.UserId=l.TeacherId
-      inner join course c on c.CourseId=l.CourseId
-      where l.LectureId=?`;
-      db.get(sql, [lectureId], (err, rows) => {
-          if (err){
-              reject(err);
-          }else{
-              resolve(rows);
-          }
-      });
-  });
-}
-
-exports.getTeacherStats = function (
-  period,
-  userId,
-  startDate,
-  endDate,
-  courseId
-) {
+exports.getTeacherStats = function (period, userId, startDate, endDate, courseId) {
+  console.log(period, userId, startDate, endDate, courseId);
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -616,11 +585,9 @@ exports.makeLectureOnline = function (lectureId) {
   return new Promise((resolve, reject) => {
     const sql = `UPDATE Lecture SET Bookable=0 WHERE LectureId = ?`;
     db.run(sql, [lectureId], (rows,err) => {
-        
       if (err) {
         reject(err);
       } else resolve(true);
     });
-
   });
 };
