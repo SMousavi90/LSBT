@@ -269,7 +269,7 @@ app.get(BASEURI + '/getTeacherStats/:period/:userId/:startDate/:endDate/:courseI
     });
 
 app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
-    dao.makelectureonline(req.params.lectureId)
+    dao.makeLectureOnline(req.params.lectureId)
     .then(() => {
         res.status(200).end();})
         .catch((err) => {

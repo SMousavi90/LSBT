@@ -40,8 +40,18 @@ const createAvailableLectures = function (row) {
 };
 
 const createBookingHistory = function (row) {
-    return new BookingHistory(row.Schedule,row.EndTime,row.Bookable, row.CourseName,row.ClassNumber,row.TeacherName,row.BookingId, row.BookingDeadline, row.CourseId);
-}
+  return new BookingHistory(
+    row.Schedule,
+    row.EndTime,
+    row.Bookable,
+    row.CourseName,
+    row.ClassNumber,
+    row.TeacherName,
+    row.BookingId,
+    row.BookingDeadline,
+    row.CourseId
+  );
+};
 
 exports.checkNotification = function (userId) {
   //X
@@ -220,13 +230,18 @@ exports.getStudentCurrentCourses = function (id) {
 /**
  * Get Available Lectures
  */
-exports.getAvailableLectures = function (id, userId) { //X
-    return new Promise((resolve, reject) => {
-        var currentDate = new Date; // get current date
-        var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
-        var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
+exports.getAvailableLectures = function (id, userId) {
+  //X
+  return new Promise((resolve, reject) => {
+    var currentDate = new Date(); // get current date
+    var firstDay = new Date(
+      currentDate.setDate(currentDate.getDate())
+    ).toISOString();
+    var lastDay = new Date(
+      currentDate.setDate(currentDate.getDate() + 14)
+    ).toISOString();
 
-        const sql = `Select BookingDeadline,U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, 
+    const sql = `Select BookingDeadline,U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, 
         cr.Name, cr.Name as CourseName
         from Lecture L inner join Class C on l.ClassId=C.ClassId
         Inner join User U on U.UserId=L.TeacherId
@@ -240,24 +255,23 @@ exports.getAvailableLectures = function (id, userId) { //X
         And sc.StudentId = ?
         `;
 
-        db.all(sql, [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId], (err, rows) => {
-            if (err)
-            {
-                
-                reject(err);
-            }
-            else if (rows.length === 0)
-            {
-                resolve(undefined);
-            }
-            else {
-                console.log(rows)
-                let data = rows.map((row) => createAvailableLectures(row));
-                resolve(data);
-            }
-        });
-    });
-}
+    db.all(
+      sql,
+      [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else if (rows.length === 0) {
+          resolve(undefined);
+        } else {
+        //   console.log(rows);
+          let data = rows.map((row) => createAvailableLectures(row));
+          resolve(data);
+        }
+      }
+    );
+  });
+};
 
 /**
  * Book a Lecture
@@ -310,33 +324,40 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
 /**
  * Get all reservations
  */
-exports.getBookingHistory = function (id) { //X
-    return new Promise((resolve, reject) => {
-        var currentDate = new Date; // get current date
-        var firstDay = new Date(currentDate.setDate(currentDate.getDate())).toISOString();
-        var lastDay = new Date(currentDate.setDate(currentDate.getDate() + 14)).toISOString();
+exports.getBookingHistory = function (id) {
+  //X
+  return new Promise((resolve, reject) => {
+    var currentDate = new Date(); // get current date
+    var firstDay = new Date(
+      currentDate.setDate(currentDate.getDate())
+    ).toISOString();
+    var lastDay = new Date(
+      currentDate.setDate(currentDate.getDate() + 14)
+    ).toISOString();
 
-        const sql = `select  c.CourseId,b.Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
+    const sql = `select  c.CourseId,b.Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
         c.Name as CourseName,ST.Name || ' ' || ST.LastName as StudentName,ClassNumber,
         T.Name || ' ' || T.LastName as TeacherName,
         b.BookingId,BookDate,ReserveDate,l.Canceled as LectureCanceled
-         from StudentFinalBooking b inner join user u on u.userid=b.StudentId 
+        from StudentFinalBooking b inner join user u on u.userid=b.StudentId 
         inner join lecture l on l.LectureId=b.LectureId
         inner join  Course c on l.CourseId=c.CourseId
         inner join  User  ST on St.UserId=b.StudentId
         inner join Class Cl on Cl.ClassId=l.ClassId
         inner join User T on T.UserId=L.TeacherId
-        where b.BookDate is not null and b.Canceled is null  and b.Schedule >=date()
+        where b.BookDate is not null and b.Canceled is null and b.Schedule >=date()
         and L.Canceled = 0 
         and b.StudentId = ?`;
     db.all(sql, [id], (err, rows) => {
       if (err) {
-        console.log(err);
+
+        // console.log(err);
         reject(err);
       } else if (rows.length === 0) resolve(undefined);
       else {
-        let rents = rows.map((row) => createBookingHistory(row));
-        resolve(rents);
+        let res = rows.map((row) => createBookingHistory(row));
+        resolve(res);
+
       }
     });
   });
@@ -413,26 +434,27 @@ exports.getTeacherCourses = function (id) {
 };
 
 exports.getCourseLectures = function (id, teacherId) {
-    return new Promise((resolve, reject) => {
-        const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable, L.Canceled, strftime("%Y-%m-%d", L.CancelDate) as CancelDate FROM Lecture L
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable, L.Canceled, strftime("%Y-%m-%d", L.CancelDate) as CancelDate FROM Lecture L
         INNER JOIN 'Class' C ON C.ClassId = L.ClassId
         WHERE L.CourseId = ?
         AND datetime(L.Schedule) > datetime('now','localtime')
         AND l.TeacherId=?
         ORDER BY L.Schedule`;
-        db.all(sql, [id, teacherId], (err, rows) => {
-            if (err){
-                reject(err);
-            }else{
-                resolve(rows);
-            }
-        });
+    db.all(sql, [id, teacherId], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
     });
-  }
+  });
+};
+
 
 exports.getLectureStudents = function (id) {
-    return new Promise((resolve, reject) => {
-        const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.BookDate FROM Booking B
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.BookDate FROM Booking B
         INNER JOIN 'User' U ON U.UserId = B.StudentId
         WHERE B.LectureId = ?
         AND (Canceled IS NULL OR Canceled = 0)
@@ -443,7 +465,7 @@ exports.getLectureStudents = function (id) {
       } else {
         resolve(rows);
       }
-    });
+    }); 
   });
 };
 
@@ -470,7 +492,7 @@ exports.cancelLecture = function (lectureId) {
     db.run(sql, [lectureId], (err) => {
       if (err) {
         reject(err);
-      } else resolve(null);
+      } else resolve(true);
     });
   });
 };
@@ -566,5 +588,39 @@ exports.getTeacherStats = function (
         }
       });
     }
+  });
+}
+
+exports.getStudentlistOfLecture = function (lectureId) {
+  return new Promise((resolve, reject) => {
+    const sql = `select t.Name || ' ' || t.LastName as TeacherName,c.Name as CourseName,
+        l.Schedule,(SELECT group_concat(Email, ', ')
+                        FROM User u inner join StudentFinalBooking s on u.UserId=s.StudentId
+                        WHERE s.LectureId = l.LectureId
+                       ) AS Emails_List
+        from Lecture l
+        inner join user T on t.UserId=l.TeacherId
+        inner join course c on c.CourseId=l.CourseId
+        where l.LectureId=?`;
+    db.get(sql, [lectureId], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+};
+
+exports.makeLectureOnline = function (lectureId) {
+  return new Promise((resolve, reject) => {
+    const sql = `UPDATE Lecture SET Bookable=0 WHERE LectureId = ?`;
+    db.run(sql, [lectureId], (rows,err) => {
+        
+      if (err) {
+        reject(err);
+      } else resolve(true);
+    });
+
   });
 };
