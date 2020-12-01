@@ -6,6 +6,7 @@ import BookingBody from './components/BookingBody.js';
 import DashboardBody from './components/DashboardBody.js';
 import { AuthContext } from './auth/AuthContext';
 import NotificationTable from './components/NotificationTable.js';
+import AllBooking from './components/AllBooking';
 
 import {
   BrowserRouter as Router,
@@ -26,48 +27,48 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { loginError: null, notification_list:[] };
+    this.state = { loginError: null, notification_list: [] };
   }
 
   componentDidMount() {
     //check if the user is authenticated
     API.isAuthenticated()
       .then((user) => { //console.log(user);
-        if(user.roleId == 2)//if it's a teacher check if there are some lecture notification to send
+        if (user.roleId == 2)//if it's a teacher check if there are some lecture notification to send
         {
           this.checkNotification();
         }
-        this.setState({ userId: user.userId, user: user.username, role: user.roleId, name: user.name }); })
+        this.setState({ userId: user.userId, user: user.username, role: user.roleId, name: user.name });
+      })
       .catch(() => this.setState({ user: null }));
   }
 
-  checkNotification(){
-        API.isAuthenticated()
-        .then((user) => { //console.log(user);
-        if(user.roleId == 2)//if it's a teacher check if there are some lecture notification to send
+  checkNotification() {
+    API.isAuthenticated()
+      .then((user) => { //console.log(user);
+        if (user.roleId == 2)//if it's a teacher check if there are some lecture notification to send
         {
-          API.getNotification(user.userId).then((notifications)=>{
-            this.setState({notification_list:notifications });
+          API.getNotification(user.userId).then((notifications) => {
+            this.setState({ notification_list: notifications });
             API.updateNotificationStatus(user.userId)
-              .then(()=>{console.log("ok")})
-              .catch(()=>{}); 
+              .then(() => { console.log("ok") })
+              .catch(() => { });
             console.log(this.state.notification_list);
-          }).catch(()=>{}); 
+          }).catch(() => { });
         }
       });
   }
-  
+
 
   login = (username, password) => {
 
     API.login(username, password)
       .then((obj) => {
-        if(obj.roleId == 2)
-        {
+        if (obj.roleId == 2) {
           console.log("teacher!");
           this.checkNotification();
         }
-        
+
         this.setState({ loginError: null, user: obj.username, authUser: obj, role: obj.roleId, name: obj.name, userId: obj.userId })
       })
       .catch((err) => this.setState({ loginError: err.code }));
@@ -91,14 +92,21 @@ class App extends React.Component {
       <AuthContext.Provider value={value}>
         <div className="App">
           <Router>
-          <NavBar user={this.state.user} role={this.state.role} name={this.state.name} notifications = {this.state.notification_list} logout={this.logout} />
+            <NavBar user={this.state.user} role={this.state.role} name={this.state.name} notifications={this.state.notification_list} logout={this.logout} />
             <Switch>
-            <Route path="/notification">
-              <Container className="login-container">
+              <Route path="/notification">
+                <Container className="login-container">
                   <h2>Notifications</h2>
-                  <NotificationTable notifications = {this.state.notification_list}/>
-              </Container>
-            </Route>
+                  <NotificationTable notifications={this.state.notification_list} />
+                </Container>
+              </Route>
+              <Route path="/allbookings">
+                <Container className="custom-container col-md-12">
+                  <Row>
+                    <AllBooking Username={this.state.name} />
+                  </Row>
+                </Container>
+              </Route>
               <Route path="/login">
                 <Container className="login-container">
                   <h2>Login</h2>
@@ -128,7 +136,7 @@ class App extends React.Component {
                   } else {
                     return <Container className="custom-container">
                       <Row>
-                        <DashboardBody name={this.state.name} id ={this.state.userId}></DashboardBody>
+                        <DashboardBody name={this.state.name} id={this.state.userId}></DashboardBody>
                       </Row>
                     </Container>
                   }

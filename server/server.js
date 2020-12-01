@@ -251,7 +251,17 @@ app.post(BASEURI + '/cancelLecture/:lectureId', (req, res) => {
         });
 });
 
-
+app.get(BASEURI + '/getTeacherStats/:period/:userId/:startDate/:endDate/:courseId', (req, res) => {
+    dao.getTeacherStats(req.params.period, req.params.userId, req.params.startDate, req.params.endDate, req.params.courseId)
+        .then((data) => {
+            res.json(data);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
 
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
