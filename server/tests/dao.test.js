@@ -79,10 +79,11 @@ initLectures = () => {
    BookingDeadline,
    NotificationDeadline,
    Bookable,
+   LectureId,
    Canceled,
    TeacherId,
    NotificationAdded)
-   VALUES (2,"2020-11-30 15:20", 1,"2020-11-30 15:20", date("now"), 1, 0, 2, 0)
+   VALUES (2,"2020-11-30 15:20", 1,"2020-11-30 15:20", date("now"), 1, 1, 0, 2, 0)
     `;
 
     db.run(sql, (err, rows) => {
@@ -257,7 +258,39 @@ describe('check teacher dashboard', () => {
       expect(data).toHaveLength(0);
     });
   });
-});
+
+  // Make the lecture unbookable, then count the unbookable lectures
+  test('Test makelectureonline', () =>{
+    dao.makelectureonline(1); // (lectureId)
+    getunbookablelectures().then(data => {
+      expect(data).toHaveLength(1);
+      });
+    });
+  });
+
+
+getunbookablelectures = () => {
+
+  return new Promise((resolve,reject) => {
+    const sql = `SELECT * FROM Lecture WHERE Bookable=0`;
+
+    db.run(sql,[],(err,rows) => {
+      if(err){
+        reject(err);
+        return;
+      }
+      else{
+        resolve(rows);
+      }
+    });
+  });
+
+
+}
+
+
+//Just
+
 
 initBooking = () => {
   return new Promise((resolve, reject) => {
@@ -306,4 +339,13 @@ clearBooking = () => {
     });
   });
 }
+
+
+
+
+
+
+
+
+
 

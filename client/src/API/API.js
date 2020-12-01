@@ -297,6 +297,7 @@ async function cancelLecture(id) {
   });
 }
 
+
 async function getTeacherStats(period, userId, startDate, endDate, courseId) {
   let url = "/getTeacherStats";
   const queryParams =
@@ -328,21 +329,23 @@ async function getTeacherStats(period, userId, startDate, endDate, courseId) {
   }
 }
 
-export default {
-  isAuthenticated,
-  login,
-  logout,
-  getStudentCurrentCourses,
-  getAvailableLectures,
-  bookLecture,
-  getBookingHistory,
-  cancelReservation,
-  getNotification,
-  updateNotificationStatus,
-  getStudentsPerLecturePerProfessor,
-  getTeacherCourses,
-  getCourseLectures,
-  getLectureStudents,
-  cancelLecture,
-  getTeacherStats,
-};
+async function makeLectureOnline(id) {
+    return new Promise((resolve, reject) => {
+        fetch(APIURL + "/makelectureonline/" + id, {
+            method: 'POST'
+        }).then( (response) => {
+            if(response.ok) {
+                resolve(null);
+            } else {
+                // analyze the cause of error
+                response.json()
+                .then( (obj) => {reject(obj);} ) // error msg in the response body
+                .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+            }
+        }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+    });
+}
+
+
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, };

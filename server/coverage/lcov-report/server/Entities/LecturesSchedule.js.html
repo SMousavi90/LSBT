@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">9.09% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>1/11</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/2</span>
+                <span class='fraction'>0/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">9.09% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/10</span>
+                <span class='fraction'>1/11</span>
             </div>
         
             
@@ -55,7 +55,7 @@
             Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
         </p>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -74,36 +74,39 @@
 <a name='L15'></a><a href='#L15'>15</a>
 <a name='L16'></a><a href='#L16'>16</a>
 <a name='L17'></a><a href='#L17'>17</a>
-<a name='L18'></a><a href='#L18'>18</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">class LectureSchedule {    
-    constructor(lectureId, schedule, classNumber, teacherName, courseName, userId, classId, bookingId) {
-        <span class="missing-if-branch" title="else path not taken" >E</span>if (lectureId) {
-            this.lectureId = lectureId;
+<span class="fstat-no" title="function not covered" >    co</span>nstructor(lectureId, schedule, classNumber, teacherName, courseName, userId, classId, bookingId, bookCanceled) {
+<span class="cstat-no" title="statement not covered" >        if (lectureId) {</span>
+<span class="cstat-no" title="statement not covered" >            this.lectureId = lectureId;</span>
         }
 &nbsp;
-        this.schedule = schedule;
-        this.classNumber = classNumber;
-        this.teacherName = teacherName;
-        this.courseName = courseName;
-        this.userId = userId;
-        this.classId = classId;
-        this.bookingId = bookingId;
+<span class="cstat-no" title="statement not covered" >        this.schedule = schedule;</span>
+<span class="cstat-no" title="statement not covered" >        this.classNumber = classNumber;</span>
+<span class="cstat-no" title="statement not covered" >        this.teacherName = teacherName;</span>
+<span class="cstat-no" title="statement not covered" >        this.courseName = courseName;</span>
+<span class="cstat-no" title="statement not covered" >        this.userId = userId;</span>
+<span class="cstat-no" title="statement not covered" >        this.classId = classId;</span>
+<span class="cstat-no" title="statement not covered" >        this.bookingId = bookingId;</span>
+<span class="cstat-no" title="statement not covered" >        this.bookCanceled = bookCanceled;</span>
     }
 }
 &nbsp;
@@ -115,7 +118,7 @@ module.exports = LectureSchedule;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Thu Nov 19 2020 10:12:15 GMT+0100 (GMT+01:00)
+                at Tue Dec 01 2020 17:08:01 GMT+0100 (Central European Standard Time)
             </div>
         </div>
         <script src="../../prettify.js"></script>

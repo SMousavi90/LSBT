@@ -14,7 +14,7 @@ class DashboardBody extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { courses: [], lectures: [], students: [], selectedCourse: null, selectedLecture: null };
+        this.state = { courses: [], lectures: [], students: [], selectedCourse: null, selectedLecture: null, userId: props.id };
     }
 
     componentDidMount() {
@@ -40,6 +40,7 @@ class DashboardBody extends React.Component {
     getCourseLectures = (course) => {
         API.getCourseLectures(course.CourseId)
             .then((data) => {
+                console.log(data);
                 data.forEach(element => {
                     const diff = new Date(element.Schedule).getTime() - new Date().getTime();
                     element.Cancelable = diff >= 3600000 ? 1 : 0;
@@ -71,6 +72,17 @@ class DashboardBody extends React.Component {
         });
 
     }
+
+    makeLectureOnline = (lecture) => {
+        API.makeLectureOnline(lecture.LectureId)
+        .then(() => {
+            this.getCourseLectures(this.state.selectedCourse)
+        })
+        .catch((errorObj) => {
+            console.log(errorObj);
+        });
+    }
+
 
     deleteLectureConfirm = (lecture) => {
         const diff = new Date(lecture.Schedule).getTime() - new Date().getTime();
@@ -105,6 +117,41 @@ class DashboardBody extends React.Component {
         }
     }
 
+    makeLectureOnlineConfirm = (lecture) => {
+        const diff = new Date(lecture.Schedule).getTime() - new Date().getTime();
+        if (diff < 3600000/2) {
+            console.log("Make online");
+            confirmAlert({
+                customUI: ({ onClose }) => {
+                    return (
+                        <div className='custom-ui-danger'>
+                            <h1></h1>
+                            <p>You cannot make the selected lecture online since it is starting in less than thirty minutes</p>
+                            <button onClick={onClose}>Ok</button>
+                        </div>
+                    );
+                }
+            });
+        } else {
+            confirmAlert({
+                title: "Warning",
+                message: `Are you sure you want to make lecture scheduled on ${lecture.Schedule} online?`,
+                buttons: [
+                    {
+                        label: 'Yes',
+                        onClick: () => this.makeLectureOnline(lecture)
+                    },
+                    {
+                        label: 'No',
+                        onClick: () => { }
+                    }
+                ]
+            })
+        }
+    }
+
+
+
     render() {
         return <>
             <h2>Welcome, {this.props.name}</h2>
@@ -118,7 +165,7 @@ class DashboardBody extends React.Component {
             </Breadcrumb>
 
             {this.state.selectedLecture != null ? <StudentTable students={this.state.students} />
-                : this.state.selectedCourse != null ? <LectureTable lectures={this.state.lectures} getLectureStudents={this.getLectureStudents} deleteLectureConfirm={this.deleteLectureConfirm} /> :
+                : this.state.selectedCourse != null ? <LectureTable lectures={this.state.lectures} getLectureStudents={this.getLectureStudents} deleteLectureConfirm={this.deleteLectureConfirm} makeLectureOnlineConfirm={this.makeLectureOnlineConfirm} /> :
                     <CourseTable courses={this.state.courses} getCourseLectures={this.getCourseLectures} />
             }
         </>
@@ -161,7 +208,7 @@ function LectureTable(props) {
             </tr>
         </thead>
         <tbody>
-            {props.lectures.map((e) => <LectureRow key={e.id} lecture={e} getLectureStudents={props.getLectureStudents} deleteLectureConfirm={props.deleteLectureConfirm} />)}
+            {props.lectures.map((e) => <LectureRow key={e.id} lecture={e} getLectureStudents={props.getLectureStudents} deleteLectureConfirm={props.deleteLectureConfirm} makeLectureOnlineConfirm={props.makeLectureOnlineConfirm} />)}
         </tbody>
     </Table>
 }
@@ -176,7 +223,7 @@ function LectureRow(props) {
         <td className="text-center">
             <div class="d-inline-flex">
                 <DropdownButton title="Actions" id="bg-nested-dropdown" variant="primary" disabled={props.lecture.Canceled === 1}>
-                    <Dropdown.Item eventKey="1"><FontAwesomeIcon icon={faLaptop} />&nbsp;Turn into distance</Dropdown.Item>
+                    <Dropdown.Item eventKey="1" onClick={() => props.makeLectureOnlineConfirm(props.lecture)} disabled={props.lecture.Bookable === 0}><FontAwesomeIcon icon={faLaptop} />&nbsp;Turn into distance</Dropdown.Item>
                     <Dropdown.Item eventKey="2" onClick={() => props.deleteLectureConfirm(props.lecture)} disabled={props.lecture.Cancelable === 0}><FontAwesomeIcon icon={faTrashAlt} />&nbsp;&nbsp;Cancel</Dropdown.Item>
                 </DropdownButton>
                 <Button variant="primary" onClick={() => props.getLectureStudents(props.lecture)}>View Students <FontAwesomeIcon icon={faArrowRight} /></Button>
@@ -202,7 +249,7 @@ function StudentTable(props) {
 function StudentRow(props) {
     return <tr>
         <td>{props.student.Name}</td>
-        <td>{props.student.ReserveDate}</td>
+        <td>{props.student.BookDate}</td>
     </tr>
 }
 

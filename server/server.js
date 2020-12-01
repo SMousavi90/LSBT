@@ -159,7 +159,7 @@ app.get('/api/bookingHistory/:userId', (req, res) => {
     dao.getBookingHistory(req.params.userId)
         .then((rows) => {
             if (!rows) {
-                res.status(404).send();
+                res.json([]); //if its the last element, then return an empty array
             } else {
                 res.json(rows);
             }
@@ -216,7 +216,7 @@ app.get(BASEURI + '/getTeacherCourses', (req, res) => {
 });
 
 app.get(BASEURI + '/getCourseLectures/:courseId', (req, res) => {
-    dao.getCourseLectures(req.params.courseId)
+    dao.getCourseLectures(req.params.courseId, req.user.username)
         .then((lectures) => {
             res.json(lectures);
         })
@@ -242,7 +242,16 @@ app.get(BASEURI + '/getLectureStudents/:lectureId', (req, res) => {
 app.post(BASEURI + '/cancelLecture/:lectureId', (req, res) => {
     dao.cancelLecture(req.params.lectureId)
         .then(() => {
-            res.status(200).end();
+            dao.getStudentlistOfLecture(req.params.lectureId)
+                .then((lecture) => {
+                    sendCancelationMailToStudent(lecture);
+                    res.status(200).end();
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        errors: [{ 'param': 'Server', 'msg': err }],
+                    });
+                });
         })
         .catch((err) => {
             res.status(500).json({
@@ -251,11 +260,18 @@ app.post(BASEURI + '/cancelLecture/:lectureId', (req, res) => {
         });
 });
 
+
 app.get(BASEURI + '/getTeacherStats/:period/:userId/:startDate/:endDate/:courseId', (req, res) => {
     dao.getTeacherStats(req.params.period, req.params.userId, req.params.startDate, req.params.endDate, req.params.courseId)
         .then((data) => {
             res.json(data);
         })
+    });
+
+app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
+    dao.makelectureonline(req.params.lectureId)
+    .then(() => {
+        res.status(200).end();})
         .catch((err) => {
             res.status(500).json({
                 errors: [{ 'param': 'Server', 'msg': err }],
@@ -335,6 +351,37 @@ function sendMailToStudent(book) {
     var mailOptions = {
         from: 'no-reply@pulsebs.com',
         to: book.Email,
+        subject: subject,
+        text: body
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
+
+function sendCancelationMailToStudent(lecture) {
+    var transporter = nodemailer.createTransport({
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: "d0cee37bf32ad9",
+            pass: "8b786f1dc70862"
+        }
+    });
+
+    var subject = `Cancelation of the lecture ${lecture.CourseName} scheduled on ${lecture.Schedule}`;
+    var body = `Dear Student, the lecture of ${lecture.CourseName}, presented by 
+    Professor ${lecture.TeacherName}, that was scheduled on ${lecture.Schedule} is canceled.`;
+
+    var mailOptions = {
+        from: 'no-reply@pulsebs.com',
+        to: lecture.Emails_List,
         subject: subject,
         text: body
     };
