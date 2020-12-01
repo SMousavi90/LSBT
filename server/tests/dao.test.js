@@ -272,7 +272,7 @@ describe('check teacher dashboard', () => {
 getunbookablelectures = () => {
 
   return new Promise((resolve,reject) => {
-    const sql = `SELECT * FROM Lectures WHERE Bookable=0`;
+    const sql = `SELECT * FROM Lecture WHERE Bookable=0`;
 
     db.run(sql,[],(err,rows) => {
       if(err){

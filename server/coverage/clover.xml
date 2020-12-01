@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1606820761664" clover="3.2.0">
-  <project timestamp="1606820761664" name="All files">
-    <metrics statements="225" coveredstatements="144" conditionals="70" coveredconditionals="29" methods="73" coveredmethods="54" elements="368" coveredelements="227" complexity="0" loc="225" ncloc="225" packages="2" files="4" classes="4"/>
+<coverage generated="1606820931961" clover="3.2.0">
+  <project timestamp="1606820931961" name="All files">
+    <metrics statements="225" coveredstatements="134" conditionals="70" coveredconditionals="25" methods="73" coveredmethods="52" elements="368" coveredelements="211" complexity="0" loc="225" ncloc="225" packages="2" files="4" classes="4"/>
     <package name="server">
-      <metrics statements="196" coveredstatements="135" conditionals="64" coveredconditionals="28" methods="70" coveredmethods="53"/>
+      <metrics statements="196" coveredstatements="125" conditionals="64" coveredconditionals="24" methods="70" coveredmethods="51"/>
       <file name="dao.js" path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\dao.js">
-        <metrics statements="196" coveredstatements="135" conditionals="64" coveredconditionals="28" methods="70" coveredmethods="53"/>
+        <metrics statements="196" coveredstatements="125" conditionals="64" coveredconditionals="24" methods="70" coveredmethods="51"/>
         <line num="3" count="1" type="stmt"/>
         <line num="4" count="1" type="stmt"/>
         <line num="5" count="1" type="stmt"/>
@@ -108,21 +108,21 @@
         <line num="257" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="258" count="0" type="stmt"/>
         <line num="259" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="260" count="0" type="stmt"/>
-        <line num="262" count="1" type="stmt"/>
-        <line num="263" count="1" type="stmt"/>
-        <line num="266" count="1" type="stmt"/>
-        <line num="267" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="260" count="1" type="stmt"/>
+        <line num="262" count="0" type="stmt"/>
+        <line num="263" count="0" type="stmt"/>
+        <line num="266" count="0" type="stmt"/>
+        <line num="267" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="268" count="0" type="stmt"/>
-        <line num="269" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="269" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="270" count="0" type="stmt"/>
-        <line num="272" count="1" type="stmt"/>
-        <line num="273" count="1" type="cond" truecount="1" falsecount="1"/>
-        <line num="274" count="1" type="stmt"/>
-        <line num="275" count="1" type="stmt"/>
-        <line num="276" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="272" count="0" type="stmt"/>
+        <line num="273" count="0" type="cond" truecount="0" falsecount="2"/>
+        <line num="274" count="0" type="stmt"/>
+        <line num="275" count="0" type="stmt"/>
+        <line num="276" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="277" count="0" type="stmt"/>
-        <line num="279" count="1" type="stmt"/>
+        <line num="279" count="0" type="stmt"/>
         <line num="282" count="0" type="stmt"/>
         <line num="289" count="0" type="stmt"/>
         <line num="298" count="1" type="stmt"/>

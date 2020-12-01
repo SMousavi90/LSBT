@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68% </span>
+                <span class="strong">63% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>136/200</span>
+                <span class='fraction'>126/200</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">43.75% </span>
+                <span class="strong">37.5% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>28/64</span>
+                <span class='fraction'>24/64</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75.71% </span>
+                <span class="strong">72.86% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>53/70</span>
+                <span class='fraction'>51/70</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">68.88% </span>
+                <span class="strong">63.78% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>135/196</span>
+                <span class='fraction'>125/196</span>
             </div>
         
             
@@ -820,26 +820,26 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -1323,27 +1323,27 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) { //X
                 db.all(sqlCapacity, [lectureId], (err, rows) =&gt; {
                     <span class="missing-if-branch" title="if path not taken" >I</span>if (err)
 <span class="cstat-no" title="statement not covered" >                        reject(err);</span>
-                    else <span class="missing-if-branch" title="if path not taken" >I</span>if (rows.length === 0)
-<span class="cstat-no" title="statement not covered" >                        resolve(undefined);</span>
+                    else <span class="missing-if-branch" title="else path not taken" >E</span>if (rows.length === 0)
+                        resolve(undefined);
                     else {
-                        let capacity = rows[0].Capacity;
-                        const sqlBookingCount = `Select Count(BookingId) BookedCount
+                        let capacity = <span class="cstat-no" title="statement not covered" >rows[0].Capacity;</span>
+                        const sqlBookingCount = <span class="cstat-no" title="statement not covered" >`Select Count(BookingId) BookedCount</span>
                 from Booking 
                 where LectureId=? and BookDate is not null and Canceled is null`;
-                        db.all(sqlBookingCount, [lectureId], (err, rows) =&gt; {
-                            <span class="missing-if-branch" title="if path not taken" >I</span>if (err)
+<span class="cstat-no" title="statement not covered" >                        db.all(sqlBookingCount, [lectureId], <span class="fstat-no" title="function not covered" >(e</span>rr, rows) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                            if (err)</span>
 <span class="cstat-no" title="statement not covered" >                                reject(err);</span>
-                            else <span class="missing-if-branch" title="if path not taken" >I</span>if (rows.length === 0)
+                            else <span class="cstat-no" title="statement not covered" >if (rows.length === 0)</span>
 <span class="cstat-no" title="statement not covered" >                                resolve(undefined);</span>
                             else {
-                                let bookedCount = rows[0].BookedCount;
-                                <span class="missing-if-branch" title="else path not taken" >E</span>if (bookedCount &lt; capacity) {
-                                    const sqlBook = `Insert into Booking(StudentId, LectureId, BookDate, ReserveDate) Values (?, ?, ?, datetime('now','localtime'))`;
-                                    db.run(sqlBook, [userId, lectureId, scheduleDate], (err, rows) =&gt; {
-                                        <span class="missing-if-branch" title="if path not taken" >I</span>if (err)
+                                let bookedCount = <span class="cstat-no" title="statement not covered" >rows[0].BookedCount;</span>
+<span class="cstat-no" title="statement not covered" >                                if (bookedCount &lt; capacity) {</span>
+                                    const sqlBook = <span class="cstat-no" title="statement not covered" >`Insert into Booking(StudentId, LectureId, BookDate, ReserveDate) Values (?, ?, ?, datetime('now','localtime'))`;</span>
+<span class="cstat-no" title="statement not covered" >                                    db.run(sqlBook, [userId, lectureId, scheduleDate], <span class="fstat-no" title="function not covered" >(e</span>rr, rows) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                                        if (err)</span>
 <span class="cstat-no" title="statement not covered" >                                            reject(err);</span>
                                         else
-                                            resolve(true);
+<span class="cstat-no" title="statement not covered" >                                            resolve(true);</span>
                                     });
                                 } else {
 <span class="cstat-no" title="statement not covered" >                                    resolve(false); </span>// the class is full, the booking is not possible
@@ -1576,7 +1576,7 @@ exports.makelectureonline = function (lectureId) {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank">istanbul</a>
-                at Tue Dec 01 2020 12:06:01 GMT+0100 (Central European Standard Time)
+                at Tue Dec 01 2020 12:08:51 GMT+0100 (Central European Standard Time)
             </div>
         </div>
         <script src="../prettify.js"></script>
