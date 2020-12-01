@@ -25,6 +25,7 @@ class AllBooking extends React.Component {
         },
       ],
       options: {
+        colors : ['#ff6f00'],
         chart: {
           height: 400,
           width: 800,
@@ -45,7 +46,7 @@ class AllBooking extends React.Component {
           offsetY: -20,
           style: {
             fontSize: "12px",
-            colors: ["#304758"],
+            colors: ["#fff"],
           },
         },
 
@@ -199,6 +200,7 @@ class AllBooking extends React.Component {
             },
           ];
           let options = {
+            colors : ['#ff6f00'],
             chart: {
               height: 400,
               width: 800,
@@ -219,7 +221,7 @@ class AllBooking extends React.Component {
               offsetY: -20,
               style: {
                 fontSize: "12px",
-                colors: ["#304758"],
+                colors: ["#fff"],
               },
             },
 
@@ -304,6 +306,7 @@ class AllBooking extends React.Component {
             },
           ];
           let options = {
+            colors : ['#ff6f00'],
             chart: {
               height: 400,
               width: 800,
@@ -324,7 +327,7 @@ class AllBooking extends React.Component {
               offsetY: -20,
               style: {
                 fontSize: "12px",
-                colors: ["#304758"],
+                colors: ["#fff"],
               },
             },
 
@@ -395,6 +398,7 @@ class AllBooking extends React.Component {
             },
           ];
           let options = {
+            colors : ['#ff6f00'],
             chart: {
               height: 400,
               width: 800,
@@ -415,7 +419,7 @@ class AllBooking extends React.Component {
               offsetY: -20,
               style: {
                 fontSize: "12px",
-                colors: ["#304758"],
+                colors: ["#fff"],
               },
             },
 
