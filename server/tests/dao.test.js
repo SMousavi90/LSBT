@@ -258,7 +258,39 @@ describe('check teacher dashboard', () => {
       expect(data).toHaveLength(0);
     });
   });
-});
+
+  // Make the lecture unbookable, then count the unbookable lectures
+  test('Test makelectureonline', () =>{
+    dao.makelectureonline(1); // (lectureId)
+    getunbookablelectures.then(data => {
+      expect(data).toHaveLength(1);
+      });
+    });
+  });
+
+
+getunbookablelectures = () => {
+
+  return new Promise((resolve,reject) => {
+    const sql = `SELECT * FROM Lectures WHERE Bookable=0`;
+
+    db.run(sql,(err,rows) => {
+      if(err){
+        reject(err);
+        return;
+      }
+      else{
+        resolve(rows);
+      }
+    })
+  });
+
+
+}
+
+
+
+
 
 initBooking = () => {
   return new Promise((resolve, reject) => {
