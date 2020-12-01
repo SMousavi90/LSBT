@@ -475,6 +475,27 @@ exports.cancelLecture = function (lectureId) {
   });
 };
 
+exports.getStudentlistOfLecture = function(lectureId){
+  return new Promise((resolve, reject) => {
+      const sql = `select t.Name || ' ' || t.LastName as TeacherName,c.Name as CourseName,
+      l.Schedule,(SELECT group_concat(Email, ', ')
+                      FROM User u inner join StudentFinalBooking s on u.UserId=s.StudentId
+                      WHERE s.LectureId = l.LectureId
+                     ) AS Emails_List
+      from Lecture l
+      inner join user T on t.UserId=l.TeacherId
+      inner join course c on c.CourseId=l.CourseId
+      where l.LectureId=?`;
+      db.get(sql, [lectureId], (err, rows) => {
+          if (err){
+              reject(err);
+          }else{
+              resolve(rows);
+          }
+      });
+  });
+}
+
 exports.getTeacherStats = function (
   period,
   userId,
