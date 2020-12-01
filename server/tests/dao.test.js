@@ -262,7 +262,7 @@ describe('check teacher dashboard', () => {
   // Make the lecture unbookable, then count the unbookable lectures
   test('Test makelectureonline', () =>{
     dao.makelectureonline(1); // (lectureId)
-    getunbookablelectures.then(data => {
+    getunbookablelectures().then(data => {
       expect(data).toHaveLength(1);
       });
     });

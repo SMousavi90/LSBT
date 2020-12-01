@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js">
-    <testCase name="test login ok" duration="87"/>
-    <testCase name="test login user does not exists" duration="1"/>
+    <testCase name="test login ok" duration="104"/>
+    <testCase name="test login user does not exists" duration="2"/>
     <testCase name="test getUserById" duration="0"/>
-    <testCase name="check Notifications test check Notification" duration="21"/>
-    <testCase name="check Notifications test update Lecture Notification Added field" duration="18"/>
-    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="16"/>
-    <testCase name="check Notifications test getAvailableLectures" duration="2">
+    <testCase name="check Notifications test check Notification" duration="6"/>
+    <testCase name="check Notifications test update Lecture Notification Added field" duration="9"/>
+    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="12"/>
+    <testCase name="check Notifications test getAvailableLectures" duration="3">
       <failure message="Error: SQLITE_ERROR: no such table: StudentFinalBooking"><![CDATA[Error: SQLITE_ERROR: no such table: StudentFinalBooking]]></failure>
     </testCase>
     <testCase name="check Notifications test getAllLectures" duration="3">
@@ -19,31 +19,17 @@ Received array:  []
     at C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js:63:20]]></failure>
     </testCase>
     <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
-    <testCase name="check Courses test getStudentCurrentCourses" duration="0"/>
-    <testCase name="check BookingAndHistory test bookLecture" duration="3">
-      <failure message="Error: expect(received).toEqual(expected) // deep equality"><![CDATA[Error: expect(received).toEqual(expected) // deep equality
-
-Expected: true
-Received: undefined
-    at C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js:220:20]]></failure>
-    </testCase>
-    <testCase name="check BookingAndHistory test bookingHistory" duration="38">
+    <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
+    <testCase name="check BookingAndHistory test bookLecture" duration="8"/>
+    <testCase name="check BookingAndHistory test bookingHistory" duration="43">
       <failure message="Error: SQLITE_ERROR: no such table: StudentFinalBooking"><![CDATA[Error: SQLITE_ERROR: no such table: StudentFinalBooking]]></failure>
     </testCase>
-    <testCase name="check BookingAndHistory test cancelReservation" duration="1"/>
+    <testCase name="check BookingAndHistory test cancelReservation" duration="0"/>
     <testCase name="check teacher dashboard test getTeacherCourses" duration="1"/>
     <testCase name="check teacher dashboard test getCourseLectures" duration="1">
       <failure message="Error: SQLITE_ERROR: no such column: L.CancelDate"><![CDATA[Error: SQLITE_ERROR: no such column: L.CancelDate]]></failure>
     </testCase>
-    <testCase name="check teacher dashboard test getLectureStudents" duration="1"/>
-    <testCase name="check teacher dashboard Test makelectureonline" duration="1">
-      <failure message="TypeError: getunbookablelectures.then is not a function"><![CDATA[TypeError: getunbookablelectures.then is not a function
-    at Object.<anonymous> (C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js:265:27)
-    at Object.asyncJestTest (C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\node_modules\jest-jasmine2\build\jasmineAsyncInstall.js:106:37)
-    at C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\node_modules\jest-jasmine2\build\queueRunner.js:45:12
-    at new Promise (<anonymous>)
-    at mapper (C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\node_modules\jest-jasmine2\build\queueRunner.js:28:19)
-    at C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\node_modules\jest-jasmine2\build\queueRunner.js:75:41]]></failure>
-    </testCase>
+    <testCase name="check teacher dashboard test getLectureStudents" duration="0"/>
+    <testCase name="check teacher dashboard Test makelectureonline" duration="1"/>
   </file>
 </testExecutions>
