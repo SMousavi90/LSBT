@@ -79,10 +79,11 @@ initLectures = () => {
    BookingDeadline,
    NotificationDeadline,
    Bookable,
+   LectureId,
    Canceled,
    TeacherId,
    NotificationAdded)
-   VALUES (2,"2020-11-30 15:20", 1,"2020-11-30 15:20", date("now"), 1, 0, 2, 0)
+   VALUES (2,"2020-11-30 15:20", 1,"2020-11-30 15:20", date("now"), 1, 1, 0, 2, 0)
     `;
 
     db.run(sql, (err, rows) => {
@@ -306,4 +307,13 @@ clearBooking = () => {
     });
   });
 }
+
+
+
+
+
+
+
+
+
 
