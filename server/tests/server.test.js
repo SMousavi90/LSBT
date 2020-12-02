@@ -100,6 +100,50 @@ describe('server rest APIs', function () {
       expect(response.status).toBe(200);
   });
 
+  it("cancelReservation", async () => {
+    const response = await request
+      .put("/api/cancelReservation/1")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+
+  it("getTeacherStats #1", async () => {
+    const response = await request
+      .get("/api/getTeacherStats/M/2/2020-11-01/2020-12-01/4")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+
+  it("getTeacherStats #2", async () => {
+    const response = await request
+      .get("/api/getTeacherStats/W/2/2020-11-01/2020-12-01/4")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+  it("getTeacherStats #3", async () => {
+    const response = await request
+      .get("/api/getTeacherStats/All/2/2020-11-01/2020-12-01/4")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+
+  it("getTeacherStats #3 no course", async () => {
+    const response = await request
+      .get("/api/getTeacherStats/All/2/2020-11-01/2020-12-01/null")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+
+  it("bookLecture", async () => {
+    const response = await request
+      .post("/api/bookLecture")
+      .send({ "lectureId": "2", "userId": "4", "scheduleDate": "2020-12-30 15:20" })
+      .set("Accept", "application/json")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+
+
 });
 
 ///getTeacherStats/:period/:userId/:startDate/:endDate/:courseId
