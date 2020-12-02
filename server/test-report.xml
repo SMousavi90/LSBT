@@ -1,35 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
-  <file path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\server.test.js">
-  </file>
   <file path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js">
-    <testCase name="test login ok" duration="90"/>
+    <testCase name="test login ok" duration="69"/>
     <testCase name="test login user does not exists" duration="1"/>
     <testCase name="test getUserById" duration="1"/>
-    <testCase name="check Notifications test check Notification" duration="6"/>
-    <testCase name="check Notifications test update Lecture Notification Added field" duration="6"/>
+    <testCase name="check Notifications test check Notification" duration="8"/>
+    <testCase name="check Notifications test update Lecture Notification Added field" duration="17"/>
     <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="6"/>
     <testCase name="check Notifications test getAvailableLectures" duration="3"/>
-    <testCase name="check Notifications test getAvailableLectures undef" duration="0"/>
+    <testCase name="check Notifications test getAvailableLectures undef" duration="1"/>
     <testCase name="check Notifications test getAllLectures" duration="1"/>
-    <testCase name="check Courses test getStudentCurrentCourses" duration="2"/>
     <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
-    <testCase name="check BookingAndHistory test bookLecture" duration="9"/>
+    <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
+    <testCase name="check BookingAndHistory test bookLecture" duration="13"/>
     <testCase name="check BookingAndHistory test bookLecture false" duration="1"/>
     <testCase name="check BookingAndHistory test bookingHistory" duration="1"/>
     <testCase name="check BookingAndHistory test cancelReservation" duration="1"/>
     <testCase name="check BookingAndHistory test getBookingDetails" duration="1"/>
     <testCase name="check Teacher Dashboard test getTeacherCourses" duration="1"/>
     <testCase name="check Teacher Dashboard test getCourseLectures" duration="1"/>
-    <testCase name="check Teacher Dashboard test getLectureStudents" duration="1"/>
+    <testCase name="check Teacher Dashboard test getLectureStudents" duration="0"/>
     <testCase name="check Teacher Dashboard test getStudentlistOfLecture" duration="1"/>
     <testCase name="check Teacher Dashboard Test makeLectureOnline" duration="6"/>
-    <testCase name="check Teacher Dashboard test getNotification" duration="2"/>
+    <testCase name="check Teacher Dashboard test getNotification" duration="1"/>
     <testCase name="check Teacher Dashboard test cancelLecture" duration="6"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats1" duration="53"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats2" duration="9"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats5" duration="1"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats3" duration="2"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats1" duration="28"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats2" duration="1"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats5" duration="2"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats3" duration="1"/>
     <testCase name="check Teacher Dashboard test getTeacherStats4" duration="2"/>
+  </file>
+  <file path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\server.test.js">
+    <testCase name="server rest APIs getUser" duration="8"/>
+    <testCase name="server rest APIs getStudentCurrentCourses" duration="4"/>
+    <testCase name="server rest APIs getAvailableLectures" duration="5"/>
+    <testCase name="server rest APIs bookingHistory" duration="4"/>
+    <testCase name="server rest APIs teacher notification" duration="5"/>
+    <testCase name="server rest APIs getTeacherCourses" duration="4"/>
+    <testCase name="server rest APIs getCourseLectures" duration="3"/>
+    <testCase name="server rest APIs getLectureStudents" duration="3"/>
+    <testCase name="server rest APIs makelectureonline" duration="7">
+      <failure message="Error: expect(received).toBe(expected) // Object.is equality"><![CDATA[Error: expect(received).toBe(expected) // Object.is equality
+
+Expected: 200
+Received: 404
+    at Object.<anonymous> (C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\server.test.js:100:31)
+    at processTicksAndRejections (internal/process/task_queues.js:97:5)]]></failure>
+    </testCase>
   </file>
 </testExecutions>
