@@ -95,7 +95,7 @@ describe('server rest APIs', function () {
 
     it('makelectureonline', async () => {
       const response = await request
-          .get('/api/makelectureonline/1')
+          .post('/api/makelectureonline/1')
           .set('Cookie', session)
       expect(response.status).toBe(200);
   });
