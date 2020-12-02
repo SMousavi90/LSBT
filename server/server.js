@@ -6,7 +6,6 @@ const dao = require('./dao.js');
 const jwt = require('express-jwt'); //provide an authentication system based on a json web token
 const jsonwebtoken = require('jsonwebtoken'); //used to generate a json token
 const cookieParser = require("cookie-parser"); //parse Cookie header and populate req.cookies with an object keyed by the cookie names.
-const { check, validationResult } = require('express-validator'); //to validate passed parameters
 
 const PORT = 3001;
 const BASEURI = '/api';
@@ -16,7 +15,7 @@ const authErrorObj = { 'param': 'Server', 'msg': 'Authorization error' };
 
 const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR0Zm";
 
-// dao.setDb("db/PULSeBS_test.db");
+//dao.setDb("db/PULSeBS_test.db");
 dao.setDb("db/PULSeBS.db");
 
 app = new express();
@@ -279,7 +278,7 @@ app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
         });
 });
 
-app.listen(PORT, () => {
+module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
 
     //send mail to teachers once a course deadline expires

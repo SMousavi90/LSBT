@@ -233,7 +233,7 @@ initLectures = () => {
    Canceled,
    TeacherId,
    NotificationAdded)
-   VALUES (2,"2021-01-30 10:00", 1,"2020-11-30 15:20", date("now"), 1, 1, 0, 2, 0)
+   VALUES (2,"2021-01-30 10:00", 1,"2020-12-30 15:20", date("now"), 1, 1, 0, 2, 0)
     `;
 
     db.run(sql, (err, rows) => {
