@@ -310,15 +310,15 @@ async function getTeacherStats(period, userId, startDate, endDate, courseId) {
     return json.map((row) => {
       let r = null;
       if (period === "W") {
-         r = { avg: row.avg, no: row.weekno };
+         r = { avg: row.avg.toFixed(2), no: row.weekno };
          return r;
       }
       else if (period === "M") {
-        r = { avg: row.avg, no: row.monthno };
+        r = { avg: row.avg.toFixed(2), no: row.monthno };
         return r;
     }
     else { 
-        r = { avg: row.avg, no: row.Dayno };
+        r = { avg: row.avg.toFixed(2), no: row.Dayno };
         return r;
       }
     });

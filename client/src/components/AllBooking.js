@@ -479,10 +479,11 @@ class AllBooking extends React.Component {
       });
   };
 
-  onDateChange = (dates) => {
+  onDateChange = async (dates) => {
     const [start, end] = dates;
-    this.setState({ startDate: start, endDate: end });
-    this.onPeriodChange();
+    await this.setState({ startDate: start, endDate: end });
+    if (end !== null)
+      this.onPeriodChange();
   };
 
   render() {
