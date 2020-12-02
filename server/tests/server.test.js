@@ -92,6 +92,14 @@ describe('server rest APIs', function () {
             .set('Cookie', session)
         expect(response.status).toBe(200);
     });
+
+    it('makelectureonline', async () => {
+      const response = await request
+          .get('/api//makelectureonline/1')
+          .set('Cookie', session)
+      expect(response.status).toBe(200);
+  });
+
 });
 
 ///getTeacherStats/:period/:userId/:startDate/:endDate/:courseId
