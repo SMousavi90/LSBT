@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testExecutions version="1">
   <file path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\dao.test.js">
-    <testCase name="test login ok" duration="74"/>
-    <testCase name="test login user does not exists" duration="1"/>
-    <testCase name="test getUserById" duration="1"/>
-    <testCase name="check Notifications test check Notification" duration="7"/>
-    <testCase name="check Notifications test update Lecture Notification Added field" duration="7"/>
-    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="6"/>
-    <testCase name="check Notifications test getAvailableLectures" duration="3"/>
-    <testCase name="check Notifications test getAvailableLectures undef" duration="1"/>
+    <testCase name="test login ok" duration="89"/>
+    <testCase name="test login user does not exists" duration="3"/>
+    <testCase name="test getUserById" duration="2"/>
+    <testCase name="check Notifications test check Notification" duration="10"/>
+    <testCase name="check Notifications test update Lecture Notification Added field" duration="16"/>
+    <testCase name="check Notifications test update Teacher Notification Sent Status field" duration="8"/>
+    <testCase name="check Notifications test getAvailableLectures" duration="6"/>
+    <testCase name="check Notifications test getAvailableLectures undef" duration="2"/>
     <testCase name="check Notifications test getAllLectures" duration="1"/>
+    <testCase name="check Courses test getStudentCurrentCourses" duration="2"/>
     <testCase name="check Courses test getStudentCurrentCourses" duration="1"/>
-    <testCase name="check Courses test getStudentCurrentCourses" duration="0"/>
-    <testCase name="check BookingAndHistory test bookLecture" duration="7"/>
+    <testCase name="check BookingAndHistory test bookLecture" duration="16"/>
     <testCase name="check BookingAndHistory test bookLecture false" duration="2"/>
-    <testCase name="check BookingAndHistory test bookingHistory" duration="1"/>
-    <testCase name="check BookingAndHistory test cancelReservation" duration="1"/>
-    <testCase name="check BookingAndHistory test getBookingDetails" duration="0"/>
-    <testCase name="check Teacher Dashboard test getTeacherCourses" duration="1"/>
+    <testCase name="check BookingAndHistory test bookingHistory" duration="3"/>
+    <testCase name="check BookingAndHistory test cancelReservation" duration="2"/>
+    <testCase name="check BookingAndHistory test getBookingDetails" duration="1"/>
+    <testCase name="check Teacher Dashboard test getTeacherCourses" duration="2"/>
     <testCase name="check Teacher Dashboard test getCourseLectures" duration="1"/>
     <testCase name="check Teacher Dashboard test getLectureStudents" duration="1"/>
     <testCase name="check Teacher Dashboard test getStudentlistOfLecture" duration="1"/>
-    <testCase name="check Teacher Dashboard Test makeLectureOnline" duration="6"/>
-    <testCase name="check Teacher Dashboard test getNotification" duration="1"/>
-    <testCase name="check Teacher Dashboard test cancelLecture" duration="6"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats1" duration="26"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats2" duration="1"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats5" duration="2"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats3" duration="1"/>
-    <testCase name="check Teacher Dashboard test getTeacherStats4" duration="3"/>
+    <testCase name="check Teacher Dashboard Test makeLectureOnline" duration="11"/>
+    <testCase name="check Teacher Dashboard test getNotification" duration="2"/>
+    <testCase name="check Teacher Dashboard test cancelLecture" duration="11"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats1" duration="83"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats2" duration="4"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats5" duration="3"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats3" duration="3"/>
+    <testCase name="check Teacher Dashboard test getTeacherStats4" duration="11"/>
   </file>
   <file path="C:\Users\mattc\OneDrive\Dokumente\GitHub\Software-Engineering-2-team10\server\tests\server.test.js">
-    <testCase name="server rest APIs getUser" duration="9"/>
+    <testCase name="server rest APIs getUser" duration="12"/>
     <testCase name="server rest APIs getStudentCurrentCourses" duration="4"/>
-    <testCase name="server rest APIs getAvailableLectures" duration="4"/>
-    <testCase name="server rest APIs bookingHistory" duration="4"/>
+    <testCase name="server rest APIs getAvailableLectures" duration="7"/>
+    <testCase name="server rest APIs bookingHistory" duration="5"/>
     <testCase name="server rest APIs teacher notification" duration="5"/>
-    <testCase name="server rest APIs getTeacherCourses" duration="3"/>
-    <testCase name="server rest APIs getCourseLectures" duration="3"/>
+    <testCase name="server rest APIs getTeacherCourses" duration="5"/>
+    <testCase name="server rest APIs getCourseLectures" duration="4"/>
     <testCase name="server rest APIs getLectureStudents" duration="4"/>
-    <testCase name="server rest APIs makelectureonline" duration="8"/>
+    <testCase name="server rest APIs makelectureonline" duration="75"/>
   </file>
 </testExecutions>
