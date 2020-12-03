@@ -143,7 +143,14 @@ class App extends React.Component {
                         <BookingBody name={this.state.name}></BookingBody>
                       </Row>
                     </Container>
-                  } else {
+                  } else if (this.state.role === "4"){
+                    return <Container className="custom-container col-md-12">
+                    <Row>
+                    <BookingAnalytics Username={this.state.name}/>
+                    </Row>
+                  </Container>
+                  } 
+                  else {
                     return <Container className="custom-container">
                       <Row>
                         <DashboardBody name={this.state.name} id={this.state.userId}></DashboardBody>

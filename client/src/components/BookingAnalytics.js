@@ -115,7 +115,12 @@ class BookingAnalytics extends React.Component {
   }
 
   componentDidMount() {
-      this.getBookings()
+      this.setState({
+          startDate: new Date("2020-11-01"),
+          endDate: new Date("2020-11-30")
+      })
+      
+      this.onTypeClick("Booking");
   }
 
   getBookings = () => {
@@ -180,15 +185,15 @@ class BookingAnalytics extends React.Component {
       selectedType: type,
     });
     switch(type){
-        case 'booking': {
+        case 'Booking': {
             this.getBookings()
             break;
         }
-        case 'cancelletion': {
+        case 'Cancelletion': {
             this.getCancellation()
             break;
         }
-        case 'getAttendance': {
+        case 'Attendance': {
             this.getCancellation()
             break;
         }
@@ -262,13 +267,13 @@ class BookingAnalytics extends React.Component {
                     <option value="M" selected>
                       Monthly
                     </option>
-                    <option value="L">Daily</option>
+                    <option value="D">Daily</option>
                   </select>
                 </div>
                 <div className="col-md-10">
                   <label>by type:</label>
                   <div>
-                    {['booking', 'cancelletion', 'attendance'].map((type, index) => (
+                    {['Booking', 'Cancelletion', 'Attendance'].map((type, index) => (
                         <Button
                           key={index}
                           id={type}
@@ -285,7 +290,7 @@ class BookingAnalytics extends React.Component {
                 </div>
               </Row>
               <Row>
-                <div className="col-md-3">
+                <div className="col-md-2 mr-5">
                   <label></label>
                   <ReactDatePicker
                     selected={this.state.startDate}
@@ -298,9 +303,8 @@ class BookingAnalytics extends React.Component {
                 </div>
                 <div
                   className="mixed-chart col-md-9"
-                  style={{ margin: "25px 0"}}
                 >
-                    <StatisticsTable bookings={this.state.bookings} />
+                    <StatisticsTable bookings={this.state.bookings} selectedPeriod={this.state.selectedPeriod} />
                 </div>
               </Row>
             </Form>
@@ -317,8 +321,9 @@ function StatisticsTable(props) {
     const bookingRows =  bookings.map((booking, index) => {
         return(<tr key={index}>
             <td>{booking.TeacherName}</td>
-            <td>{booking.CourseId}</td>
-            <td>{booking.avg.toFixed(2)}</td>
+            <td>{booking.CourseName}</td>
+            <td>{booking.no}</td>
+            <td>{booking.avg}</td>
         </tr>)
     })
     return (
@@ -326,7 +331,8 @@ function StatisticsTable(props) {
         <thead>
             <tr>
                 <th className="col-1">Teacher Name</th>
-                <th>courseId</th>
+                <th>Course Name</th>
+                <th>{props.selectedPeriod}</th>
                 <th>avg</th>
             </tr>
         </thead>
