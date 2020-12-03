@@ -7,6 +7,7 @@ import DashboardBody from './components/DashboardBody.js';
 import { AuthContext } from './auth/AuthContext';
 import NotificationTable from './components/NotificationTable.js';
 import AllBooking from './components/AllBooking';
+import BookingAnalytics from './components/BookingAnalytics';
 
 import {
   BrowserRouter as Router,
@@ -112,6 +113,15 @@ class App extends React.Component {
                   <h2>Login</h2>
                   <LoginForm onLogin={this.login} loginError={this.state.loginError} logged={this.state.user} ></LoginForm>
 
+                </Container>
+              </Route>
+              <Route path="/analytics">
+                <Container className="custom-container col-md-12">
+                  <Row>
+                    <Col sm={12}>
+                      <BookingAnalytics Username={this.state.name}/>
+                    </Col>
+                  </Row>
                 </Container>
               </Route>
               <Route path="/BookingHistory">

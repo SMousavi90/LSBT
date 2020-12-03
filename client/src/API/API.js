@@ -346,6 +346,18 @@ async function makeLectureOnline(id) {
     });
 }
 
+// Get All courses
+async function getAllCourses() {
+  const url = "/getAllCourses";
+  const response = await fetch(APIURL + url);
+  const courses = await response.json();
+  if (response.ok) {
+    return courses;
+  } else {
+    let err = { status: response.status, errObj: courses };
+    throw err;
+  }
+}
 
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, };
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, };

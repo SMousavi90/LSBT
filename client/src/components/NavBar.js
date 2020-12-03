@@ -17,7 +17,10 @@ function NavBar(props) {
         {props.user !== undefined && props.user !== null ?
           (props.role === "1" ? 
 
-          <><Link to="/" className="nav-link">My Reservations</Link><Link to="/BookingHistory" className="nav-link">Booking</Link></>  :  
+          <><Link to="/" className="nav-link">My Reservations</Link><Link to="/BookingHistory" className="nav-link">Booking</Link></>  :
+          props.role === "4" ? 
+          <>
+          <Link to="/analytics" className="nav-link">Analytics</Link></> : 
           <>
             <Link to="/" className="nav-link">Dashboard</Link>
             <Link to="/notification" className="nav-link">

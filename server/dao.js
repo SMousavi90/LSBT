@@ -591,3 +591,21 @@ exports.makeLectureOnline = function (lectureId) {
     });
   });
 };
+/**
+ * Get All Course
+ */
+exports.getAllCourse = function () {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT CourseID, Name, Description FROM Course c;`;
+    db.all(sql, [], (err, rows) => {
+      console.log("ROW RA")
+      console.log(rows)
+      console.log(err)
+      if (err) reject(err);
+      else {
+        console.log(rows)
+        resolve(rows);
+      }
+    });
+  });
+};
