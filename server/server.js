@@ -289,6 +289,47 @@ app.get(BASEURI + '/getAllCourses', (req, res) => {
             });
         });
 });
+// getBookCountByCourseID delete ( 
+app.get(BASEURI + '/getBookCountByCourseID/:period/:startDate/:endDate/:courseId', (req, res) => {
+    dao.getBookCountByCourseID(req.params.period, req.params.startDate, req.params.endDate, req.params.courseId)
+        .then((data) => {
+            res.json(data);
+        })
+    });
+      //@Rmeidanshahi  getBookingStatistics
+app.get(BASEURI + '/getBookingStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getBookingStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+app.get(BASEURI + '/getCancellationStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getCancellationStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+app.get(BASEURI + '/getAttendanceStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getAttendanceStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
 module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
 

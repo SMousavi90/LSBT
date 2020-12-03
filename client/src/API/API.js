@@ -358,6 +358,114 @@ async function getAllCourses() {
     throw err;
   }
 }
+//Delete no correct way
+async function getBookCountByCourseID(period, startDate, endDate, courseId) {
+  let url = "/getBookCountByCourseID";
+  const queryParams =
+    "/" + period  + "/" + startDate + "/" + endDate + "/" + courseId;
+  url += queryParams;
+  const response = await fetch(APIURL + url);
+  const json = await response.json();
+  //console.log(response);
+  if (response.ok) {
+    return json.map((row) => {
+      let r = null;
+      if (period === "W") {
+         r = { avg: row.avg.toFixed(2), no: row.weekno };
+         return r;
+      }
+      else if (period === "M") {
+        r = { avg: row.avg.toFixed(2), no: row.monthno };
+        return r;
+    }
+    else { 
+        r = { avg: row.avg.toFixed(2), no: row.Dayno };
+        return r;
+      }
+    });
+    //return json.map((row) => new StudentCourse(row.courseId, row.name, row.desc, row.semester, row.studentId));
+  } else {
+    let err = { status: response.status, errObj: json };
+    throw err;
+  }
+}
+// Booking
+async function getBookingStatistics(period, startDate, endDate) {
+  let url = "/getBookingStatistics";
+  const queryParams =
+    "/" + period + "/"  + startDate + "/" + endDate;
+  url += queryParams;
+  const response = await fetch(APIURL + url);
+  const json = await response.json();
+  //console.log(response);
+  if (response.ok) {
+    return json
+    //return json.map((row) => new StudentCourse(row.courseId, row.name, row.desc, row.semester, row.studentId));
+  } else {
+    let err = { status: response.status, errObj: json };
+    throw err;
+  }
+}
+// Cancellation Delete it if there is way to use enum
+async function getCancellationStatistics(period, startDate, endDate) {
+  let url = "/getCancellationStatistics";
+  const queryParams =
+    "/" + period + "/"  + startDate + "/" + endDate;
+  url += queryParams;
+  const response = await fetch(APIURL + url);
+  const json = await response.json();
+  //console.log(response);
+  if (response.ok) {
+    return json.map((row) => {
+      let r = null;
+      if (period === "W") {
+         r = { avg: row.avg.toFixed(2), no: row.weekno };
+         return r;
+      }
+      else if (period === "M") {
+        r = { avg: row.avg.toFixed(2), no: row.monthno };
+        return r;
+    }
+    else { 
+        r = { avg: row.avg.toFixed(2), no: row.Dayno };
+        return r;
+      }
+    });
+    //return json.map((row) => new StudentCourse(row.courseId, row.name, row.desc, row.semester, row.studentId));
+  } else {
+    let err = { status: response.status, errObj: json };
+    throw err;
+  }
+}
+async function getAttendanceStatistics(period, startDate, endDate) {
+  let url = "/getAttendanceStatistics";
+  const queryParams =
+    "/" + period + "/"  + startDate + "/" + endDate;
+  url += queryParams;
+  const response = await fetch(APIURL + url);
+  const json = await response.json();
+  //console.log(response);
+  if (response.ok) {
+    return json.map((row) => {
+      let r = null;
+      if (period === "W") {
+         r = { avg: row.avg.toFixed(2), no: row.weekno };
+         return r;
+      }
+      else if (period === "M") {
+        r = { avg: row.avg.toFixed(2), no: row.monthno };
+        return r;
+    }
+    else { 
+        r = { avg: row.avg.toFixed(2), no: row.Dayno };
+        return r;
+      }
+    });
+    //return json.map((row) => new StudentCourse(row.courseId, row.name, row.desc, row.semester, row.studentId));
+  } else {
+    let err = { status: response.status, errObj: json };
+    throw err;
+  }
+}
 
-
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, };
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics,};
