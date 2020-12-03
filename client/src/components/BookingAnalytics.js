@@ -318,7 +318,7 @@ function StatisticsTable(props) {
         return(<tr key={index}>
             <td>{booking.TeacherName}</td>
             <td>{booking.CourseId}</td>
-            <td>{booking.avg}</td>
+            <td>{booking.avg.toFixed(2)}</td>
         </tr>)
     })
     return (

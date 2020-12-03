@@ -699,16 +699,16 @@ exports.getBookingStatistics= function (period, startDate, endDate) {
         group by monthno,CourseId,CourseName,u.Name,u.LastName
         order by monthno`;
     } else {
-        sql = `select count(BookingId)BookCount,Schedule ,c.CourseId,c.Name as CorseName,
+        sql = `select count(BookingId)BookCount,l.Schedule ,c.CourseId,c.Name as CorseName,
         u.Name || ' ' || u.LastName as TeacherName
-         ,strftime('%d',Schedule) as Dayno
+         ,strftime('%d',l.Schedule) as Dayno
          from StudentFinalBooking b inner join lecture l on b.LectureId=l.LectureId
          inner join course C on C.CourseId=l.CourseId
          inner join user U on l.TeacherId=u.UserId
         where b.BookDate is not null and b.Canceled is null and l.Canceled=0
-        and Schedule between @Starttime and @endtime
-        group by Schedule,c.CourseId,c.Name,u.Name , u.LastName
-        order by Schedule
+        and l.Schedule between @Starttime and @endtime
+        group by l.Schedule,c.CourseId,c.Name,u.Name , u.LastName
+        order by l.Schedule
             `;
     }
       db.all(sql, [startDate, endDate], (err, rows) => {
@@ -731,21 +731,21 @@ exports.getCancellationStatistics= function (period, startDate, endDate) {
         sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.weekno
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
-        and Schedule between @ Starttime and @ endtime
+        and c.Schedule between @Starttime and @endtime
         group by c.Schedule,CourseName,TeacherName,c.weekno
         order by c.weekno`;
     } else if (period === "M") {
         sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.monthno
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
-        and Schedule between @Starttime and @endtime
+        and c.Schedule between @Starttime and @endtime
         group by c.Schedule,CourseName,TeacherName,c.monthno
         order by c.monthno`;
     } else {
         sql = `select count(c.BookingId) CancelCounts,c.Dayno ,CourseName,TeacherName
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
-        and Schedule between @ Starttime and @ endtime
+        and c.Schedule between @Starttime and @endtime
         group by c.Dayno,CourseName,TeacherName
         order by c.Dayno
             `;
