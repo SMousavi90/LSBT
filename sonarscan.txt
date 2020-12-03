@@ -3,3 +3,19 @@ sonar-scanner.bat -D"sonar.organization=peppep97" -D"sonar.projectKey=pulsebs" -
 OR 
 
 sonar-scanner.bat -D"sonar.organization=peppep97" -D"sonar.projectKey=pulsebs" -D"sonar.sources=." -D"sonar.host.url=https://sonarcloud.io" -D"sonar.language=js" -D"sonar.tests=./server/tests,./client/src/tests" -D"sonar.javascript.lcov.reportPaths=./server/coverage/lcov.info,./client/coverage/lcov.info" -D"sonar.testExecutionReportPaths=./server/test-report.xml,./client/test-report.xml"
+
+FOR MAC
+sonar-scanner \
+  -Dsonar.login=2898c9ef3cf1c952c60ddbe22ffcf58badef0124 \
+  -Dsonar.organization=peppep97 \
+  -Dsonar.projectKey=pulsebs \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=https://sonarcloud.io \
+  -Dsonar.language=js \
+  -Dsonar.tests=./server/tests \
+  -Dsonar.javascript.lcov.reportPaths=./server/coverage/lcov.info \
+  -Dsonar.testExecutionReportPaths=./server/test-report.xml
+
+
+
+

@@ -1,8 +1,14 @@
+.gitignore
 server/node_modules/
+server/coverage/
+client/coverage/
 .scannerwork
 server/.vscode
 docker-compose.yml
 server/Dockerfile
 client/Dockerfile
 server/.dockerignore
+server/test-report.xml
 client/.dockerignore
+
+
