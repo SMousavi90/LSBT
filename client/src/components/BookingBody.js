@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import API from '../API/API';
 import StudentCurrentCourses from './StudentCurrentCourses'
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import { confirmAlert } from 'react-confirm-alert'; // Import
 import 'react-confirm-alert/src/react-confirm-alert.css' // Import css
-import { Redirect } from 'react-router-dom';
+
 
 class BookingBody extends React.Component {
 

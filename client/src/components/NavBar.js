@@ -2,10 +2,9 @@ import React from 'react';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
-import Button from 'react-bootstrap/Button';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChalkboardTeacher, faSignInAlt, faUser, faSignOutAlt, faBell } from '@fortawesome/free-solid-svg-icons'
+import { faChalkboardTeacher, faUser, faSignOutAlt, faBell } from '@fortawesome/free-solid-svg-icons'
 import { Link } from 'react-router-dom/cjs/react-router-dom.min';
 
 function NavBar(props) {

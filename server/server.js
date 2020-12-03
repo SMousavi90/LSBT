@@ -18,7 +18,7 @@ const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR
 //dao.setDb("db/PULSeBS_test.db");
 dao.setDb("db/PULSeBS.db");
 
-app = new express();
+let app = new express();
 
 app.use(morgan('dev')); //to print log as Standard Apache combined log output.
 app.use(express.json()); //method inbuilt in express to recognize the incoming Request Object as a JSON Object

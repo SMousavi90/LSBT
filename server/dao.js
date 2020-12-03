@@ -323,12 +323,12 @@ exports.getBookingHistory = function (id) {
   //X
   return new Promise((resolve, reject) => {
     var currentDate = new Date(); // get current date
-    var firstDay = new Date(
-      currentDate.setDate(currentDate.getDate())
-    ).toISOString();
-    var lastDay = new Date(
-      currentDate.setDate(currentDate.getDate() + 14)
-    ).toISOString();
+    // var firstDay = new Date(
+    //   currentDate.setDate(currentDate.getDate())
+    // ).toISOString();
+    // var lastDay = new Date(
+    //   currentDate.setDate(currentDate.getDate() + 14)
+    // ).toISOString();
 
     const sql = `select  c.CourseId,b.Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
         c.Name as CourseName,ST.Name || ' ' || ST.LastName as StudentName,ClassNumber,

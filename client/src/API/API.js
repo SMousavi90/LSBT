@@ -1,6 +1,4 @@
 import StudentCourse from "../Entities/StudentCourse";
-import LectureSchedule from "../Entities/LectureSchedule";
-import BookingHistory from "../Entities/BookingHistory";
 import ProfessorCourse from "../Entities/ProfessorCourse";
 const APIURL = "api";
 

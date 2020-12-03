@@ -2,7 +2,6 @@ import React from "react";
 import { Table, Form, Row, Button} from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
 import API from "../API/API";
-import Chart from "react-apexcharts";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 

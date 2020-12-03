@@ -1,13 +1,11 @@
 import React from "react";
 import { AuthContext } from "../auth/AuthContext";
-import Table from "react-bootstrap/Table";
 import API from "../API/API";
 import Button from "react-bootstrap/Button";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import MyCalendar from "./MyCalendar.js";
 import moment from "moment";
-import { faRetweet } from "@fortawesome/free-solid-svg-icons";
 
 class BookingHistory extends React.Component {
   constructor(props) {

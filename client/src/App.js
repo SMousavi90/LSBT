@@ -13,8 +13,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
-  withRouter
+  Redirect
 } from "react-router-dom";
 
 import Container from 'react-bootstrap/Container';
