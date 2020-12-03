@@ -136,7 +136,7 @@ class BookingAnalytics extends React.Component {
     const { selectedPeriod, startDate, endDate } = this.state
     API.getCancellationStatistics(selectedPeriod, startDate, endDate)
       .then((data) => {
-        console.log("DATA CATCHED")
+        console.log("DATA Cancel")
         console.log(data)
         this.setState({
             bookings: data
@@ -148,9 +148,9 @@ class BookingAnalytics extends React.Component {
   }
   getAttendance = () => {
     const { selectedPeriod, startDate, endDate } = this.state
-    API.getCancellationStatistics(selectedPeriod, startDate, endDate)
+    API.getAttendanceStatistics(selectedPeriod, startDate, endDate)
       .then((data) => {
-        console.log("DATA CATCHED")
+        console.log("DATA Attendace")
         console.log(data)
         this.setState({
             bookings: data
@@ -184,6 +184,15 @@ class BookingAnalytics extends React.Component {
             this.getBookings()
             break;
         }
+        case 'cancelletion': {
+            this.getCancellation()
+            break;
+        }
+        case 'getAttendance': {
+            this.getCancellation()
+            break;
+        }
+
     }
     this.onPeriodChange();
   };
@@ -307,18 +316,18 @@ function StatisticsTable(props) {
     console.log(props)
     const bookingRows =  bookings.map((booking, index) => {
         return(<tr key={index}>
-            <td>{booking.avg}</td>
-            <td>{booking.CourseId}</td>
             <td>{booking.TeacherName}</td>
+            <td>{booking.CourseId}</td>
+            <td>{booking.avg}</td>
         </tr>)
     })
     return (
         <Table striped bordered hover>
         <thead>
             <tr>
-                <th className="col-1">AVR</th>
+                <th className="col-1">Teacher Name</th>
                 <th>courseId</th>
-                <th>teacherName</th>
+                <th>avg</th>
             </tr>
         </thead>
         <tbody>
