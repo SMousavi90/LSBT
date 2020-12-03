@@ -591,3 +591,211 @@ exports.makeLectureOnline = function (lectureId) {
     });
   });
 };
+/**
+ * Get All Course
+ */
+exports.getAllCourse = function () {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT CourseID, Name, Description FROM Course c;`;
+    db.all(sql, [], (err, rows) => {
+      console.log("ROW RA")
+      console.log(rows)
+      console.log(err)
+      if (err) reject(err);
+      else {
+        console.log(rows)
+        resolve(rows);
+      }
+    });
+  });
+};
+/**
+ * Get All Stats for Manager
+ */
+// Booking statistics:
+exports.getBookCountByCourseID = function (period, startDate, endDate, courseId) {
+  console.log(period, userId, startDate, endDate, courseId);
+  return new Promise((resolve, reject) => {
+    let sql = "";
+    if (period === "W") {
+      if (courseId != "null" && courseId != "All")
+        sql = `select avg(BookCount) as avg, row_number() over(order by weekno) as weekno
+      from BookCount
+      where Schedule between ? and ?
+      and CourseId = ?
+      group by weekNo`;
+      else
+        sql = `select avg(BookCount) as avg, row_number() over(order by weekno) as weekno
+      from BookCount
+      where Schedule between ? and ?
+      group by weekNo`;
+    } else if (period === "M") {
+      if (courseId != "null" && courseId != "All")
+        sql = `select avg(BookCount) as avg, monthno
+      from BookCount
+      where Schedule between ? and ?
+      and CourseId = ?
+      group by monthNo`;
+      else
+        sql = `select avg(BookCount) as avg, monthno
+            from BookCount
+            where Schedule between ? and ?
+            group by monthNo`;
+    } else {
+      if (courseId != "null" && courseId != "All")
+        sql = `select avg(BookCount) as avg, row_number() over(order by Dayno) as Dayno
+            from BookCount
+            where Schedule between ? and ?
+            and CourseId = ?
+            group by Dayno,CourseId,CourseName
+            order by Dayno
+            `;
+      else
+        sql = `select avg(BookCount) as avg, row_number() over(order by Dayno) as Dayno
+            from BookCount
+            where Schedule between ? and ?
+            group by Dayno,CourseId,CourseName
+            order by Dayno`;
+    }
+    if (courseId != "null" && courseId != "All") {
+      db.all(sql, [startDate, endDate, courseId], (err, rows) => {
+        console.log(rows)
+        console.log(err)
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    } else {
+      db.all(sql, [startDate, endDate], (err, rows) => {
+        console.log(rows)
+        console.log(err)
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+    }
+  });
+}
+//@Rmeidanshahi correct way 
+//Booking statistics
+exports.getBookingStatistics= function (period, startDate, endDate) {
+  console.log(period, startDate, endDate);
+  return new Promise((resolve, reject) => {
+    let sql = "";
+    if (period === "W") {
+        sql = `select avg(BookCount) as avg,weekno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
+        from BookCount inner join user u on u.UserId=BookCount.TeacherId
+        where Schedule between @Starttime and @endtime
+        group by weekno,CourseId,CourseName,u.Name,u.LastName 
+        order by weekno`;
+    } else if (period === "M") {
+        sql = `select avg(BookCount) as avg,monthno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
+        from BookCount inner join user u on u.UserId=BookCount.TeacherId
+        where Schedule between @Starttime and @endtime
+        group by monthno,CourseId,CourseName,u.Name,u.LastName
+        order by monthno`;
+    } else {
+        sql = `select count(BookingId)BookCount,l.Schedule ,c.CourseId,c.Name as CorseName,
+        u.Name || ' ' || u.LastName as TeacherName
+         ,strftime('%d',l.Schedule) as Dayno
+         from StudentFinalBooking b inner join lecture l on b.LectureId=l.LectureId
+         inner join course C on C.CourseId=l.CourseId
+         inner join user U on l.TeacherId=u.UserId
+        where b.BookDate is not null and b.Canceled is null and l.Canceled=0
+        and l.Schedule between @Starttime and @endtime
+        group by l.Schedule,c.CourseId,c.Name,u.Name , u.LastName
+        order by l.Schedule
+            `;
+    }
+      db.all(sql, [startDate, endDate], (err, rows) => {
+        console.log(rows)
+        console.log(err)
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+  });
+}
+//Cancellation statistics
+exports.getCancellationStatistics= function (period, startDate, endDate) {
+  console.log(period, startDate, endDate);
+  return new Promise((resolve, reject) => {
+    let sql = "";
+    if (period === "W") {
+        sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.weekno
+        from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
+        where b.StudentId is NULL
+        and c.Schedule between @Starttime and @endtime
+        group by c.Schedule,CourseName,TeacherName,c.weekno
+        order by c.weekno`;
+    } else if (period === "M") {
+        sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.monthno
+        from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
+        where b.StudentId is NULL
+        and c.Schedule between @Starttime and @endtime
+        group by c.Schedule,CourseName,TeacherName,c.monthno
+        order by c.monthno`;
+    } else {
+        sql = `select count(c.BookingId) CancelCounts,c.Dayno ,CourseName,TeacherName
+        from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
+        where b.StudentId is NULL
+        and c.Schedule between @Starttime and @endtime
+        group by c.Dayno,CourseName,TeacherName
+        order by c.Dayno
+            `;
+    }
+      db.all(sql, [startDate, endDate], (err, rows) => {
+        console.log(rows)
+        console.log(err)
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+  });
+}
+//Attendance
+exports.getAttendanceStatistics= function (period, startDate, endDate) {
+  console.log(period, startDate, endDate);
+  return new Promise((resolve, reject) => {
+    let sql = "";
+    if (period === "W") {
+        sql = `select weekno,CourseName, TeacherName,sum(BookCounts), sum(PresenceCount),sum(AbsenceCount )
+        from StudentAttendance
+        where Schedule BETWEEN @Starttime and @endtime
+        group by weekno,CourseName, TeacherName 
+        order by weekno
+       `;
+    } else if (period === "M") {
+        sql = `select monthno,CourseName, TeacherName,sum(BookCounts), sum(PresenceCount),sum(AbsenceCount )
+        from StudentAttendance
+        where Schedule BETWEEN @Starttime and @endtime
+        group by monthno,CourseName, TeacherName 
+        order by monthno
+       `;
+    } else {
+        sql = `select BookCounts, PresenceCount,AbsenceCount
+        ,Schedule, CourseName, TeacherName ,Dayno
+        from StudentAttendance
+        where Schedule BETWEEN @Starttime and @endtime
+        order by Dayno
+            `;
+    }
+      db.all(sql, [startDate, endDate], (err, rows) => {
+        console.log(rows)
+        console.log(err)
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows);
+        }
+      });
+  });
+}

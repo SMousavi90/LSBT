@@ -20,7 +20,7 @@ dao.setDb("db/PULSeBS.db");
 
 app = new express();
 
-//app.use(morgan('combined')); //to print log as Standard Apache combined log output.
+app.use(morgan('dev')); //to print log as Standard Apache combined log output.
 app.use(express.json()); //method inbuilt in express to recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
 
@@ -277,7 +277,59 @@ app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
             });
         });
 });
-
+//Story 11
+app.get(BASEURI + '/getAllCourses', (req, res) => {
+    dao.getAllCourse()
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+// getBookCountByCourseID delete ( 
+app.get(BASEURI + '/getBookCountByCourseID/:period/:startDate/:endDate/:courseId', (req, res) => {
+    dao.getBookCountByCourseID(req.params.period, req.params.startDate, req.params.endDate, req.params.courseId)
+        .then((data) => {
+            res.json(data);
+        })
+    });
+      //@Rmeidanshahi  getBookingStatistics
+app.get(BASEURI + '/getBookingStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getBookingStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+app.get(BASEURI + '/getCancellationStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getCancellationStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+app.get(BASEURI + '/getAttendanceStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getAttendanceStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
 module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
 
@@ -362,7 +414,6 @@ function sendMailToStudent(book) {
         }
     });
 }
-
 
 function sendCancelationMailToStudent(lecture) {
     var transporter = nodemailer.createTransport({

@@ -7,6 +7,7 @@ import DashboardBody from './components/DashboardBody.js';
 import { AuthContext } from './auth/AuthContext';
 import NotificationTable from './components/NotificationTable.js';
 import AllBooking from './components/AllBooking';
+import BookingAnalytics from './components/BookingAnalytics';
 
 import {
   BrowserRouter as Router,
@@ -114,6 +115,15 @@ class App extends React.Component {
 
                 </Container>
               </Route>
+              <Route path="/analytics">
+                <Container className="custom-container col-md-12">
+                  <Row>
+                    <Col sm={12}>
+                      <BookingAnalytics Username={this.state.name}/>
+                    </Col>
+                  </Row>
+                </Container>
+              </Route>
               <Route path="/BookingHistory">
                 <Container className="custom-container col-md-12">
                   <Row>
@@ -133,7 +143,14 @@ class App extends React.Component {
                         <BookingBody name={this.state.name}></BookingBody>
                       </Row>
                     </Container>
-                  } else {
+                  } else if (this.state.role === "4"){
+                    return <Container className="custom-container col-md-12">
+                    <Row>
+                    <BookingAnalytics Username={this.state.name}/>
+                    </Row>
+                  </Container>
+                  } 
+                  else {
                     return <Container className="custom-container">
                       <Row>
                         <DashboardBody name={this.state.name} id={this.state.userId}></DashboardBody>
