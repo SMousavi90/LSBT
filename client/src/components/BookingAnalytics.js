@@ -1,5 +1,5 @@
 import React from "react";
-import { Table, Form, Row, Button} from "react-bootstrap";
+import { Table, Form, Row, Button } from "react-bootstrap";
 import { AuthContext } from "../auth/AuthContext";
 import API from "../API/API";
 import ReactDatePicker from "react-datepicker";
@@ -24,7 +24,7 @@ class BookingAnalytics extends React.Component {
         },
       ],
       options: {
-        colors : ['#ff6f00'],
+        colors: ["#ff6f00"],
         chart: {
           height: 400,
           width: 800,
@@ -114,56 +114,65 @@ class BookingAnalytics extends React.Component {
   }
 
   componentDidMount() {
-      this.setState({
-          startDate: new Date("2020-11-01"),
-          endDate: new Date("2020-11-30")
-      })
-      
-      this.onTypeClick("Booking");
+    this.setState({
+      startDate: new Date("2020-11-01"),
+      endDate: new Date("2020-11-30"),
+    });
+
+    this.onTypeClick("Booking");
   }
 
   getBookings = () => {
-    const { selectedPeriod, startDate, endDate } = this.state
+    const { selectedPeriod } = this.state;
+    let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
+    let endDate = moment(this.state.endDate).format("yyyy-MM-DD");
     API.getBookingStatistics(selectedPeriod, startDate, endDate)
       .then((data) => {
-        console.log("DATA CATCHED")
-        console.log(data)
-        this.setState({
-            bookings: data
-        })
+        console.log("DATA CATCHED");
+        console.log(data);
+        this.setState(() => ({
+          bookings: data,
+        }));
+        // this.onTypeClick("Booking");
       })
       .catch((errorObj) => {
         console.log(errorObj);
       });
-  }
+  };
   getCancellation = () => {
-    const { selectedPeriod, startDate, endDate } = this.state
+    const { selectedPeriod } = this.state;
+    let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
+    let endDate = moment(this.state.endDate).format("yyyy-MM-DD");
     API.getCancellationStatistics(selectedPeriod, startDate, endDate)
       .then((data) => {
-        console.log("DATA Cancel")
-        console.log(data)
-        this.setState({
-            bookings: data
-        })
+        console.log("DATA Cancel");
+        console.log(data);
+        this.setState(() => ({
+          bookings: data,
+        }));
+        // this.onTypeClick("Cancelletion");
       })
       .catch((errorObj) => {
         console.log(errorObj);
       });
-  }
+  };
   getAttendance = () => {
-    const { selectedPeriod, startDate, endDate } = this.state
+    const { selectedPeriod } = this.state;
+    let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
+    let endDate = moment(this.state.endDate).format("yyyy-MM-DD");
     API.getAttendanceStatistics(selectedPeriod, startDate, endDate)
       .then((data) => {
-        console.log("DATA Attendace")
-        console.log(data)
-        this.setState({
-            bookings: data
-        })
+        console.log("DATA Attendace");
+        console.log(data);
+        this.setState(() => ({
+          bookings: data,
+        }));
+        // this.onTypeClick("Attendance");
       })
       .catch((errorObj) => {
         console.log(errorObj);
       });
-  }
+  };
   getAllCourses = (ev) => {
     API.getAllCourses()
       .then((data) => {
@@ -183,23 +192,38 @@ class BookingAnalytics extends React.Component {
     await this.setState({
       selectedType: type,
     });
-    switch(type){
-        case 'Booking': {
-            this.getBookings()
-            break;
-        }
-        case 'Cancelletion': {
-            this.getCancellation()
-            break;
-        }
-        case 'Attendance': {
-            this.getCancellation()
-            break;
-        }
-
-    }
+    // switch(type){
+    //     case 'Booking': {
+    //         this.getBookings()
+    //         break;
+    //     }
+    //     case 'Cancelletion': {
+    //         this.getCancellation()
+    //         break;
+    //     }
+    //     case 'Attendance': {
+    //         this.getAttendance()
+    //         break;
+    //     }
+    // }
     this.onPeriodChange();
   };
+
+  // getBookings = async () => {
+  //   const { selectedPeriod } = this.state;
+  //   let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
+  //   let endDate = moment(this.state.endDate).format("yyyy-MM-DD");
+  //   API.getBookingStatistics(period, startDate, endDate)
+  //     .then((data) => {
+  //       console.log(data);
+  //       await this.setState({
+  //         bookings: data,
+  //       });
+  //     })
+  //     .catch((errorObj) => {
+  //       console.log(errorObj);
+  //     });
+  // };
 
   onPeriodChange = (ev) => {
     let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
@@ -210,27 +234,26 @@ class BookingAnalytics extends React.Component {
       period = ev.target.value;
       this.setState({ selectedPeriod: period });
     }
-    API.getBookingStatistics(
-      period,
-      startDate,
-      endDate
-    )
-      .then((data) => {
-          console.log(data)
-          this.setState({
-              bookings: data
-          })
-        })
-      .catch((errorObj) => {
-        console.log(errorObj);
-      });
+    switch (this.state.selectedType) {
+      case "Booking": {
+        this.getBookings();
+        break;
+      }
+      case "Cancelletion": {
+        this.getCancellation();
+        break;
+      }
+      case "Attendance": {
+        this.getAttendance();
+        break;
+      }
+    }
   };
 
   onDateChange = async (dates) => {
     const [start, end] = dates;
     await this.setState({ startDate: start, endDate: end });
-    if (end !== null)
-      this.onPeriodChange();
+    if (end !== null) this.onPeriodChange();
   };
 
   render() {
@@ -272,19 +295,21 @@ class BookingAnalytics extends React.Component {
                 <div className="col-md-10">
                   <label>by type:</label>
                   <div>
-                    {['Booking', 'Cancelletion', 'Attendance'].map((type, index) => (
+                    {["Booking", "Cancelletion", "Attendance"].map(
+                      (type, index) => (
                         <Button
                           key={index}
                           id={type}
                           type="button"
-                          active={type===this.state.selectedType}
+                          active={type === this.state.selectedType}
                           class="btn btn-outline-primary mx-2"
-                          style={{ height: "48px", margin: '0 10px'}}
+                          style={{ height: "48px", margin: "0 10px" }}
                           onClick={() => this.onTypeClick(type)}
                         >
                           {type}
                         </Button>
-                      ))}
+                      )
+                    )}
                   </div>
                 </div>
               </Row>
@@ -300,10 +325,16 @@ class BookingAnalytics extends React.Component {
                     inline
                   />
                 </div>
-                <div
-                  className="mixed-chart col-md-9"
-                >
-                    <StatisticsTable bookings={this.state.bookings} selectedPeriod={this.state.selectedPeriod} />
+                <div className="mixed-chart col-md-9">
+                  <StatisticsTable
+                    bookings={this.state.bookings}
+                    selectedPeriod={this.state.selectedPeriod}
+                    avg={
+                      this.state.selectedPeriod === "D"
+                        ? "Count"
+                        : "Average"
+                    }
+                  />
                 </div>
               </Row>
             </Form>
@@ -315,31 +346,31 @@ class BookingAnalytics extends React.Component {
 }
 
 function StatisticsTable(props) {
-    const {bookings} = props
-    console.log(props)
-    const bookingRows =  bookings.map((booking, index) => {
-        return(<tr key={index}>
-            <td>{booking.TeacherName}</td>
-            <td>{booking.CourseName}</td>
-            <td>{booking.no}</td>
-            <td>{booking.avg}</td>
-        </tr>)
-    })
+  const { bookings } = props;
+  console.log(props);
+  const bookingRows = bookings.map((booking, index) => {
     return (
-        <Table striped bordered hover>
-        <thead>
-            <tr>
-                <th className="col-1">Teacher Name</th>
-                <th>Course Name</th>
-                <th>{props.selectedPeriod}</th>
-                <th>avg</th>
-            </tr>
-        </thead>
-        <tbody>
-            {bookingRows}
-        </tbody>
+      <tr key={index}>
+        <td>{booking.TeacherName}</td>
+        <td>{booking.CourseName}</td>
+        <td>{booking.no}</td>
+        <td>{booking.avg}</td>
+      </tr>
+    );
+  });
+  return (
+    <Table striped bordered hover>
+      <thead>
+        <tr>
+          <th className="col-1">Teacher Name</th>
+          <th>Course Name</th>
+          <th>{props.selectedPeriod}</th>
+          <th>{props.avg}</th>
+        </tr>
+      </thead>
+      <tbody>{bookingRows}</tbody>
     </Table>
-    )
+  );
 }
 
 export default BookingAnalytics;

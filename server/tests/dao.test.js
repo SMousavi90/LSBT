@@ -218,6 +218,24 @@ describe("check Teacher Dashboard", () => {
     });
   });
 
+  test("test getBookingStatistics", () => {
+    return dao.getBookingStatistics("W", "2020-12-01", "2020-12-18").then((data) => {
+      expect(data.length>0);
+    });
+  });
+
+  test("test getCancellationStatistics", () => {
+    return dao.getCancellationStatistics("D", "2020-12-01", "2020-12-18").then((data) => {
+      expect(data.length>0);
+    });
+  });
+
+  test("test getAttendanceStatistics", () => {
+    return dao.getAttendanceStatistics("D", "2020-12-01", "2020-12-18").then((data) => {
+      expect(data.length>0);
+    });
+  });
+
 });
 
 initLectures = () => {
