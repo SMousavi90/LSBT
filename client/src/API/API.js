@@ -379,7 +379,7 @@ async function getBookingStatistics(period, startDate, endDate) {
         return r;
     }
     else { 
-      r = { avg: row.avg.toFixed(2), no: row.Dayno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
+      r = { avg: row.BookCount, no: row.Dayno, CourseId: row.CourseId, CourseName: row.CorseName, TeacherName: row.TeacherName };
         return r;
       }
     });
@@ -402,15 +402,15 @@ async function getCancellationStatistics(period, startDate, endDate) {
     return json.map((row) => {
       let r = null;
       if (period === "W") {
-         r = { avg: row.avg.toFixed(2), no: row.weekno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
+         r = { avg: row.CancelCounts, no: row.weekno, CourseName: row.CourseName, TeacherName: row.TeacherName };
          return r;
       }
       else if (period === "M") {
-        r = { avg: row.avg.toFixed(2), no: row.monthno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
+        r = { avg: row.CancelCounts, no: row.monthno, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
     }
     else { 
-      r = { avg: row.avg.toFixed(2), no: row.Dayno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
+      r = { avg: row.CancelCounts, no: row.Dayno, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }
     });
@@ -432,15 +432,15 @@ async function getAttendanceStatistics(period, startDate, endDate) {
     return json.map((row) => {
       let r = null;
       if (period === "W") {
-        r = { avg: row.avg.toFixed(2), no: row.weekno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
+        r = { avg: row.PresenceCount, no: row.weekno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
          return r;
       }
       else if (period === "M") {
-        r = { avg: row.avg.toFixed(2), no: row.monthno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
+        r = { avg: row.PresenceCount, no: row.monthno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
     }
     else { 
-      r = { avg: row.avg.toFixed(2), no: row.Dayno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
+      r = { avg: row.PresenceCount, no: row.Dayno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }
     });

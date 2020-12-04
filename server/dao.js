@@ -767,14 +767,14 @@ exports.getAttendanceStatistics= function (period, startDate, endDate) {
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
-        sql = `select weekno,CourseName, TeacherName,sum(BookCounts), sum(PresenceCount),sum(AbsenceCount )
+        sql = `select weekno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
         from StudentAttendance
         where Schedule BETWEEN @Starttime and @endtime
         group by weekno,CourseName, TeacherName 
         order by weekno
        `;
     } else if (period === "M") {
-        sql = `select monthno,CourseName, TeacherName,sum(BookCounts), sum(PresenceCount),sum(AbsenceCount )
+        sql = `select monthno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
         from StudentAttendance
         where Schedule BETWEEN @Starttime and @endtime
         group by monthno,CourseName, TeacherName 
