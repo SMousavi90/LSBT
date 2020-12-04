@@ -143,6 +143,26 @@ describe('server rest APIs', function () {
     expect(response.status).toBe(200);
   });
 
+  it("getBookingStatistics ", async () => {
+    const response = await request
+      .get("/api/getBookingStatistics/M/2020-11-01/2020-12-01/")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+
+  it("getCancellationStatistics ", async () => {
+    const response = await request
+      .get("/api/getCancellationStatistics/M/2020-11-01/2020-12-01/")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
+
+  it("getCancellationStatistics ", async () => {
+    const response = await request
+      .get("/api/getCancellationStatistics/M/2020-11-01/2020-12-01/")
+      .set("Cookie", session);
+    expect(response.status).toBe(200);
+  });
 
 });
 

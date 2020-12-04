@@ -289,14 +289,7 @@ app.get(BASEURI + '/getAllCourses', (req, res) => {
             });
         });
 });
-// getBookCountByCourseID delete ( 
-app.get(BASEURI + '/getBookCountByCourseID/:period/:startDate/:endDate/:courseId', (req, res) => {
-    dao.getBookCountByCourseID(req.params.period, req.params.startDate, req.params.endDate, req.params.courseId)
-        .then((data) => {
-            res.json(data);
-        })
-    });
-      //@Rmeidanshahi  getBookingStatistics
+
 app.get(BASEURI + '/getBookingStatistics/:period/:startDate/:endDate', (req, res) => {
     dao.getBookingStatistics(req.params.period, req.params.startDate, req.params.endDate)
         .then((courses) => {

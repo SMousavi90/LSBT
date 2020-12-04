@@ -194,7 +194,7 @@ class BookingAnalytics extends React.Component {
             break;
         }
         case 'Attendance': {
-            this.getCancellation()
+            this.getAttendance()
             break;
         }
 
