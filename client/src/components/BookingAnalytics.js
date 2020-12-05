@@ -226,8 +226,8 @@ class BookingAnalytics extends React.Component {
   // };
 
   onPeriodChange = (ev) => {
-    let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
-    let endDate = moment(this.state.endDate).format("yyyy-MM-DD");
+    // let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
+    // let endDate = moment(this.state.endDate).format("yyyy-MM-DD");
     let period = "";
     if (ev === undefined) period = this.state.selectedPeriod;
     else {

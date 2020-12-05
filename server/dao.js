@@ -322,7 +322,7 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
 exports.getBookingHistory = function (id) {
   //X
   return new Promise((resolve, reject) => {
-    var currentDate = new Date(); // get current date
+    // var currentDate = new Date(); // get current date
     // var firstDay = new Date(
     //   currentDate.setDate(currentDate.getDate())
     // ).toISOString();
