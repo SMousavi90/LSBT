@@ -1,6 +1,5 @@
 import React from 'react';
 import { AuthContext } from '../auth/AuthContext'
-import API from '../API/API';
 
 class StudentCurrentCourses extends React.Component {
     constructor(props) {

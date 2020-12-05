@@ -6,7 +6,6 @@ const dao = require('./dao.js');
 const jwt = require('express-jwt'); //provide an authentication system based on a json web token
 const jsonwebtoken = require('jsonwebtoken'); //used to generate a json token
 const cookieParser = require("cookie-parser"); //parse Cookie header and populate req.cookies with an object keyed by the cookie names.
-const { check, validationResult } = require('express-validator'); //to validate passed parameters
 
 const PORT = 3001;
 const BASEURI = '/api';
@@ -16,12 +15,12 @@ const authErrorObj = { 'param': 'Server', 'msg': 'Authorization error' };
 
 const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR0Zm";
 
-// dao.setDb("db/PULSeBS_test.db");
+//dao.setDb("db/PULSeBS_test.db");
 dao.setDb("db/PULSeBS.db");
 
-app = new express();
+let app = new express();
 
-//app.use(morgan('combined')); //to print log as Standard Apache combined log output.
+app.use(morgan('dev')); //to print log as Standard Apache combined log output.
 app.use(express.json()); //method inbuilt in express to recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
 
@@ -159,7 +158,7 @@ app.get('/api/bookingHistory/:userId', (req, res) => {
     dao.getBookingHistory(req.params.userId)
         .then((rows) => {
             if (!rows) {
-                res.status(404).send();
+                res.json([]); //if its the last element, then return an empty array
             } else {
                 res.json(rows);
             }
@@ -216,7 +215,7 @@ app.get(BASEURI + '/getTeacherCourses', (req, res) => {
 });
 
 app.get(BASEURI + '/getCourseLectures/:courseId', (req, res) => {
-    dao.getCourseLectures(req.params.courseId)
+    dao.getCourseLectures(req.params.courseId, req.user.username)
         .then((lectures) => {
             res.json(lectures);
         })
@@ -239,9 +238,92 @@ app.get(BASEURI + '/getLectureStudents/:lectureId', (req, res) => {
         });
 });
 
+app.post(BASEURI + '/cancelLecture/:lectureId', (req, res) => {
+    dao.cancelLecture(req.params.lectureId)
+        .then(() => {
+            dao.getStudentlistOfLecture(req.params.lectureId)
+                .then((lecture) => {
+                    sendCancelationMailToStudent(lecture);
+                    res.status(200).end();
+                })
+                .catch((err) => {
+                    res.status(500).json({
+                        errors: [{ 'param': 'Server', 'msg': err }],
+                    });
+                });
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
 
 
-app.listen(PORT, () => {
+app.get(BASEURI + '/getTeacherStats/:period/:userId/:startDate/:endDate/:courseId', (req, res) => {
+    dao.getTeacherStats(req.params.period, req.params.userId, req.params.startDate, req.params.endDate, req.params.courseId)
+        .then((data) => {
+            res.json(data);
+        })
+    });
+
+app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
+    dao.makeLectureOnline(req.params.lectureId)
+    .then(() => {
+        res.status(200).end();})
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+//Story 11
+app.get(BASEURI + '/getAllCourses', (req, res) => {
+    dao.getAllCourse()
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.get(BASEURI + '/getBookingStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getBookingStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+app.get(BASEURI + '/getCancellationStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getCancellationStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+app.get(BASEURI + '/getAttendanceStatistics/:period/:startDate/:endDate', (req, res) => {
+    dao.getAttendanceStatistics(req.params.period, req.params.startDate, req.params.endDate)
+        .then((courses) => {
+            res.json(courses);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
 
     //send mail to teachers once a course deadline expires
@@ -313,6 +395,36 @@ function sendMailToStudent(book) {
     var mailOptions = {
         from: 'no-reply@pulsebs.com',
         to: book.Email,
+        subject: subject,
+        text: body
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
+}
+
+function sendCancelationMailToStudent(lecture) {
+    var transporter = nodemailer.createTransport({
+        host: "smtp.mailtrap.io",
+        port: 2525,
+        auth: {
+            user: "d0cee37bf32ad9",
+            pass: "8b786f1dc70862"
+        }
+    });
+
+    var subject = `Cancelation of the lecture ${lecture.CourseName} scheduled on ${lecture.Schedule}`;
+    var body = `Dear Student, the lecture of ${lecture.CourseName}, presented by 
+    Professor ${lecture.TeacherName}, that was scheduled on ${lecture.Schedule} is canceled.`;
+
+    var mailOptions = {
+        from: 'no-reply@pulsebs.com',
+        to: lecture.Emails_List,
         subject: subject,
         text: body
     };

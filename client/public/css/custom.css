@@ -230,3 +230,8 @@
     color: #fff;
     font-size: 14px;
 }
+
+.d-inline-flex > button {
+    width: max-content;
+    margin-left: 10px;
+}
