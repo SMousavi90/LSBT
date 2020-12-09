@@ -236,18 +236,20 @@ exports.getAvailableLectures = function (id, userId) {
       currentDate.setDate(currentDate.getDate() + 14)
     ).toISOString();
 
-    const sql = `Select BookingDeadline,U.UserId, C.ClassId, L.LectureId, Schedule,c.ClassNumber,U.Name || ' ' || U.LastName as TeacherName, 
-        cr.Name, cr.Name as CourseName
-        from Lecture L inner join Class C on l.ClassId=C.ClassId
-        Inner join User U on U.UserId=L.TeacherId
-        inner join Course cr on cr.CourseId = L.CourseId
-        inner join StudentCourse sc on sc.CourseId = L.CourseId
-        where 
-        LectureId not in(select LectureId from StudentFinalBooking where StudentId=? and BookDate is not null and Canceled is null)
-        and  l.CourseId=? and
-        l.Bookable=1 and l.Canceled=0
-        And BookingDeadline between ? and ?
-        And sc.StudentId = ?
+    const sql = `Select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
+                        U.Name || ' ' || U.LastName as TeacherName, 
+                        cr.Name, cr.Name as CourseName
+                from Lecture L 
+                Inner join User U on U.UserId=L.TeacherId
+                inner join Course cr on cr.CourseId = L.CourseId
+                inner join StudentCourse sc on sc.CourseId = L.CourseId
+                where 
+                      LectureId not in(select LectureId from StudentFinalBooking where 
+                      StudentId=? and BookDate is not null and Canceled is null)
+                      and  l.CourseId=? and
+                      l.Bookable=1 and l.Canceled=0
+                      And BookingDeadline between ? and ?
+                      And sc.StudentId = ?
         `;
 
     db.all(
@@ -278,15 +280,13 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
     db.all(sqlAlreadyBooked, [lectureId, userId], (err, rows) => {
       if (err) reject(err);
       else if (rows.length === 0) {
-        const sqlCapacity = `Select Capacity from Class where ClassId=(select ClassId from Lecture where LectureId=?)`;
+        const sqlCapacity = `select TotalSeats as Capacity from AvailableSeats where LectureId=?`;
         db.all(sqlCapacity, [lectureId], (err, rows) => {
           if (err) reject(err);
           else if (rows.length === 0) resolve(undefined);
           else {
             let capacity = rows[0].Capacity;
-            const sqlBookingCount = `Select Count(BookingId) BookedCount
-                from Booking 
-                where LectureId=? and BookDate is not null and Canceled is null`;
+            const sqlBookingCount = `select BookCount as BookedCount from AvailableSeats where LectureId=?`;
             db.all(sqlBookingCount, [lectureId], (err, rows) => {
               if (err) reject(err);
               else if (rows.length === 0) resolve(undefined);
@@ -331,18 +331,17 @@ exports.getBookingHistory = function (id) {
     // ).toISOString();
 
     const sql = `select  c.CourseId,b.Schedule,EndTime,BookingDeadline,NotificationDeadline,Bookable,l.LectureId,l.TeacherId,b.StudentId,
-        c.Name as CourseName,ST.Name || ' ' || ST.LastName as StudentName,ClassNumber,
-        T.Name || ' ' || T.LastName as TeacherName,
-        b.BookingId,BookDate,ReserveDate,l.Canceled as LectureCanceled
-        from StudentFinalBooking b inner join user u on u.userid=b.StudentId 
-        inner join lecture l on l.LectureId=b.LectureId
-        inner join  Course c on l.CourseId=c.CourseId
-        inner join  User  ST on St.UserId=b.StudentId
-        inner join Class Cl on Cl.ClassId=l.ClassId
-        inner join User T on T.UserId=L.TeacherId
-        where b.BookDate is not null and b.Canceled is null and b.Schedule >=date()
-        and L.Canceled = 0 
-        and b.StudentId = ?`;
+    c.Name as CourseName,ST.Name || ' ' || ST.LastName as StudentName,l.Room as ClassNumber,
+    T.Name || ' ' || T.LastName as TeacherName,
+    b.BookingId,BookDate,ReserveDate,l.Canceled as LectureCanceled
+    from StudentFinalBooking b inner join user u on u.userid=b.StudentId 
+    inner join lecture l on l.LectureId=b.LectureId
+    inner join  Course c on l.CourseId=c.CourseId
+    inner join  User  ST on St.UserId=b.StudentId
+    inner join User T on T.UserId=L.TeacherId
+    where b.BookDate is not null and b.Canceled is null and b.Schedule >=date()
+    and L.Canceled = 0 
+    and b.StudentId = ?`;
     db.all(sql, [id], (err, rows) => {
       if (err) {
 
@@ -430,12 +429,13 @@ exports.getTeacherCourses = function (id) {
 
 exports.getCourseLectures = function (id, teacherId) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline, C.ClassNumber, L.Bookable, L.Canceled, strftime("%Y-%m-%d", L.CancelDate) as CancelDate FROM Lecture L
-        INNER JOIN 'Class' C ON C.ClassId = L.ClassId
-        WHERE L.CourseId = ?
-        AND datetime(L.Schedule) > datetime('now','localtime')
-        AND l.TeacherId=?
-        ORDER BY L.Schedule`;
+    const sql = `SELECT L.LectureId, L.Schedule, L.BookingDeadline,l.Room as ClassNumber, L.Bookable, L.Canceled, 
+                    strftime("%Y-%m-%d", L.CancelDate) as CancelDate 
+                FROM Lecture L
+                WHERE L.CourseId = ?
+                AND datetime(L.Schedule) > datetime('now','localtime')
+                AND l.TeacherId=?
+                ORDER BY L.Schedule`;
     db.all(sql, [id, teacherId], (err, rows) => {
       if (err) {
         reject(err);
@@ -449,11 +449,11 @@ exports.getCourseLectures = function (id, teacherId) {
 
 exports.getLectureStudents = function (id) {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.BookDate FROM Booking B
-        INNER JOIN 'User' U ON U.UserId = B.StudentId
-        WHERE B.LectureId = ?
-        AND (Canceled IS NULL OR Canceled = 0)
-        ORDER BY Name`;
+    const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.BookDate FROM StudentFinalBooking B
+    INNER JOIN 'User' U ON U.UserId = B.StudentId
+    WHERE B.LectureId = ?
+    AND (b.Canceled IS NULL OR b.Canceled = 0)
+    ORDER BY Name`;
     db.all(sql, [id], (err, rows) => {
       if (err) {
         reject(err);
