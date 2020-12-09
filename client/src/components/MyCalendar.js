@@ -52,6 +52,7 @@ const MyCalendar = (props) => {
         })[0];
         var teacherName = res.teacherName;
         var classNumber = res.classNumber;
+        var bookable = res.bookable;
 
         info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
           "beforeend",
@@ -69,6 +70,15 @@ const MyCalendar = (props) => {
             "beforeend",
             `<div style="color:yellow"><b> Booking deadline expired!</b><\div>`
           );
+        }
+
+        if(bookable==0)
+        {
+          info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
+            "beforeend",
+            `<div style="color:red"><b> This lecture is now online!</b><\div>`
+          );
+
         }
 
         info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
