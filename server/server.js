@@ -17,9 +17,19 @@ const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR
 
 //dao.setDb("db/PULSeBS_test.db");
 //dao.setDb("db/PULSeBS_test_empty.db");
-dao.setDb("db/PULSeBS.db");
 
-console.log(process.env.npm_config_port);
+//You activate the test database by running
+// npm start --test=true
+if(process.env.npm_config_test === "true"){
+    console.log("Test database activated");
+    dao.setDb("db/PULSeBS_test.db");
+    
+}
+else {
+    
+    dao.setDb("db/PULSeBS.db");
+}
+
 
 let app = new express();
 
