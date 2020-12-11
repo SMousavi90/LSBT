@@ -933,10 +933,10 @@ exports.importCSVData = function (data, type) {
                 `;
                 dates.forEach(d => {
                     db.run(sql, [element.Code, 
-                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[0] : element.Time.split(':')[0] + "" + element.Time.split(':')[1]), 
+                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[0] : element.Time.split(':')[0] + ":" + element.Time.split(':')[1]), 
                       moment(d).add(-1, "d").format("yyyy-MM-DD"),
                       moment(d).format("yyyy-MM-DD") + " 00:00:00",
-                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[1] : element.Time.split(':')[2] + "" + element.Time.split(':')[3]), 
+                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[1] : element.Time.split(':')[2] + ":" + element.Time.split(':')[3]), 
                       1,
                       0,
                       userId,
