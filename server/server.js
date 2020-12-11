@@ -15,6 +15,9 @@ const authErrorObj = { 'param': 'Server', 'msg': 'Authorization error' };
 
 const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR0Zm";
 
+var multer = require('multer')
+var cors = require('cors');
+
 //dao.setDb("db/PULSeBS_test.db");
 dao.setDb("db/PULSeBS.db");
 
@@ -23,6 +26,9 @@ let app = new express();
 app.use(morgan('dev')); //to print log as Standard Apache combined log output.
 app.use(express.json()); //method inbuilt in express to recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
+app.use(cors());
+var fs = require('fs');
+const neatCsv = require('neat-csv');
 
 const expireTime = 3600 * 24 * 7; //7 days
 
@@ -136,7 +142,7 @@ app.get('/api/getAvailableLectures/:courseId', (req, res) => {
 app.post('/api/bookLecture', (req, res) => {
     dao.bookLecture(req.body.lectureId, req.body.userId, req.body.scheduleDate)
         .then((result) => {
-            
+
             dao.getBookingDetails(req.body.lectureId, req.body.userId)
                 .then((book) => {
                     sendMailToStudent(book);
@@ -146,8 +152,8 @@ app.post('/api/bookLecture', (req, res) => {
                     errors: [{ 'param': 'Server', 'msg': err }]
                 }));
 
-          
-            
+
+
         })
         .catch((err) => res.status(500).json({
             errors: [{ 'param': 'Server', 'msg': err }]
@@ -265,12 +271,13 @@ app.get(BASEURI + '/getTeacherStats/:period/:userId/:startDate/:endDate/:courseI
         .then((data) => {
             res.json(data);
         })
-    });
+});
 
 app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
     dao.makeLectureOnline(req.params.lectureId)
-    .then(() => {
-        res.status(200).end();})
+        .then(() => {
+            res.status(200).end();
+        })
         .catch((err) => {
             res.status(500).json({
                 errors: [{ 'param': 'Server', 'msg': err }],
@@ -323,6 +330,49 @@ app.get(BASEURI + '/getAttendanceStatistics/:period/:startDate/:endDate', (req, 
             });
         });
 });
+
+app.post(BASEURI + '/uploadDataCSV', (req, res) => {
+    var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'upload')
+        },
+        filename: function (req, file, cb) {
+            cb(null, Date.now() + '-' + file.originalname)
+        }
+    })
+    var upload = multer({ storage: storage }).any();
+
+    upload(req, res, function (err) {
+        if (err) {
+            console.log(err);
+            return res.end("Error uploading file.");
+        } else {
+            req.files.forEach(function (f) {
+                fs.rename(f.path,
+                "upload/" + req.body.importType + ".csv", function(err) {
+                    if ( err ) console.log('ERROR: ' + err);
+                });
+
+                f.filename = req.body.importType + ".csv";
+                f.path = "upload/" + f.filename;
+            });
+            makeCSVArray(req.files[0], req.body.importType);
+            res.end("File has been uploaded");
+        }
+    });
+});
+
+makeCSVArray = (file, type) => {
+    fs.readFile(file.path, async (err, data) => {
+        if (err) {
+          console.error(err)
+          return
+        }
+        let csvData = await neatCsv(data);
+        dao.importCSVData(csvData, type);
+      })
+}
+
 module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
 

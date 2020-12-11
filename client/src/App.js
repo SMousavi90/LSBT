@@ -8,6 +8,7 @@ import { AuthContext } from './auth/AuthContext';
 import NotificationTable from './components/NotificationTable.js';
 import AllBooking from './components/AllBooking';
 import BookingAnalytics from './components/BookingAnalytics';
+import OfficerDashboard from './components/OfficerDashboard';
 
 import {
   BrowserRouter as Router,
@@ -148,7 +149,13 @@ class App extends React.Component {
                     <BookingAnalytics Username={this.state.name}/>
                     </Row>
                   </Container>
-                  } 
+                  } else if (this.state.role === "3") { // Support officer
+                    return <Container className="custom-container col-md-12">
+                      <Row>
+                        <OfficerDashboard name={this.state.name}></OfficerDashboard>
+                      </Row>
+                    </Container>
+                  }
                   else {
                     return <Container className="custom-container">
                       <Row>

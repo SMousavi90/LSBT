@@ -1,5 +1,7 @@
 import StudentCourse from "../Entities/StudentCourse";
 import ProfessorCourse from "../Entities/ProfessorCourse";
+import axios from "axios"
+
 const APIURL = "api";
 
 async function getNotification(userId) {
@@ -449,4 +451,12 @@ async function getAttendanceStatistics(period, startDate, endDate) {
   }
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics,};
+async function uploadDataCSV(data) {
+    axios.post(APIURL + "/uploadDataCSV/", data, {
+      })
+      .then(res => { // then print response status
+        console.log(res.statusText);
+      })
+}
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics, uploadDataCSV};

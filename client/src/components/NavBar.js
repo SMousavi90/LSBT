@@ -15,11 +15,13 @@ function NavBar(props) {
       <Nav className="mr-auto">
         {props.user !== undefined && props.user !== null ?
           (props.role === "1" ? 
-
           <><Link to="/" className="nav-link">My Reservations</Link><Link to="/BookingHistory" className="nav-link">Booking</Link></>  :
           props.role === "4" ? 
           <>
           <Link to="/analytics" className="nav-link">Analytics</Link></> : 
+          props.role === "3" ? 
+          <>
+          <Link to="/" className="nav-link">Officer Dashboard</Link></> : 
           <>
             <Link to="/" className="nav-link">Dashboard</Link>
             <Link to="/notification" className="nav-link">

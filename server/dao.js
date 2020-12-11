@@ -6,6 +6,7 @@ const BookingHistory = require("./Entities/BookingHistory");
 
 const sqlite = require("sqlite3");
 const bcrypt = require("bcrypt");
+const moment = require('moment');
 
 let db;
 
@@ -799,3 +800,163 @@ exports.getAttendanceStatistics= function (period, startDate, endDate) {
       });
   });
 }
+
+const getDateOfDay = (start, end, day) => {
+  var result = [];
+  var current = start.clone();
+
+  while (current.day(7 + day).isBefore(end)) {
+    result.push(current.clone());
+  }
+  return result;
+}
+
+exports.importCSVData = function (data, type) {
+  return new Promise((resolve, reject) => {
+    if (type === "Students") {
+      data.forEach(element => {
+        // let birthDate = moment(element.Birthday).format("yyyy-MM-DD");
+        let sql = `insert into user 
+        (UserId,Name,LastName,Username,Password,Email,RolId,City,SSN,Birthday)
+        values (?,?,?,?,
+        '$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,1,?,?,?)
+       `;
+        db.run(sql, [element.Id, element.Name, element.Surname, element.SSN, 
+          element.OfficialEmail, element.City, element.SSN, element.Birthday], (rows,err) => {
+          if (err) {
+            reject(err);
+          } else resolve(true);
+        });
+      });
+    } else if (type === "Professors") {
+      data.forEach(element => {
+      let sql = `insert into user (Name,LastName,Username,Password,Email,RolId,SSN,Number)
+        values (?,?,?,'$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,2,?,?)
+       `;
+        db.run(sql, [element.GivenName, element.Surname, element.SSN, element.OfficialEmail, element.SSN, element.Number], (rows,err) => {
+          if (err) {
+            reject(err);
+          } else resolve(true);
+        });
+      });
+    } else if (type === "Courses") {
+      data.forEach(element => {
+      let sql = `insert into Course (CourseId,name,Description,Year,Semester,Teacher)
+        values (?,?,?,?,?,?)
+       `;
+        db.run(sql, [element.Code, element.Course, element.Course, element.Year, element.Semester, element.Teacher], (rows,err) => {
+          if (err) {
+            reject(err);
+          } else resolve(true);
+        });
+      });
+    } else if (type === "Enrollment") {
+      data.forEach(element => {
+      let sql = `insert into StudentCourse(CourseId,StudentId)
+        values (?,?)
+       `;
+        db.run(sql, [element.Code, element.Student], (rows,err) => {
+          if (err) {
+            reject(err);
+          } else resolve(true);
+        });
+      });
+    } else if (type === "Schedule") {
+      data.forEach(element => {
+        const getUserIdSql = `select UserId from user where Number=(select Teacher from Course where CourseId=?)`;
+        db.all(getUserIdSql, [element.Code], (err, rows) => {
+          if (err) reject(err);
+          else if (rows.length === 0) resolve(undefined);
+          else {
+
+            let userId = rows[0].UserId;
+
+            const getCourseYearSemester = `select Year, Semester from Course where CourseId=?`;
+            db.all(getCourseYearSemester, [element.Code], (err, rows) => {
+              if (err) reject(err);
+              else if (rows.length === 0) resolve(undefined);
+              else {
+                let year = rows[0].Year;
+                let semester = rows[0].Semester;
+                let dates = [];
+                // todo: check if the current date is the first semester or the second semester
+                if (semester === '1') { // find dates between October 1st to Jan 15th
+                  let startDate = moment(`${moment().format('YYYY')}-10-01`);
+                  let endDate = moment(`${moment().add(1, 'Y').format('YYYY')}-01-15`);
+                  switch (element.Day) {
+                    case "Mon": 
+                      dates = getDateOfDay(startDate, endDate, 1);
+                      break;
+                    case "Tue":
+                      dates = getDateOfDay(startDate, endDate, 2);
+                      break;
+                    case "Wed":
+                      dates = getDateOfDay(startDate, endDate, 3);
+                      break;
+                    case "Thu":
+                      dates = getDateOfDay(startDate, endDate, 4);
+                      break;
+                    case "Fri":
+                      dates = getDateOfDay(startDate, endDate, 5);
+                      break;
+                    default:
+                      break;
+                  }
+                } else { // it is second semester lecture and the date is between March 1st to Jun 15th
+                  let startDate = moment(`${moment().add(1, 'Y').format('YYYY')}-03-01`);
+                  let endDate = moment(`${moment().format('YYYY')}-06-15`);
+                  switch (element.Day) {
+                    case "Mon": 
+                      dates = getDateOfDay(startDate, endDate, 1);
+                      break;
+                    case "Tue":
+                      dates = getDateOfDay(startDate, endDate, 2);
+                      break;
+                    case "Wed":
+                      dates = getDateOfDay(startDate, endDate, 3);
+                      break;
+                    case "Thu":
+                      dates = getDateOfDay(startDate, endDate, 4);
+                      break;
+                    case "Fri":
+                      dates = getDateOfDay(startDate, endDate, 5);
+                      break;
+                    default:
+                      break;
+                  }
+                }
+
+                let sql = `insert into Lecture (CourseId, Schedule,
+                  BookingDeadline, NotificationDeadline, EndTime,
+                  Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
+                `;
+                dates.forEach(d => {
+                    db.run(sql, [element.Code, 
+                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[0] : element.Time.split(':')[0] + "" + element.Time.split(':')[1]), 
+                      moment(d).add(-1, "d").format("yyyy-MM-DD"),
+                      moment(d).format("yyyy-MM-DD") + " 00:00:00",
+                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[1] : element.Time.split(':')[2] + "" + element.Time.split(':')[3]), 
+                      1,
+                      0,
+                      userId,
+                      0,
+                      element.Room,
+                      element.Seats,
+                      element.Day,
+                      element.Time
+                    ], (rows,err) => {
+                      if (err) {
+                        reject(err);
+                      } else resolve(true);
+                    });
+                });
+              }
+            })
+          }
+              
+            });
+          });
+        
+    }
+  });
+};
