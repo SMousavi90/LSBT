@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "jest --coverage",
-    "start": "node server.js"
+    "start": "node server.js",
+    "cypress:open": "cypress open"
   },
   "author": "",
   "license": "ISC",

@@ -19,7 +19,20 @@ var multer = require('multer')
 var cors = require('cors');
 
 //dao.setDb("db/PULSeBS_test.db");
-dao.setDb("db/PULSeBS.db");
+//dao.setDb("db/PULSeBS_test_empty.db");
+
+//You activate the test database by running
+// npm start --test=true
+if(process.env.npm_config_test === "true"){
+    console.log("Test database activated");
+    dao.setDb("db/PULSeBS_test.db");
+    
+}
+else {
+    
+    dao.setDb("db/PULSeBS.db");
+}
+
 
 let app = new express();
 
@@ -59,6 +72,8 @@ app.post(BASEURI + '/login', (req, res) => {
 app.post(BASEURI + '/logout', (req, res) => {
     res.clearCookie('token').end();
 });
+
+
 
 
 //all next APIs require authentication (express-jwt)

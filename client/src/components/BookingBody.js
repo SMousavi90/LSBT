@@ -101,7 +101,7 @@ class BookingBody extends React.Component {
         })
     }
 
-    createLectureRows = (r) => {
+        createLectureRows = (r) => {
         
         return (
             <tr>
