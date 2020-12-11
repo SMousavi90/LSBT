@@ -8,7 +8,15 @@ const studentLogin = () => {
 
 
 describe('As a student I want to book a seat for one of my lectures so that I can attend it', () =>{
+
+    before(
+        () => {
+            studentLogin();
+        }
+    )
+
+
     it('Student login', () => {
-        studentLogin();
+        cy.
     })
 })

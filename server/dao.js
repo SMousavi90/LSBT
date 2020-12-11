@@ -15,6 +15,7 @@ exports.setDb = function (dbname) {
   });
 };
 
+
 const createStudentCourse = function (row) {
   return new StudentCourse(
     row.CourseId,

@@ -16,7 +16,10 @@ const authErrorObj = { 'param': 'Server', 'msg': 'Authorization error' };
 const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR0Zm";
 
 //dao.setDb("db/PULSeBS_test.db");
+//dao.setDb("db/PULSeBS_test_empty.db");
 dao.setDb("db/PULSeBS.db");
+
+console.log(process.env.npm_config_port);
 
 let app = new express();
 
@@ -53,6 +56,8 @@ app.post(BASEURI + '/login', (req, res) => {
 app.post(BASEURI + '/logout', (req, res) => {
     res.clearCookie('token').end();
 });
+
+
 
 
 //all next APIs require authentication (express-jwt)
