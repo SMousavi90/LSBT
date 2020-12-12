@@ -932,11 +932,48 @@ exports.importCSVData = function (data, type) {
                   Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
                 `;
                 dates.forEach(d => {
+                  let startTime = "";
+                  let endTime = "";
+                  if (element.Time.includes("-")) {
+                    let hour = element.Time.split('-')[0].split(':')[0];
+                    let minute = element.Time.split('-')[0].split(':')[1];
+                    if (hour < 10 && hour != "00")
+                      hour = '0' + hour;
+                    if (minute < 10 && minute != "00") 
+                      minute = '0' + minute;
+
+                    let ehour = element.Time.split('-')[1].split(':')[0];
+                    let eminute = element.Time.split('-')[1].split(':')[1];
+                    if (ehour < 10 && ehour != "00")
+                      ehour = '0' + ehour;
+                    if (eminute < 10 && eminute != "00") 
+                      eminute = '0' + eminute;
+                    
+                    startTime = hour + ":" + minute;
+                    endTime = ehour + ":" + eminute;
+                  } else {
+                    let hour = element.Time.split(':')[0];
+                    let minute = element.Time.split(':')[1];
+                    if (hour < 10 && hour != "00")
+                      hour = '0' + hour;
+                    if (minute < 10 && minute != "00") 
+                      minute = '0' + minute;
+                    
+                    let ehour = element.Time.split(':')[2];
+                    let eminute = element.Time.split(':')[3];
+                    if (ehour < 10 && ehour != "00")
+                      ehour = '0' + ehour;
+                    if (eminute < 10 && eminute != "00") 
+                      eminute = '0' + eminute;
+
+                    startTime = hour + ":" + minute;
+                    endTime = ehour + ":" + eminute;
+                  }
                     db.run(sql, [element.Code, 
-                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[0] : element.Time.split(':')[0] + ":" + element.Time.split(':')[1]), 
-                      moment(d).add(-1, "d").format("yyyy-MM-DD"),
-                      moment(d).format("yyyy-MM-DD") + " 00:00:00",
-                      moment(d).format("yyyy-MM-DD") + " " + (element.Time.includes('-') ? element.Time.split('-')[1] : element.Time.split(':')[2] + ":" + element.Time.split(':')[3]), 
+                      moment(d).format("yyyy-MM-DD") + " " + startTime, // Schedule
+                      moment(d).add(-1, "d").format("yyyy-MM-DD") + startTime, // BookingDeadline
+                      moment(d).format("yyyy-MM-DD"), // NotificationDeadline
+                      moment(d).format("yyyy-MM-DD") + " " + endTime, // EndTime
                       1,
                       0,
                       userId,
