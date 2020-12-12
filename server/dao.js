@@ -1051,8 +1051,6 @@ exports.addCourse = function (data) {
   });
 };
 
-
-
 exports.addLecture = function () {
   return new Promise((resolve, reject) => {
     if(process.env.npm_config_test !== "true"){
@@ -1072,3 +1070,41 @@ exports.addLecture = function () {
     });
   });
 };
+
+exports.getStudents = function(userId, name, lastName){
+  return new Promise((resolve, reject) => {
+    const sql = 'SELECT UserId, Name, LastName, Email FROM User where RolId = 1 and UserId LIKE ? AND Name LIKE ? AND LastName LIKE ? ORDER BY LastName, Name';
+
+    db.all(sql, [userId + '%', name + '%', lastName + '%'], (err, rows) => {
+      if (err)
+        reject(err);
+      else
+        resolve(rows);
+    });
+  });
+}
+
+exports.getContactTracingReport = function(userId){
+  return new Promise((resolve, reject) => {
+    const sql = `select Contlist.StudentId, ContList.StudentName, ContList.Email, ContList.TeacherName from  
+    (SELECT LectureId, Schedule
+    from StudentFinalBooking 
+    where StudentId=?
+    and Presence=1 and Schedule between date(DATETIME('now') , '-14 day') and DATETIME('now')) PositiveList
+    left join 
+    (select b.LectureId, StudentId,St.Name || ' ' || st.LastName as StudentName, st.Email, t.Name || ' ' || t.LastName as TeacherName
+    from StudentFinalBooking  B inner join user St 
+    on b.StudentId=St.UserId
+    inner join User T on t.UserId=b.TeacherId
+    where Presence=1 and StudentId<>?
+    )Contlist
+    on PositiveList.LectureId=Contlist.LectureId`;
+
+    db.all(sql, [userId, userId], (err, rows) => {
+      if (err)
+        reject(err);
+      else
+        resolve(rows);
+    });
+  });
+}
