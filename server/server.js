@@ -155,15 +155,22 @@ app.get('/api/getAvailableLectures/:courseId', (req, res) => {
 app.post('/api/bookLecture', (req, res) => {
     dao.bookLecture(req.body.lectureId, req.body.userId, req.body.scheduleDate)
         .then((result) => {
-
-            dao.getBookingDetails(req.body.lectureId, req.body.userId)
+            if(result==true)
+            {
+                dao.getBookingDetails(req.body.lectureId, req.body.userId)
                 .then((book) => {
                     sendMailToStudent(book);
-                    res.status(200).end();
+                    res.json({reserved:true});
+                    // res.status(200).end();
                 })
                 .catch((err) => res.status(500).json({
                     errors: [{ 'param': 'Server', 'msg': err }]
                 }));
+            }else if (result==false)
+            {
+                res.json({reserved:false});
+                // res.status(200).end();
+            }
 
 
 

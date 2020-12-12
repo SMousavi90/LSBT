@@ -146,11 +146,14 @@ async function bookLecture(lectureId, userId, scheduleDate) {
     })
       .then((response) => {
         if (response.ok) {
-          resolve(true);
-        } else {
-          let err = { status: response.status, errObj: response };
-          throw err;
-        }
+          response.json().then((json)=>{
+            resolve(json.reserved);
+            });
+          } else {
+            let err = { status: response.status, errObj: response };
+            throw err;
+          }
+        
       })
       .catch((err) => {
         reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] });
