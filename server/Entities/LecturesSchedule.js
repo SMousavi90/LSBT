@@ -1,5 +1,6 @@
 class LectureSchedule {    
-    constructor(lectureId, schedule, classNumber, teacherName, courseName, userId, classId, bookingId, bookCanceled) {
+    constructor( lectureId,schedule,classNumber,teacherName,courseName,userId,classId,bookButton,freeSeats, reserved){
+
         if (lectureId) {
             this.lectureId = lectureId;
         }
@@ -10,8 +11,9 @@ class LectureSchedule {
         this.courseName = courseName;
         this.userId = userId;
         this.classId = classId;
-        this.bookingId = bookingId;
-        this.bookCanceled = bookCanceled;
+        this.bookButton = bookButton;
+        this.freeSeats = freeSeats;
+        this.reserved = reserved;
     }
 }
 

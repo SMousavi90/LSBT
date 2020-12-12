@@ -146,11 +146,14 @@ async function bookLecture(lectureId, userId, scheduleDate) {
     })
       .then((response) => {
         if (response.ok) {
-          resolve(true);
-        } else {
-          let err = { status: response.status, errObj: response };
-          throw err;
-        }
+          response.json().then((json)=>{
+            resolve(json.reserved);
+            });
+          } else {
+            let err = { status: response.status, errObj: response };
+            throw err;
+          }
+        
       })
       .catch((err) => {
         reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] });
@@ -203,6 +206,38 @@ async function cancelReservation(id) {
       }); // connection errors
   });
 }
+
+async function clearDatabase() {
+  return new Promise((resolve, reject) => {
+    fetch(APIURL + "/cleardatabase/", {
+      method: "PUT",
+    })
+      .then((response) => {
+        if (response.ok) {
+          resolve(null);
+        } else {
+          // analyze the cause of error
+          response
+            .json()
+            .then((obj) => {
+              reject(obj);
+            }) // error msg in the response body
+            .catch((err) => {
+              reject({
+                errors: [
+                  { param: "Application", msg: "Cannot parse server response" },
+                ],
+              });
+            }); // something else
+        }
+      })
+      .catch((err) => {
+        reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] });
+      }); // connection errors
+  });
+}
+
+
 
 async function getStudentsPerLecturePerProfessor(userId) {
   let url = "/getStudentsPerLecturePerProfessor";
@@ -459,4 +494,28 @@ async function uploadDataCSV(data) {
       })
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics, uploadDataCSV};
+
+async function addCourse(data){
+  return new Promise((resolve, reject) => {
+    fetch(APIURL + "/addcourse/", {
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ data: data}),
+    }).then( (response) => {
+        if(response.ok) {
+            resolve(null);
+        } else {
+            // analyze the cause of error
+            response.json()
+            .then( (obj) => {reject(obj);} ) // error msg in the response body
+            .catch( (err) => {reject({ errors: [{ param: "Application", msg: "Cannot parse server response" }] }) }); // something else
+        }
+    }).catch( (err) => {reject({ errors: [{ param: "Server", msg: "Cannot communicate" }] }) }); // connection errors
+});
+}
+
+
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics, uploadDataCSV, clearDatabase, addCourse};

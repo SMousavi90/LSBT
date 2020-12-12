@@ -1,8 +1,18 @@
+import API from '../../../src/API/API';
+
+
+
 const studentLogin = () => {
     cy.visit('http://localhost:3000/');
     cy.url().should('contain' , 'http://localhost:3000/login');
     cy.contains('Username').click().type('student1');
+    cy.contains('Password').click().type('pass').type('{enter}');
+    
+    cy.contains('John Smith');
 }
+
+
+const courseData = [1,"data science","We study a lot of data science","2020","Scott"];
 
 
 
@@ -10,13 +20,36 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
 
     before(
         () => {
-            studentLogin();
+            
+
+
+
+            studentLogin().as('Login');
+            cy.wait('@Login',{ timeout: 10000});
+            API.clearDatabase().then(
+                (resp) => {
+                    expect(resp).to.be.null;
+                }
+            ).catch((errorObj) => {
+                console.log(errorObj);
+            });
+
+            API.addCourse(courseData).then(
+                () => {
+                    console.log("Course added");
+                }
+            ).catch((errorObj) => {
+                console.log(errorObj);
+            });
+            
+            //addLecture()
+
         }
     )
 
 
     it('Student login', () => {
-        studentLogin();
+        
     })
 })
 

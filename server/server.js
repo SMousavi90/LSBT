@@ -25,7 +25,7 @@ var cors = require('cors');
 // npm start --test=true
 if(process.env.npm_config_test === "true"){
     console.log("Test database activated");
-    dao.setDb("db/PULSeBS_test.db");
+    dao.setDb("db/PULSeBS_test_clear.db");
     
 }
 else {
@@ -73,6 +73,26 @@ app.post(BASEURI + '/logout', (req, res) => {
     res.clearCookie('token').end();
 });
 
+
+app.post(BASEURI + '/addcourse/', (req, res) => {
+    dao.addCourse(req.body.data)
+        .then(() => {
+            res.status(200);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.put('/cleardatabase/', (req, res) => {
+    dao.clearDatabase()
+        .then((result) => res.status(200).end())
+        .catch((err) => res.status(500).json({
+            errors: [{ 'param': 'Server', 'msg': err }],
+        }));
+});
 
 
 
@@ -157,15 +177,22 @@ app.get('/api/getAvailableLectures/:courseId', (req, res) => {
 app.post('/api/bookLecture', (req, res) => {
     dao.bookLecture(req.body.lectureId, req.body.userId, req.body.scheduleDate)
         .then((result) => {
-
-            dao.getBookingDetails(req.body.lectureId, req.body.userId)
+            if(result==true)
+            {
+                dao.getBookingDetails(req.body.lectureId, req.body.userId)
                 .then((book) => {
                     sendMailToStudent(book);
-                    res.status(200).end();
+                    res.json({reserved:true});
+                    // res.status(200).end();
                 })
                 .catch((err) => res.status(500).json({
                     errors: [{ 'param': 'Server', 'msg': err }]
                 }));
+            }else if (result==false)
+            {
+                res.json({reserved:false});
+                // res.status(200).end();
+            }
 
 
 
@@ -199,6 +226,11 @@ app.put('/api/cancelReservation/:bookingId', (req, res) => {
             errors: [{ 'param': 'Server', 'msg': err }],
         }));
 });
+
+
+
+
+
 
 app.get(BASEURI + '/teacher/:userId/notification', (req, res) => {
     dao.checkNotification(req.params.userId)
@@ -502,3 +534,5 @@ function sendCancelationMailToStudent(lecture) {
         }
     });
 }
+
+

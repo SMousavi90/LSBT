@@ -36,8 +36,9 @@ const createAvailableLectures = function (row) {
     row.CourseName,
     row.UserId,
     row.ClassId,
-    row.BookingId,
-    row.BookCanceled
+    row.BookButton,
+    row.FreeSeats,
+    row.Reserved
   );
 };
 
@@ -238,25 +239,30 @@ exports.getAvailableLectures = function (id, userId) {
       currentDate.setDate(currentDate.getDate() + 14)
     ).toISOString();
 
-    const sql = `Select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
-                        U.Name || ' ' || U.LastName as TeacherName, 
-                        cr.Name, cr.Name as CourseName
-                from Lecture L 
-                Inner join User U on U.UserId=L.TeacherId
-                inner join Course cr on cr.CourseId = L.CourseId
-                inner join StudentCourse sc on sc.CourseId = L.CourseId
-                where 
-                      LectureId not in(select LectureId from StudentFinalBooking where 
-                      StudentId=? and BookDate is not null and Canceled is null)
-                      and  l.CourseId=? and
-                      l.Bookable=1 and l.Canceled=0
-                      And BookingDeadline between ? and ?
-                      And sc.StudentId = ?
+    const sql = `select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
+    U.Name || ' ' || U.LastName as TeacherName, 
+    cr.Name, cr.Name as CourseName,case ava.FreeSeats when 0 then 0 else 1 end as BookButton,ava.FreeSeats,case when Reservetbl.Reserved=1 then 1 else 0 end as Reserved
+    from Lecture L 
+    Inner join User U on U.UserId=L.TeacherId
+    inner join Course cr on cr.CourseId = L.CourseId
+    inner join StudentCourse sc on sc.CourseId = L.CourseId
+    left join AvailableSeats ava on ava.LectureId=l.LectureId
+    left join (select LectureId,StudentId,Reserved from StudentFinalBooking where BookDate is null and Canceled is null and Reserved=1)Reservetbl
+    on Reservetbl.LectureId=l.LectureId 
+    and Reservetbl.StudentId=?
+    where 
+      l.LectureId not in(select LectureId from StudentFinalBooking where 
+    StudentId=?  and 
+    BookDate is not null and Canceled is null)
+    and  l.CourseId=? 
+    and   l.Bookable=1 and l.Canceled=0
+      And BookingDeadline between ? and ?
+    And sc.StudentId = ?
         `;
 
     db.all(
       sql,
-      [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
+      [userId, userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
       (err, rows) => {
         if (err) {
           reject(err);
@@ -305,7 +311,17 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
                     }
                   );
                 } else {
-                  resolve(false); // the class is full, the booking is not possible
+                  // the class is full, the booking is not possible
+                  const sqlResBook = `insert into Booking(StudentId,LectureId,Reserved,ReserveDate)
+                  values(?,?,1,datetime('now','localtime'))`                  
+                  db.run(
+                    sqlResBook,
+                    [userId, lectureId],
+                    (err, rows) => {
+                      if (err) reject(err);
+                      else resolve(false);
+                    }
+                  );
                 }
               }
             });
@@ -373,6 +389,10 @@ exports.cancelReservation = function (id) {
     });
   });
 };
+
+
+
+
 
 /**
  * Get all lectures
@@ -996,5 +1016,75 @@ exports.importCSVData = function (data, type) {
           });
         
     }
+  });
+};
+
+
+
+
+
+
+
+
+
+
+
+exports.clearDatabase = function () {
+  return new Promise((resolve, reject) => {
+    if(process.env.npm_config_test !== "true"){
+      console.log("Tried clearing production database");
+      reject("ClearProductionDB");
+    }
+
+    const sql =
+      "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
+
+    db.run(sql, (err) => {
+      if (err) {
+        console.log("DB failed clearing database");
+        reject(err);
+      } else resolve(null);
+    });
+  });
+};
+
+exports.addCourse = function (data) {
+  return new Promise((resolve, reject) => {
+    if(process.env.npm_config_test !== "true"){
+      console.log("Tried clearing production database");
+      reject("ClearProductionDB");
+    }
+
+    let sql = `insert into Course (CourseId,Name,Description,Year,Semester,Teacher) values (?, ?, ?, ?, ?, ?)                  
+    `;
+
+    db.run(sql, [...data], (err) => {
+      if (err) {
+        console.log("DB failed adding course");
+        reject(err);
+      } else resolve(null);
+    });
+  });
+};
+
+
+
+exports.addLecture = function () {
+  return new Promise((resolve, reject) => {
+    if(process.env.npm_config_test !== "true"){
+      console.log("Tried clearing production database");
+      reject("ClearProductionDB");
+    }
+
+    let sql = `insert into Lecture (CourseId, Schedule,
+      BookingDeadline, NotificationDeadline, EndTime,
+      Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
+    `;
+
+    db.run(sql, [], (err) => {
+      if (err) {
+        reject(err);
+      } else resolve(null);
+    });
   });
 };
