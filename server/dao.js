@@ -36,8 +36,9 @@ const createAvailableLectures = function (row) {
     row.CourseName,
     row.UserId,
     row.ClassId,
-    row.BookingId,
-    row.BookCanceled
+    row.BookButton,
+    row.FreeSeats,
+    row.Reserved
   );
 };
 
@@ -238,25 +239,30 @@ exports.getAvailableLectures = function (id, userId) {
       currentDate.setDate(currentDate.getDate() + 14)
     ).toISOString();
 
-    const sql = `Select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
-                        U.Name || ' ' || U.LastName as TeacherName, 
-                        cr.Name, cr.Name as CourseName
-                from Lecture L 
-                Inner join User U on U.UserId=L.TeacherId
-                inner join Course cr on cr.CourseId = L.CourseId
-                inner join StudentCourse sc on sc.CourseId = L.CourseId
-                where 
-                      LectureId not in(select LectureId from StudentFinalBooking where 
-                      StudentId=? and BookDate is not null and Canceled is null)
-                      and  l.CourseId=? and
-                      l.Bookable=1 and l.Canceled=0
-                      And BookingDeadline between ? and ?
-                      And sc.StudentId = ?
+    const sql = `select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
+    U.Name || ' ' || U.LastName as TeacherName, 
+    cr.Name, cr.Name as CourseName,case ava.FreeSeats when 0 then 0 else 1 end as BookButton,ava.FreeSeats,case when Reservetbl.Reserved=1 then 1 else 0 end as Reserved
+    from Lecture L 
+    Inner join User U on U.UserId=L.TeacherId
+    inner join Course cr on cr.CourseId = L.CourseId
+    inner join StudentCourse sc on sc.CourseId = L.CourseId
+    left join AvailableSeats ava on ava.LectureId=l.LectureId
+    left join (select LectureId,StudentId,Reserved from StudentFinalBooking where BookDate is null and Canceled is null and Reserved=1)Reservetbl
+    on Reservetbl.LectureId=l.LectureId 
+    and Reservetbl.StudentId=?
+    where 
+      l.LectureId not in(select LectureId from StudentFinalBooking where 
+    StudentId=?  and 
+    BookDate is not null and Canceled is null)
+    and  l.CourseId=? 
+    and   l.Bookable=1 and l.Canceled=0
+      And BookingDeadline between ? and ?
+    And sc.StudentId = ?
         `;
 
     db.all(
       sql,
-      [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
+      [userId, userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
       (err, rows) => {
         if (err) {
           reject(err);
@@ -305,7 +311,17 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
                     }
                   );
                 } else {
-                  resolve(false); // the class is full, the booking is not possible
+                  // the class is full, the booking is not possible
+                  const sqlResBook = `insert into Booking(StudentId,LectureId,Reserved,ReserveDate)
+                  values(?,?,1,datetime('now','localtime'))`                  
+                  db.run(
+                    sqlResBook,
+                    [userId, lectureId],
+                    (err, rows) => {
+                      if (err) reject(err);
+                      else resolve(false);
+                    }
+                  );
                 }
               }
             });
