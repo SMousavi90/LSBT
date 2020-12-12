@@ -7,6 +7,7 @@ import "react-confirm-alert/src/react-confirm-alert.css";
 import MyCalendar from "./MyCalendar.js";
 import moment from "moment";
 
+
 class BookingHistory extends React.Component {
   constructor(props) {
     super(props);
@@ -106,7 +107,12 @@ class BookingHistory extends React.Component {
   };
   render() {
     console.log(this.state.resHistory)
-    var color = ["#ff6600", "#00cc66", "#0099cc","#006666", "#0066cc"]
+
+  
+    var color = ["#b71c1c", "#4A148C", "#1A237E","#01579B", "#004D40", "#33691E", "#F57F17", "#E65100", "#37474F"];
+    var courseIds = this.state.resHistory.map((res)=>(res.courseId)); 
+    courseIds = [... new Set(courseIds)]
+    var courseColors = courseIds.map((id, index)=>({courseId:id, color:color[index] }))
     
     return (
       <AuthContext.Consumer>
@@ -118,7 +124,7 @@ class BookingHistory extends React.Component {
               start: moment(res.schedule).toDate(),
               end: moment(res.endTime).toDate(),
               allDay: false,
-              color: color[res.courseId-1]
+              color: Object(courseColors.filter((col)=> {return col.courseId == res.courseId})[0])['color']
             }))}
             cancelBooking = {this.cancelReservationConfirm}
             resHistory = {this.state.resHistory}

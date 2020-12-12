@@ -54,13 +54,17 @@ const MyCalendar = (props) => {
         var classNumber = res.classNumber;
         var bookable = res.bookable;
 
+        
+        info.el.firstElementChild.firstElementChild.firstElementChild.nextElementSibling.firstElementChild.setAttribute("style","font-size:20px" )
+        info.el.firstElementChild.firstElementChild.firstElementChild.setAttribute("style","font-size:15px" )
+        
         info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
           "beforeend",
-          `<div> ${classNumber} <\div>`
+          `<div style="font-size:20px">${classNumber}<\div>`
         );
         info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
           "beforeend",
-          `<div> ${teacherName} <\div>`
+          `<div style="font-size:20px">${teacherName} <\div>`
         );
         
         
@@ -68,7 +72,7 @@ const MyCalendar = (props) => {
         {
           info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
             "beforeend",
-            `<div style="color:yellow"><b> Booking deadline expired!</b><\div>`
+            `<div style="color:white, font-size:15px"><b> Booking deadline expired!</b><\div>`
           );
         }
 
@@ -76,7 +80,7 @@ const MyCalendar = (props) => {
         {
           info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
             "beforeend",
-            `<div style="color:red"><b> This lecture is now online!</b><\div>`
+            `<div style="color:white, font-size:15px><b> This lecture is now online!</b><\div>`
           );
 
         }
@@ -89,6 +93,15 @@ const MyCalendar = (props) => {
         
       }}
       eventTimeFormat={
+        // like '14:30:00'
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          meridiem: false,
+        }
+      }
+      slotLabelFormat={
         // like '14:30:00'
         {
           hour: "2-digit",
