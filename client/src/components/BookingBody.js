@@ -51,7 +51,7 @@ class BookingBody extends React.Component {
     bookLecture = (lectureId, schedule) => {
         API.bookLecture(lectureId, this.state.authUser.userId, schedule)
             .then((data) => {
-                if (data==true) {
+                if (data == true) {
                     confirmAlert({
                         customUI: ({ onClose }) => {
                             return (
@@ -64,8 +64,7 @@ class BookingBody extends React.Component {
                         }
                     });
 
-                }else if(data==false)
-                {
+                } else if (data == false) {
                     confirmAlert({
                         customUI: ({ onClose }) => {
                             return (
@@ -115,8 +114,8 @@ class BookingBody extends React.Component {
         })
     }
 
-        createLectureRows = (r) => {
-        
+    createLectureRows = (r) => {
+
         return (
             <tr>
                 <td>{r.schedule}</td>
@@ -124,10 +123,10 @@ class BookingBody extends React.Component {
                 <td>{r.teacherName}</td>
                 <td>{r.freeSeats}</td>
                 <td>{
-                    r.reserved === 0 ? 
-                    <Button variant={r.bookButton === 1 ? "success":"warning"} className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>{r.bookButton === 1 ?"Book":"Reserve"}</Button>
-                    : <Button variant="warning disabled">Waiting list</Button>
-                
+                    r.reserved === 0 ?
+                        <Button variant={r.bookButton === 1 ? "success" : "warning"} className="btn btn-sm btn-block btn-success mt-auto" type="button" onClick={() => this.bookLectureConfirm(r.lectureId, r.schedule)}>{r.bookButton === 1 ? "Book" : "Reserve"}</Button>
+                        : <Button variant="warning disabled">Waiting list</Button>
+
                 }</td>
             </tr>
         );
@@ -150,7 +149,7 @@ class BookingBody extends React.Component {
                         <StudentCurrentCourses courses={this.state.courses} onGetAvailableLectures={this.getAvailableLectures} />
                     </div>
                 </div>
-                <div style={{ display: `${this.state.scheduleVisibility}` }}>
+                <div>
                     <h5><strong>{this.state.selectedCourse}</strong></h5>
                     <hr style={{ borderColor: 'gray' }} />
                     <div className="container col-md-12">
@@ -166,7 +165,7 @@ class BookingBody extends React.Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.state.lectures.map(this.createLectureRows)}
+                                    {this.state.lectures.length > 0 ? this.state.lectures.map(this.createLectureRows) : <td colSpan="6" style={{textAlign: "center"}}>No lecture available, please select one course.</td>}
                                 </tbody>
                             </Table>
                         </div>
