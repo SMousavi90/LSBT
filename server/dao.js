@@ -374,6 +374,10 @@ exports.cancelReservation = function (id) {
   });
 };
 
+
+
+
+
 /**
  * Get all lectures
  */
@@ -996,5 +1000,74 @@ exports.importCSVData = function (data, type) {
           });
         
     }
+  });
+};
+
+
+
+
+
+
+
+
+
+let sql = `insert into Lecture (CourseId, Schedule,
+  BookingDeadline, NotificationDeadline, EndTime,
+  Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
+`;
+
+exports.clearDatabase = function () {
+  return new Promise((resolve, reject) => {
+    if(process.env.npm_config_test !== "true"){
+      console.log("Tried clearing production database");
+      reject("ClearProductionDB");
+    }
+
+    const sql =
+      "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
+
+    db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
+      if (err) {
+        reject(err);
+      } else resolve(null);
+    });
+  });
+};
+
+exports.addCourse = function () {
+  return new Promise((resolve, reject) => {
+    if(process.env.npm_config_test !== "true"){
+      console.log("Tried clearing production database");
+      reject("ClearProductionDB");
+    }
+
+    const sql =
+      "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
+
+    db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
+      if (err) {
+        reject(err);
+      } else resolve(null);
+    });
+  });
+};
+
+
+
+exports.addLecture = function () {
+  return new Promise((resolve, reject) => {
+    if(process.env.npm_config_test !== "true"){
+      console.log("Tried clearing production database");
+      reject("ClearProductionDB");
+    }
+
+    const sql =
+      "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
+
+    db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
+      if (err) {
+        reject(err);
+      } else resolve(null);
+    });
   });
 };

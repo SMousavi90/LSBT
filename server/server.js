@@ -25,7 +25,7 @@ var cors = require('cors');
 // npm start --test=true
 if(process.env.npm_config_test === "true"){
     console.log("Test database activated");
-    dao.setDb("db/PULSeBS_test.db");
+    dao.setDb("db/PULSeBS_test_clear.db");
     
 }
 else {
@@ -199,6 +199,17 @@ app.put('/api/cancelReservation/:bookingId', (req, res) => {
             errors: [{ 'param': 'Server', 'msg': err }],
         }));
 });
+
+app.put('/cleardatabase/', (req, res) => {
+    dao.clearDatabase()
+        .then((result) => res.status(200).end())
+        .catch((err) => res.status(500).json({
+            errors: [{ 'param': 'Server', 'msg': err }],
+        }));
+});
+
+
+
 
 app.get(BASEURI + '/teacher/:userId/notification', (req, res) => {
     dao.checkNotification(req.params.userId)
