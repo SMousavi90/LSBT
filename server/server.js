@@ -74,6 +74,26 @@ app.post(BASEURI + '/logout', (req, res) => {
 });
 
 
+app.post(BASEURI + '/addcourse/', (req, res) => {
+    dao.addCourse(req.body.data)
+        .then(() => {
+            res.status(200);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.put('/cleardatabase/', (req, res) => {
+    dao.clearDatabase()
+        .then((result) => res.status(200).end())
+        .catch((err) => res.status(500).json({
+            errors: [{ 'param': 'Server', 'msg': err }],
+        }));
+});
+
 
 
 //all next APIs require authentication (express-jwt)
@@ -200,13 +220,7 @@ app.put('/api/cancelReservation/:bookingId', (req, res) => {
         }));
 });
 
-app.put('/cleardatabase/', (req, res) => {
-    dao.clearDatabase()
-        .then((result) => res.status(200).end())
-        .catch((err) => res.status(500).json({
-            errors: [{ 'param': 'Server', 'msg': err }],
-        }));
-});
+
 
 
 
@@ -513,3 +527,5 @@ function sendCancelationMailToStudent(lecture) {
         }
     });
 }
+
+

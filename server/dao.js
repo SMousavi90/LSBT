@@ -1011,10 +1011,7 @@ exports.importCSVData = function (data, type) {
 
 
 
-let sql = `insert into Lecture (CourseId, Schedule,
-  BookingDeadline, NotificationDeadline, EndTime,
-  Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
-`;
+
 
 exports.clearDatabase = function () {
   return new Promise((resolve, reject) => {
@@ -1026,26 +1023,28 @@ exports.clearDatabase = function () {
     const sql =
       "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
 
-    db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
+    db.run(sql, (err) => {
       if (err) {
+        console.log("DB failed clearing database");
         reject(err);
       } else resolve(null);
     });
   });
 };
 
-exports.addCourse = function () {
+exports.addCourse = function (data) {
   return new Promise((resolve, reject) => {
     if(process.env.npm_config_test !== "true"){
       console.log("Tried clearing production database");
       reject("ClearProductionDB");
     }
 
-    const sql =
-      "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
+    let sql = `insert into Course (CourseId,Name,Description,Year,Semester,Teacher) values (?, ?, ?, ?, ?, ?)                  
+    `;
 
-    db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
+    db.run(sql, [...data], (err) => {
       if (err) {
+        console.log("DB failed adding course");
         reject(err);
       } else resolve(null);
     });
@@ -1061,10 +1060,12 @@ exports.addLecture = function () {
       reject("ClearProductionDB");
     }
 
-    const sql =
-      "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
+    let sql = `insert into Lecture (CourseId, Schedule,
+      BookingDeadline, NotificationDeadline, EndTime,
+      Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
+    `;
 
-    db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
+    db.run(sql, [], (err) => {
       if (err) {
         reject(err);
       } else resolve(null);
