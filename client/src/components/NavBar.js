@@ -18,7 +18,9 @@ function NavBar(props) {
           <><Link to="/" className="nav-link">My Reservations</Link><Link to="/BookingHistory" className="nav-link">Booking</Link></>  :
           props.role === "4" ? 
           <>
-          <Link to="/analytics" className="nav-link">Analytics</Link></> : 
+          <Link to="/analytics" className="nav-link">Analytics</Link>
+          <Link to="/tracingreport" className="nav-link">Contact Tracing</Link>
+          </> : 
           props.role === "3" ? 
           <>
           <Link to="/" className="nav-link">Officer Dashboard</Link></> : 

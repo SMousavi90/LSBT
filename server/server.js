@@ -23,16 +23,14 @@ var cors = require('cors');
 
 //You activate the test database by running
 // npm start --test=true
-if(process.env.npm_config_test === "true"){
+if (process.env.npm_config_test === "true") {
     console.log("Test database activated");
     dao.setDb("db/PULSeBS_test_clear.db");
-    
+
 }
 else {
-    
     dao.setDb("db/PULSeBS.db");
 }
-
 
 let app = new express();
 
@@ -138,26 +136,6 @@ app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
         });
 });
 
-/*app.get('/api/getStudentsPerLecturePerProfessor/:userId', (req, res) => {
-    dao.getStudentsPerLecturePerProfessor(req.params.userId)
-        .then((row) => {
-            if (!row) {
-                res.status(404).send();
-            } else {
-                console.log("Server:: ");
-                console.log(row);
-                res.json(row);
-            }
-        })
-        .catch((err) => {
-            res.status(500).json({
-                errors: [{ 'param': 'Server', 'msg': err }],
-            });
-        });
-
-});*/
-
-
 app.get('/api/getAvailableLectures/:courseId', (req, res) => {
     dao.getAvailableLectures(req.params.courseId, req.user.username)
         .then((row) => {
@@ -226,11 +204,6 @@ app.put('/api/cancelReservation/:bookingId', (req, res) => {
             errors: [{ 'param': 'Server', 'msg': err }],
         }));
 });
-
-
-
-
-
 
 app.get(BASEURI + '/teacher/:userId/notification', (req, res) => {
     dao.checkNotification(req.params.userId)
@@ -378,6 +351,22 @@ app.get(BASEURI + '/getAttendanceStatistics/:period/:startDate/:endDate', (req, 
         });
 });
 
+app.get(BASEURI + '/getContactTracingReport/:userId', (req, res) => {
+
+    dao.getContactTracingReport(req.params.userId)
+        .then((data) => {
+            res.json(data);
+        });
+});
+
+app.get(BASEURI + '/getStudents', (req, res) => {
+
+    dao.getStudents(req.query.userId, req.query.name, req.query.lastName)
+        .then((data) => {
+            res.json(data);
+        });
+});
+
 app.post(BASEURI + '/uploadDataCSV', (req, res) => {
     var storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -396,9 +385,9 @@ app.post(BASEURI + '/uploadDataCSV', (req, res) => {
         } else {
             req.files.forEach(function (f) {
                 fs.rename(f.path,
-                "upload/" + req.body.importType + ".csv", function(err) {
-                    if ( err ) console.log('ERROR: ' + err);
-                });
+                    "upload/" + req.body.importType + ".csv", function (err) {
+                        if (err) console.log('ERROR: ' + err);
+                    });
 
                 f.filename = req.body.importType + ".csv";
                 f.path = "upload/" + f.filename;
@@ -412,26 +401,26 @@ app.post(BASEURI + '/uploadDataCSV', (req, res) => {
 makeCSVArray = (file, type) => {
     fs.readFile(file.path, async (err, data) => {
         if (err) {
-          console.error(err)
-          return
+            console.error(err)
+            return
         }
         let csvData = await neatCsv(data);
         dao.importCSVData(csvData, type);
-      })
+    })
 }
 
 module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
 
     //send mail to teachers once a course deadline expires
-    dao.getAllLectures()
+    /*dao.getAllLectures()
         .then((res) => {
 
             res.forEach(function (e) {
                 setTimer(e.BookingDeadline, insertNotification, e);
             });
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err));*/
 });
 
 function setTimer(date, func, lecture) {
