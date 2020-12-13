@@ -199,7 +199,12 @@ app.get('/api/bookingHistory/:userId', (req, res) => {
 //PUT /cancelReservation/<bookingId>
 app.put('/api/cancelReservation/:bookingId/:lectureId', (req, res) => {
     dao.cancelReservation(req.params.bookingId,req.params.lectureId )
-        .then((result) => res.status(200).end())
+        .then((result) => {
+            if(result!=null) {
+                sendMailToStudent(result);
+                res.status(200).end()
+            }
+        })
         .catch((err) => res.status(500).json({
             errors: [{ 'param': 'Server', 'msg': err }],
         }));

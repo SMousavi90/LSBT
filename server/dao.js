@@ -390,22 +390,43 @@ exports.cancelReservation = function (id, lectureId) {
         db.all(sql, [lectureId, lectureId], (err, rows) => {
           if (err) reject(err);
           else {
-            let newStudentId = rows[0].StudentId;
-            if (newStudentId) {
-              //if there's a waiting student
-              let sql = `update Booking set Reserved=0 ,ReserveDate=null ,BookDate=datetime('now', 'localtime')
-                         where StudentId=? and LectureId=?   
-                        `;
-              db.run(sql, [newStudentId, lectureId], (rows, err) => {
-                if (err) {
-                  reject(err);
-                } else {   
-                  // todo: email
-                  resolve(true);
-                }
-              });
-            }
+            if(rows!=null && rows.length>0){
+              let newStudentId = rows[0].StudentId;
+              if (newStudentId) {
+                //if there's a waiting student
+                let sql = `update Booking set Reserved=null ,ReserveDate=null ,BookDate=datetime('now', 'localtime')
+                          where StudentId=? and LectureId=?   
+                          `;
+                db.run(sql, [newStudentId, lectureId], (rows, err) => {
+                  if (err) {
+                    reject(err);
+                  } else {   
+                  
+                          // : email to first reserved student:
+                    let sqlEmail = `select b.Schedule,u.Name || ' ' || u.LastName as Name,c.Name as CourseName
+                    from StudentFinalBooking b inner join Course c on c.CourseId=b.CourseId
+                    inner join user u on u.UserId=b.StudentId
+                    where b.StudentId=? and b.LectureId=?   
+                  `;
+                    db.all(sqlEmail, [newStudentId, lectureId], (err,rows) => {
+                      if (err) {
+                        reject(err);
+                      } else {   
+                        if(rows!=null && rows.length>0){
+                          resolve(rows[0]);
+                        }
+                        else
+                          resolve(null);
+                      }
+                    });
+                    
+                  }
+                });
+              }
+              else
+                resolve(null); 
           }
+        }
         });
         resolve(null);
       }
