@@ -24,14 +24,17 @@ class ContactTracingDashboard extends React.Component {
         super(props);
         this.state = { userId: '', name: '', lastName: '', students: [], contacts: [], show: false, studentReportId: null };
     }
-
+    
+    componentDidMount() {
+        this.searchStudents();
+    }
 
     updateField = (name, value) => {
         this.setState({ [name]: value });
     }
 
     searchStudents = () => {
-        API.getStudents(this.state.userId, this.state.name, this.state.lastName)
+        API.getPositiveStudents(this.state.userId, this.state.name, this.state.lastName)
             .then((data) => {
                 this.setState({ students: data })
             })
@@ -57,9 +60,9 @@ class ContactTracingDashboard extends React.Component {
         doc.setFontSize(15);
 
         const title = `Contact Tracing Report - Student ID: ${this.state.studentReportId}`;
-        const headers = [["Student ID", "Full Name", "Email"]];
+        const headers = [["Student ID", "Full Name", "Email", "Teacher Name"]];
 
-        const data = this.state.contacts.map(c => [c.StudentId, c.StudentName, c.Email]);
+        const data = this.state.contacts.map(c => [c.StudentId, c.StudentName, c.Email, c.TeacherName]);
 
         let content = {
             startY: 50,
@@ -77,7 +80,7 @@ class ContactTracingDashboard extends React.Component {
         return <Container>
             <Jumbotron className="p-4 mt-1">
                 <h3>Contact Tracing Report</h3>
-                <p>Select a student and click the button to generate a Contact Tracing Report. The report contains all contacts of the students in the past 14 days.</p>
+                <p>Select a Covid-19 positive student and click on the button to generate a Contact Tracing Report. The report contains all contacts of the students in the past 14 days.</p>
             </Jumbotron>
             <Form>
                 <Row>
@@ -145,9 +148,7 @@ function StudentRow(props) {
         <td>{props.student.Email}</td>
         <td>
             <Button onClick={() => props.getContactTracingReport(props.student.UserId)} size={"sm"}>Generate Report</Button>
-
         </td>
-        {/* <td><Button size="sm" onClick={() => props.getContactTracingReport(props.student.UserId)}><FontAwesomeIcon icon={faFilePdf} /></Button>&nbsp;<Button size="sm"><FontAwesomeIcon icon={faFileCsv} /></Button></td> */}
     </tr>
 }
 
