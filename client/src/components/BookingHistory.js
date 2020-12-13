@@ -32,8 +32,8 @@ class BookingHistory extends React.Component {
       });
   }
 
-  cancelReservation = (id) => {
-    API.cancelReservation(id)
+  cancelReservation = (id,lectureId) => {
+    API.cancelReservation(id, lectureId)
       .then(() => {
         API.getBookingHistory(this.state.authUser.userId)
           .then((r) => {
@@ -48,14 +48,14 @@ class BookingHistory extends React.Component {
       });
   };
 
-  cancelReservationConfirm = (id) => {
+  cancelReservationConfirm = (id,lectureId) => {
     confirmAlert({
       title: "Warning",
       message: `Do you want to cancel the reservation for this lecture?`,
       buttons: [
         {
           label: "Yes",
-          onClick: () => this.cancelReservation(id),
+          onClick: () => this.cancelReservation(id,lectureId),
         },
         {
           label: "No",
@@ -65,46 +65,47 @@ class BookingHistory extends React.Component {
     });
   };
 
-  createBookingHistory = (r) => {
-    return (
-      <tr>
-        <td>{r.courseName}</td>
-        <td>{r.teacherName}</td>
-        <td>{r.bookDate}</td>
-        <td>{r.bookingDeadline}</td>
-        <td>{r.reserved == null ? "No" : "Yes"}</td>
-        <td>
-          {r.canceled == null ? (
-            "No"
-          ) : (
-            <div>
-              <span>You canceled at: </span>
-              <span className="badge badge-danger">{r.cancelDate}</span>
-            </div>
-          )}
-        </td>
-        <td>{r.presence == null ? "N/A" : "Yes"}</td>
-        <td>{r.reserveDate == null ? "N/A" : r.reserveDate}</td>
-        <td>
-          {
-            //
-            r.canceled === null ? (
-              <Button
-                variant="danger"
-                className="ml-2"
-                type="button"
-                onClick={() => this.cancelReservationConfirm(r.bookingId)}
-              >
-                Cancel
-              </Button>
-            ) : (
-              ""
-            )
-          }
-        </td>
-      </tr>
-    );
-  };
+  // createBookingHistory = (r) => {
+  //   console.log(r)
+  //   return (
+  //     <tr>
+  //       <td>{r.courseName}</td>
+  //       <td>{r.teacherName}</td>
+  //       <td>{r.bookDate}</td>
+  //       <td>{r.bookingDeadline}</td>
+  //       <td>{r.reserved == null ? "No" : "Yes"}</td>
+  //       <td>
+  //         {r.canceled == null ? (
+  //           "No"
+  //         ) : (
+  //           <div>
+  //             <span>You canceled at: </span>
+  //             <span className="badge badge-danger">{r.cancelDate}</span>
+  //           </div>
+  //         )}
+  //       </td>
+  //       <td>{r.presence == null ? "N/A" : "Yes"}</td>
+  //       <td>{r.reserveDate == null ? "N/A" : r.reserveDate}</td>
+  //       <td>
+  //         {
+  //           //
+  //           r.canceled === null ? (
+  //             <Button
+  //               variant="danger"
+  //               className="ml-2"
+  //               type="button"
+  //               onClick={() => this.cancelReservationConfirm(r.bookingId)}
+  //             >
+  //               Cancel
+  //             </Button>
+  //           ) : (
+  //             ""
+  //           )
+  //         }
+  //       </td>
+  //     </tr>
+  //   );
+  // };
   render() {
     console.log(this.state.resHistory)
 

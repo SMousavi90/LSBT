@@ -1,5 +1,5 @@
 class BookingHistory {    
-    constructor( Schedule,EndTime,Bookable, CourseName,ClassNumber,TeacherName,BookingId, BookingDeadline, CourseId){
+    constructor( Schedule,EndTime,Bookable, CourseName,ClassNumber,TeacherName,BookingId, BookingDeadline, CourseId,LectureId){
         if (BookingId) {
             this.bookingId = BookingId;
         }
@@ -12,6 +12,7 @@ class BookingHistory {
         this.classNumber = ClassNumber; 
         this.bookingDeadline = BookingDeadline; 
         this.courseId = CourseId; 
+        this.lectureId = LectureId;
     }
 }
 

@@ -177,9 +177,9 @@ async function getBookingHistory(userId) {
   }
 }
 
-async function cancelReservation(id) {
+async function cancelReservation(id,lectureId) {
   return new Promise((resolve, reject) => {
-    fetch(APIURL + "/cancelReservation/" + id, {
+    fetch(APIURL + `/cancelReservation/${id}/${lectureId}`, {
       method: "PUT",
     })
       .then((response) => {

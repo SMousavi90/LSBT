@@ -27,7 +27,7 @@ import moment from "moment";
 
 const MyCalendar = (props) => {
   
- 
+  
   return (
     <FullCalendar
       plugins={[momentPlugin, timeGridPlugin]}
@@ -41,7 +41,12 @@ const MyCalendar = (props) => {
       eventClick={function (info) {
         var eventObj = info.event;
         console.log(eventObj.id);
-        props.cancelBooking(eventObj.id);
+        var res = props.resHistory.filter((v) => {
+          return v.bookingId == info.event.id;
+        })[0];
+        var lectureId = res.lectureId;
+
+        props.cancelBooking(eventObj.id,lectureId);
       }}
       eventDidMount={function (info) {
         // console.log(info.event.id);
