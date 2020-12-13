@@ -516,8 +516,8 @@ async function addCourse(data) {
   });
 }
 
-async function getStudents(userId, name, lastName) {
-  const url = `/getStudents?userId=${userId}&name=${name}&lastName=${lastName}`;
+async function getPositiveStudents(userId, name, lastName) {
+  const url = `/getPositiveStudents?userId=${userId}&name=${name}&lastName=${lastName}`;
   const response = await fetch(APIURL + url);
   const students = await response.json();
   if (response.ok) {
@@ -540,4 +540,4 @@ async function getContactTracingReport(userId) {
   }
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics, uploadDataCSV, clearDatabase, addCourse, getStudents, getContactTracingReport };
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics, uploadDataCSV, clearDatabase, addCourse, getPositiveStudents, getContactTracingReport };

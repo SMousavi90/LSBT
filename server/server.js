@@ -361,14 +361,25 @@ app.get(BASEURI + '/getContactTracingReport/:userId', (req, res) => {
     dao.getContactTracingReport(req.params.userId)
         .then((data) => {
             res.json(data);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
         });
 });
 
-app.get(BASEURI + '/getStudents', (req, res) => {
+app.get(BASEURI + '/getPositiveStudents', (req, res) => {
 
-    dao.getStudents(req.query.userId, req.query.name, req.query.lastName)
+    dao.getPositiveStudents(req.query.userId, req.query.name, req.query.lastName)
         .then((data) => {
+            console.log(data);
             res.json(data);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
         });
 });
 

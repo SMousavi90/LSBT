@@ -115,21 +115,26 @@ class App extends React.Component {
                   <LoginForm onLogin={this.login} loginError={this.state.loginError} logged={this.state.user} ></LoginForm>
                 </Container>
               </Route>
-              <Route path="/analytics">
-                <Container className="custom-container col-md-12">
+              <Route path="/analytics" render={() => {
+                if (this.state.user === null || this.state.role !== "4")
+                  return <Redirect to="/"></Redirect>
+                return <Container className="custom-container col-md-12">
                   <Row>
                     <BookingAnalytics Username={this.state.name} />
                   </Row>
                 </Container>
+              }}>
               </Route>
               <Route path="/tracingreport" render={() => {
-                  return <Container className="custom-container col-md-12">
-                    <Row>
-                      <Col sm={12}>
-                        <ContactTracingDashboard username={this.state.name} />
-                      </Col>
-                    </Row>
-                  </Container>
+                if (this.state.user === null || this.state.role !== "4")
+                  return <Redirect to="/"></Redirect>
+                return <Container className="custom-container col-md-12">
+                  <Row>
+                    <Col sm={12}>
+                      <ContactTracingDashboard username={this.state.name} />
+                    </Col>
+                  </Row>
+                </Container>
               }}>
 
               </Route>
