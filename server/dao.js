@@ -372,7 +372,7 @@ exports.getBookingHistory = function (id) {
 /**
  * Cancel an existing reservation with a given id.
  */
-exports.cancelReservation = function (id, lectureId) {
+exports.cancelReservation = function (id) {
   return new Promise((resolve, reject) => {
     const sql =
       "UPDATE Booking SET canceled=1, CancelDate=? WHERE BookingId = ?";
@@ -380,59 +380,56 @@ exports.cancelReservation = function (id, lectureId) {
       if (err) {
         reject(err);
       } else {
-        const sql = `select  StudentId from StudentFinalBooking where LectureId=? 
+        resolve(null);
+      }
+    });
+  });
+};
+
+exports.manageQueueReservation = function (lectureId) {
+  return new Promise((resolve, reject) => {
+    const sql = `select  StudentId from StudentFinalBooking where LectureId=? 
         and BookDate is null and Canceled is null  and Reserved=1
         and ReserveDate=(select min(ReserveDate)MinReserveDate 
               from StudentFinalBooking
               where ReserveDate is not null and LectureId=?
               and BookDate is null and Canceled is null  and Reserved=1)
         `;
-        db.all(sql, [lectureId, lectureId], (err, rows) => {
-          if (err) reject(err);
-          else {
-            if(rows!=null && rows.length>0){
-              let newStudentId = rows[0].StudentId;
-              if (newStudentId) {
-                //if there's a waiting student
-                let sql = `update Booking set Reserved=null ,ReserveDate=null ,BookDate=datetime('now', 'localtime')
-                          where StudentId=? and LectureId=?   
-                          `;
-                db.run(sql, [newStudentId, lectureId], (rows, err) => {
-                  if (err) {
-                    reject(err);
-                  } else {   
-                  
-                          // : email to first reserved student:
-                    let sqlEmail = `select b.Schedule,u.Name || ' ' || u.LastName as Name,c.Name as CourseName
+    db.all(sql, [lectureId, lectureId], (err, rows) => {
+      if (err) reject(err);
+      else {
+        if (rows != null && rows.length > 0) {
+          let newStudentId = rows[0].StudentId;
+          if (newStudentId) {
+            //if there's a waiting student
+            let sql = `update Booking set Reserved=null ,ReserveDate=null ,BookDate=datetime('now', 'localtime')
+                where StudentId=? and LectureId=?   
+                `;
+            db.run(sql, [newStudentId, lectureId], (err, rows) => {
+              if (err) {
+                reject(err);
+              } else {
+                let sqlEmail = `select b.Schedule,u.Name || ' ' || u.LastName as Name,c.Name as CourseName, u.Email
                     from StudentFinalBooking b inner join Course c on c.CourseId=b.CourseId
                     inner join user u on u.UserId=b.StudentId
                     where b.StudentId=? and b.LectureId=?   
                   `;
-                    db.all(sqlEmail, [newStudentId, lectureId], (err,rows) => {
-                      if (err) {
-                        reject(err);
-                      } else {   
-                        if(rows!=null && rows.length>0){
-                          resolve(rows[0]);
-                        }
-                        else
-                          resolve(null);
-                      }
-                    });
-                    
+                db.all(sqlEmail, [newStudentId, lectureId], (err, rows) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    if (rows != null && rows.length > 0) resolve(rows[0]);
+                    else resolve(null);
                   }
                 });
               }
-              else
-                resolve(null); 
+            });
           }
         }
-        });
-        resolve(null);
       }
     });
   });
-};
+}
 
 /**
  * Get all lectures

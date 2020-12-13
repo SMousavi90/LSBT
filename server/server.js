@@ -155,20 +155,18 @@ app.get('/api/getAvailableLectures/:courseId', (req, res) => {
 app.post('/api/bookLecture', (req, res) => {
     dao.bookLecture(req.body.lectureId, req.body.userId, req.body.scheduleDate)
         .then((result) => {
-            if(result==true)
-            {
+            if (result == true) {
                 dao.getBookingDetails(req.body.lectureId, req.body.userId)
-                .then((book) => {
-                    sendMailToStudent(book);
-                    res.json({reserved:true});
-                    // res.status(200).end();
-                })
-                .catch((err) => res.status(500).json({
-                    errors: [{ 'param': 'Server', 'msg': err }]
-                }));
-            }else if (result==false)
-            {
-                res.json({reserved:false});
+                    .then((book) => {
+                        sendMailToStudent(book);
+                        res.json({ reserved: true });
+                        // res.status(200).end();
+                    })
+                    .catch((err) => res.status(500).json({
+                        errors: [{ 'param': 'Server', 'msg': err }]
+                    }));
+            } else if (result == false) {
+                res.json({ reserved: false });
                 // res.status(200).end();
             }
 
@@ -198,11 +196,19 @@ app.get('/api/bookingHistory/:userId', (req, res) => {
 
 //PUT /cancelReservation/<bookingId>
 app.put('/api/cancelReservation/:bookingId/:lectureId', (req, res) => {
-    dao.cancelReservation(req.params.bookingId,req.params.lectureId )
+    dao.cancelReservation(req.params.bookingId, req.params.lectureId)
         .then((result) => {
-            if(result!=null) {
-                sendMailToStudent(result);
-                res.status(200).end()
+            if (result == null) {
+                dao.manageQueueReservation(req.params.lectureId)
+                    .then((result) => {
+                        if (result !== null) {
+                            sendMailToStudent(result);
+                            res.status(200).end()
+                        }
+                    })
+                    .catch((err) => res.status(500).json({
+                        errors: [{ 'param': 'Server', 'msg': err }],
+                    }));
             }
         })
         .catch((err) => res.status(500).json({
