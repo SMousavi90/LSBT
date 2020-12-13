@@ -301,10 +301,10 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
               else {
                 let bookedCount = rows[0].BookedCount;
                 if (bookedCount < capacity) {
-                  const sqlBook = `Insert into Booking(StudentId, LectureId, BookDate, ReserveDate) Values (?, ?, ?, datetime('now','localtime'))`;
+                  const sqlBook = `Insert into Booking(StudentId, LectureId, BookDate) Values (?, ?,  datetime('now','localtime'))`;
                   db.run(
                     sqlBook,
-                    [userId, lectureId, scheduleDate],
+                    [userId, lectureId],
                     (err, rows) => {
                       if (err) reject(err);
                       else resolve(true);
@@ -393,25 +393,15 @@ exports.cancelReservation = function (id, lectureId) {
             let newStudentId = rows[0].StudentId;
             if (newStudentId) {
               //if there's a waiting student
-              let sql = `insert into Booking(StudentId,LectureId,Reserved,ReserveDate,BookDate)
-                values(?,?,null,null,datetime('now', 'localtime'))
-              `;
+              let sql = `update Booking set Reserved=0 ,ReserveDate=null ,BookDate=datetime('now', 'localtime')
+                         where StudentId=? and LectureId=?   
+                        `;
               db.run(sql, [newStudentId, lectureId], (rows, err) => {
                 if (err) {
                   reject(err);
-                } else {
-                  const sql =
-                    "DELETE from Booking where StudentId=? and Reserved=1"
-                  db.run(sql, [newStudentId], (err) => {
-                    if (err) {
-                      //console.log("DB failed clearing database");
-                      reject(err);
-                    } else 
-                    {
-                      resolve(true);
-                    }
-                  });
-                  
+                } else {   
+                  // todo: email
+                  resolve(true);
                 }
               });
             }
