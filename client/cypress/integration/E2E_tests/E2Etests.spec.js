@@ -1,5 +1,25 @@
 import API from '../../../src/API/API';
 
+const APIURL = "api";
+
+Cypress.Commands.add('login', () => { 
+    cy.request({
+      method: 'POST',
+      url: APIURL + '/login',
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({ username: username, password: password }),
+        
+      
+    })
+    .then((resp) => {
+      window.localStorage.setItem('jwt', resp.body.user.token)
+    })
+  
+  })
+
+
 
 
 const studentLogin = () => {
@@ -10,6 +30,10 @@ const studentLogin = () => {
     
     cy.contains('John Smith');
 }
+
+
+
+
 
 
 const courseData = [1,"data science","We study a lot of data science","2020","Scott"];
