@@ -24,8 +24,8 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
 
 
 
-            studentLogin().as('Login');
-            cy.wait('@Login',{ timeout: 10000});
+            studentLogin()
+            // cy.wait('@Login',{ timeout: 10000});
             API.clearDatabase().then(
                 (resp) => {
                     expect(resp).to.be.null;
