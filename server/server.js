@@ -106,10 +106,10 @@ app.use(
 
 //to handle each UnauthorizedError
 app.use(function (err, req, res, next) { //used when i call isAuthenticated (client side) and the user is not authenticated
-    if(process.env.npm_config_test !== "true"){
+    
         if (err.name === 'UnauthorizedError') {
         res.status(401).json(authErrorObj);
-    } }
+    } 
 });
 
 //get a user info (used by client to reauthenticate itself - getting its user info)

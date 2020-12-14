@@ -28,11 +28,38 @@ const studentLogin = () => {
     cy.contains('Username').click().type('student1');
     cy.contains('Password').click().type('pass').type('{enter}');
     
-    cy.contains('John Smith');
+}
+
+const professorLogin = () => {
+  cy.visit('http://localhost:3000/');
+  cy.url().should('contain' , 'http://localhost:3000/login');
+  cy.contains('Username').click().type('CZ87086252');
+  cy.contains('Password').click().type('pass').type('{enter}');
+  
 }
 
 
 
+
+// studentLogin()
+//             // cy.wait('@Login',{ timeout: 10000});
+//             API.clearDatabase().then(
+//                 (resp) => {
+//                     expect(resp).to.be.null;
+//                 }
+//             ).catch((errorObj) => {
+//                 console.log(errorObj);
+//             });
+
+//             API.addCourse(courseData).then(
+//                 () => {
+//                     console.log("Course added");
+//                 }
+//             ).catch((errorObj) => {
+//                 console.log(errorObj);
+//             });
+            
+//             //addLecture()
 
 
 
@@ -42,39 +69,20 @@ const courseData = [1,"data science","We study a lot of data science","2020","Sc
 
 describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so that I can attend it', () =>{
 
-    before(
-        () => {
-            
-
-
-
-            studentLogin()
-            // cy.wait('@Login',{ timeout: 10000});
-            API.clearDatabase().then(
-                (resp) => {
-                    expect(resp).to.be.null;
-                }
-            ).catch((errorObj) => {
-                console.log(errorObj);
-            });
-
-            API.addCourse(courseData).then(
-                () => {
-                    console.log("Course added");
-                }
-            ).catch((errorObj) => {
-                console.log(errorObj);
-            });
-            
-            //addLecture()
-
-        }
-    )
-
-
+  
     it('Student login', () => {
+        studentLogin();
         
+        
+
+        cy.contains('Economia e finanza').click();
+        cy.contains('Joe Simone'); //click();
+        cy.get('Button').contains('Book').click();
     })
+
+    // it('Choose a course', () => {
+    //   //cy.contains('Economia e finanza').click();
+    // })
 })
 
 
