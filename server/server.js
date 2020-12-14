@@ -84,7 +84,7 @@ app.post(BASEURI + '/addcourse/', (req, res) => {
         });
 });
 
-app.put('/cleardatabase/', (req, res) => {
+app.delete(BASEURI + '/cleardatabase/', (req, res) => {
     dao.clearDatabase()
         .then((result) => res.status(200).end())
         .catch((err) => res.status(500).json({

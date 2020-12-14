@@ -33,7 +33,7 @@ const studentLogin = () => {
 const professorLogin = () => {
   cy.visit('http://localhost:3000/');
   cy.url().should('contain' , 'http://localhost:3000/login');
-  cy.contains('Username').click().type('CZ87086252');
+  cy.contains('Username').click().type('teacher1');
   cy.contains('Password').click().type('pass').type('{enter}');
   
 }
@@ -61,10 +61,34 @@ const professorLogin = () => {
             
 //             //addLecture()
 
-
-
 const courseData = [1,"data science","We study a lot of data science","2020","Scott"];
 
+function addCourse(){
+  cy.request({
+    method: 'POST',
+    url: APIURL + '/addcourse/',
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ data: courseData }),
+      
+    
+  })
+  .then((resp) => {
+    window.localStorage.setItem('jwt', resp.body.user.token)
+  })
+}
+
+
+function clearDatabase(){
+  cy.request({
+    method: 'DELETE',
+    url: APIURL + '/cleardatabase/',
+    
+  }).then((resp) => {
+    window.localStorage.setItem('jwt', resp.body.user.token)
+  })
+}
 
 
 describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so that I can attend it', () =>{
@@ -72,23 +96,29 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
   
     it('Student login', () => {
         studentLogin();
-        
-        
+        cy.wait(500);
+
+        clearDatabase();
+        addCourse();
 
         cy.contains('Economia e finanza').click();
         cy.contains('Joe Simone'); //click();
         cy.get('Button').contains('Book').click();
     })
 
-    // it('Choose a course', () => {
-    //   //cy.contains('Economia e finanza').click();
-    // })
+    
 })
 
 
 
 
 describe('[LSBT1-2]As a teacher I want to get notified of the number of students attending my next lecture so that I am informed' , () => {
+
+  it('Professor Login', () => {
+    professorLogin();
+  })
+
+
 })
 
 

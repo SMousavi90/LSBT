@@ -1110,8 +1110,8 @@ exports.clearDatabase = function () {
     }
 
     const sql =
-      "DELETE from user where UserId>23 delete from Course delete from Class delete from StudentCourse delete from Lecture delete from Booking delete from TeacherNotification";
-
+      "DELETE from user where UserId>23; DELETE from Course; DELETE from Class; DELETE from StudentCourse; DELETE from Lecture; DELETE from Booking; DELETE from TeacherNotification;";
+    //console.log("Clearing database");
     db.run(sql, (err) => {
       if (err) {
         console.log("DB failed clearing database");
@@ -1130,7 +1130,6 @@ exports.addCourse = function (data) {
 
     let sql = `insert into Course (CourseId,Name,Description,Year,Semester,Teacher) values (?, ?, ?, ?, ?, ?)                  
     `;
-
     db.run(sql, [...data], (err) => {
       if (err) {
         console.log("DB failed adding course");
