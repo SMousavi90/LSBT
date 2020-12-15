@@ -125,7 +125,7 @@ function clearDatabase(){
 describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so that I can attend it', () =>{
 
   
-    it('Student login', () => {
+    it('Student books a lecture', () => {
       
       clearDatabase();
       
@@ -167,6 +167,41 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       cy.get('Button').contains('Book').click();
       cy.get('Button').contains('Yes').click();
       cy.get('Button').contains('Ok').click();
+    })
+
+    it('Student cannot book a lecture scheduled in more than 2 weeks', () => {
+      
+      clearDatabase();
+      
+      const courseData = [1,"data science","We study a lot of data science","2020",1,"John Smith"];
+
+      addCourse(courseData);
+      
+      
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate()+20);
+      const tomorrowstring = tomorrow.toISOString().slice(0,16);
+
+      const deadline = new Date(today);
+      deadline.setDate(deadline.getDate() + 20);
+
+      const deadlinestring = deadline.toISOString().slice(0,16);
+      
+
+
+        console.log(tomorrowstring);
+        console.log(deadlinestring);
+        console.log(new Date(tomorrowstring));
+      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 1, 0, 1, 120, "Mon",  "8:30-11:30"];
+         
+      addLecture(lectureData);
+      
+      cy.visit("http://localhost:3000/");
+      studentLogin();
+      cy.contains(courseData[2]).click();
+      cy.contains(courseData[5]); //click();
+      cy.contains('No lecture available, please select one course.')
     })
 
     
