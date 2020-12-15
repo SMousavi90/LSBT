@@ -129,7 +129,7 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       
       clearDatabase();
       
-      const courseData = [1,"data science","We study a lot of data science","2020","Scott"];
+      const courseData = [1,"data science","We study a lot of data science","2020",1,"John Smith"];
 
       addCourse(courseData);
       
@@ -144,30 +144,13 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate()+1);
-      const tomorrowstring = tomorrow.toLocaleDateString(
-        'it-IT',
-        {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric'
-        }
-      ) + " " +  tomorrow.toLocaleTimeString('it-It');
+      const tomorrowstring = tomorrow.toISOString().slice(0,16);
 
       const deadline = new Date(today);
       deadline.setDate(deadline.getDate() + 5);
 
-      const deadlinestring = deadline.toLocaleDateString(
-        'it-IT',
-        {
-          year: 'numeric',
-          month: 'numeric',
-          day: 'numeric'
-        }
-      ) + " " +  deadline.toLocaleTimeString('it-It');
-
-      // (CourseId, Schedule,
-      // BookingDeadline, NotificationDeadline, EndTime,
-      // Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time)
+      const deadlinestring = deadline.toISOString().slice(0,16);
+      
 
 
         console.log(tomorrowstring);
@@ -180,8 +163,10 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       cy.visit("http://localhost:3000/");
       studentLogin();
       cy.contains(courseData[2]).click();
-      //cy.contains(courseData[5]); //click();
-      //   cy.get('Button').contains('Book').click();
+      cy.contains(courseData[5]); //click();
+      cy.get('Button').contains('Book').click();
+      cy.get('Button').contains('Yes').click();
+      cy.get('Button').contains('Ok').click();
     })
 
     

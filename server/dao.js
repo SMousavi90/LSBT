@@ -1134,6 +1134,17 @@ exports.clearDatabase = function () {
           
         } else resolve(null);
       });
+      console.log("CANCEL booking");
+      const sqlBooking =
+      "DELETE from Booking"; 
+      db.run(sqlBooking, (err) => {
+        if (err) {
+          console.log("DB failed clearing database");
+          console.log(err);
+          reject(err);
+          
+        } else resolve(null);
+      });
 
     });
   };
