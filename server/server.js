@@ -85,6 +85,35 @@ app.post(BASEURI + '/addcourse/', (req, res) => {
         });
 });
 
+app.post(BASEURI + '/addbooking/', (req, res) => {
+    dao.addBooking(req.body.data)
+        .then(() => {
+            console.log("Server resolved");
+            res.status(200).end();
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+
+
+
+app.post(BASEURI + '/addstudentcourse/', (req, res) => {
+    dao.addStudentCourse(req.body.data)
+        .then(() => {
+            console.log("Server resolved");
+            res.status(200).end();
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
 app.post(BASEURI + '/addlecture/', (req, res) => {
     dao.addLecture(req.body.data)
         .then(() => {

@@ -1,23 +1,9 @@
+const { findIconDefinition } = require("@fortawesome/fontawesome-svg-core");
 const moment = require("moment");
 
 const APIURL = "api";
 
-Cypress.Commands.add('login', () => { 
-    cy.request({
-      method: 'POST',
-      url: APIURL + '/login',
-      headers: {
-        "Content-type": "application/json",
-      },
-      body: JSON.stringify({ username: username, password: password }),
-        
-      
-    })
-    .then((resp) => {
-      window.localStorage.setItem('jwt', resp.body.user.token)
-    })
-  
-  })
+
 
 
 
@@ -27,6 +13,7 @@ const studentLogin = () => {
     cy.url().should('contain' , 'http://localhost:3000/login');
     cy.contains('Username').click().type('student1');
     cy.contains('Password').click().type('pass').type('{enter}');
+    cy.location('href').should('eq','http://localhost:3000/');
     
 }
 
@@ -40,29 +27,6 @@ const professorLogin = () => {
 
 
 
-
-// studentLogin()
-//             // cy.wait('@Login',{ timeout: 10000});
-//             API.clearDatabase().then(
-//                 (resp) => {
-//                     expect(resp).to.be.null;
-//                 }
-//             ).catch((errorObj) => {
-//                 console.log(errorObj);
-//             });
-
-//             API.addCourse(courseData).then(
-//                 () => {
-//                     console.log("Course added");
-//                 }
-//             ).catch((errorObj) => {
-//                 console.log(errorObj);
-//             });
-            
-//             //addLecture()
-
-
-
 function addCourse(courseData){
   cy.request({
     method: 'POST',
@@ -71,6 +35,51 @@ function addCourse(courseData){
       "Content-type": "application/json",
     },
     body: JSON.stringify({ data: courseData }),
+      
+    
+  }).then(
+    (response) => {
+      expect(response.status).to.eq(200);
+      console.log(response);
+    }
+  )
+  // .then((resp) => {
+  //   window.localStorage.setItem('jwt', resp.body.user.token)
+  // })
+}
+
+function addBooking(bookingData){
+  cy.request({
+    method: 'POST',
+    url: "http://localhost:3000/" + APIURL + '/addbooking/',
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ data: bookingData }),
+      
+    
+  }).then(
+    (response) => {
+      expect(response.status).to.eq(200);
+      console.log(response);
+    }
+  )
+  // .then((resp) => {
+  //   window.localStorage.setItem('jwt', resp.body.user.token)
+  // })
+}
+
+
+
+
+function addStudentCourse(studentcourseData){
+  cy.request({
+    method: 'POST',
+    url: "http://localhost:3000/" + APIURL + '/addstudentcourse/',
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ data: studentcourseData }),
       
     
   }).then(
@@ -133,6 +142,13 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
 
       addCourse(courseData);
       
+      const studentcourseData = [1,1,1];
+
+      addStudentCourse(studentcourseData);
+
+
+
+
       new Date().toLocaleDateString(
         'en-gb',
         {
@@ -144,7 +160,7 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       const today = new Date();
       const tomorrow = new Date(today);
       tomorrow.setDate(tomorrow.getDate()+1);
-      const tomorrowstring = tomorrow.toISOString().slice(0,16);
+      const tomorrowstring = tomorrow.toISOString().slice(0,2);
 
       const deadline = new Date(today);
       deadline.setDate(deadline.getDate() + 5);
@@ -156,7 +172,7 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
         console.log(tomorrowstring);
         console.log(deadlinestring);
         console.log(new Date(tomorrowstring));
-      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 1, 0, 1, 120, "Mon",  "8:30-11:30"];
+      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 2, 0, 1, 120, "Mon",  "8:30-11:30"];
          
       addLecture(lectureData);
       
@@ -177,6 +193,9 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
 
       addCourse(courseData);
       
+      const studentcourseData = [1,1,1];
+
+      addStudentCourse(studentcourseData);
       
       const today = new Date();
       const tomorrow = new Date(today);
@@ -190,10 +209,8 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       
 
 
-        console.log(tomorrowstring);
-        console.log(deadlinestring);
-        console.log(new Date(tomorrowstring));
-      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 1, 0, 1, 120, "Mon",  "8:30-11:30"];
+        
+      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 2, 0, 1, 120, "Mon",  "8:30-11:30"];
          
       addLecture(lectureData);
       
@@ -201,7 +218,7 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       studentLogin();
       cy.contains(courseData[2]).click();
       cy.contains(courseData[5]); //click();
-      cy.contains('No lecture available, please select one course.')
+      cy.get('td').should('have.text','No lecture available, please select one course.');
     })
 
     
@@ -212,15 +229,108 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
 
 describe('[LSBT1-2]As a teacher I want to get notified of the number of students attending my next lecture so that I am informed' , () => {
 
-  // it('Professor Login', () => {
-  //   professorLogin();
-  // })
+  it('Student books a lecture -> teacher receives notification', () => {
+      
+    clearDatabase();
+    
+    const courseData = [1,"data science","We study a lot of data science","2020",1,"John Smith"];
+
+    addCourse(courseData);
+    
+    const studentcourseData = [1,1,1];
+
+    addStudentCourse(studentcourseData);
+
+
+
+
+    new Date().toLocaleDateString(
+      'en-gb',
+      {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric'
+      }
+    );
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate()+1);
+    const tomorrowstring = tomorrow.toISOString().slice(0,2);
+
+    const deadline = new Date(today);
+    deadline.setDate(deadline.getDate() + 5);
+
+    const deadlinestring = deadline.toISOString().slice(0,16);
+    
+
+
+      console.log(tomorrowstring);
+      console.log(deadlinestring);
+      console.log(new Date(tomorrowstring));
+    const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 2, 0, 1, 120, "Mon",  "8:30-11:30"];
+       
+    addLecture(lectureData);
+    
+    cy.visit("http://localhost:3000/");
+    studentLogin();
+    cy.contains(courseData[2]).click();
+    cy.contains(courseData[5]); //click();
+    cy.get('Button').contains('Book').click();
+    cy.get('Button').contains('Yes').click();
+    cy.get('Button').contains('Ok').click();
+    cy.get('#collasible-nav-dropdown > span').click();
+    cy.get('.dropdown-item').click();
+
+    professorLogin();
+
+  })
+
 
 
 })
 
 
 describe('[LSBT1-3]As a teacher I want to access the list of students booked for my lectures so that I am informed' , () => {
+  
+  // it('Professor Login', () => {
+  //   clearDatabase();
+      
+  //   const courseData = [1,"data science","We study a lot of data science","2020",1,"John Smith"];
+  //   addCourse(courseData);
+
+  //   const today = new Date();
+  //     const tomorrow = new Date(today);
+  //     tomorrow.setDate(tomorrow.getDate()+20);
+  //     const tomorrowstring = tomorrow.toISOString().slice(0,16);
+
+  //     const deadline = new Date(today);
+  //     deadline.setDate(deadline.getDate() + 20);
+
+  //     const deadlinestring = deadline.toISOString().slice(0,16);
+      
+
+
+        
+  //     const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 2, 0, 1, 120, "Mon",  "8:30-11:30"];
+  //     addLecture(lectureData);
+
+  //     const bookingDate = new Date().toISOString().slice(0,16);
+
+  //     const bookingData = [1,1,1,null,null,null,null,null,bookingDate];
+  //     addBooking(bookingData);
+
+  //   professorLogin();
+
+  //   cy.get('.btn > .svg-inline--fa > path').click();
+  //   cy.get('.d-inline-flex > :nth-child(2)').click();
+  //   cy.get('tbody > tr > :nth-child(1)').should('have.text',courseData[5]);
+  //   cy.get('tbody > tr > :nth-child(2)').should('have.text',bookingDate);
+
+
+    
+  // })
+
+
 })
 
 describe('[LSBT1-4]As a student I want to get an email confirmation of my booking so that I am informed' , () => {
