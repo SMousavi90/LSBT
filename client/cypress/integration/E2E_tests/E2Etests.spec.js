@@ -8,10 +8,10 @@ const APIURL = "api";
 
 
 
-const studentLogin = () => {
+const studentLogin = (number) => {
     cy.visit('http://localhost:3000/');
     cy.url().should('contain' , 'http://localhost:3000/login');
-    cy.contains('Username').click().type('student1');
+    cy.contains('Username').click().type('student'+number);
     cy.contains('Password').click().type('pass').type('{enter}');
     cy.location('href').should('eq','http://localhost:3000/');
     
@@ -177,7 +177,7 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       addLecture(lectureData);
       
       cy.visit("http://localhost:3000/");
-      studentLogin();
+      studentLogin(1);
       cy.contains(courseData[2]).click();
       cy.contains(courseData[5]); //click();
       cy.get('Button').contains('Book').click();
@@ -215,7 +215,7 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       addLecture(lectureData);
       
       cy.visit("http://localhost:3000/");
-      studentLogin();
+      studentLogin(1);
       cy.contains(courseData[2]).click();
       cy.contains(courseData[5]); //click();
       cy.get('td').should('have.text','No lecture available, please select one course.');
@@ -272,7 +272,7 @@ describe('[LSBT1-2]As a teacher I want to get notified of the number of students
     addLecture(lectureData);
     
     cy.visit("http://localhost:3000/");
-    studentLogin();
+    studentLogin(1);
     cy.contains(courseData[2]).click();
     cy.contains(courseData[5]); //click();
     cy.get('Button').contains('Book').click();
@@ -358,10 +358,81 @@ describe('[LSBT1-11]As a booking manager I want to monitor usage (booking, cance
 })
 
 describe('[LSBT1-12]As a support officer I want to upload the list of students, courses, teachers, lectures, and classes to setup the system' , () => {
+
+
+
+
+
+
+
+
 })
 
 describe('[LSBT1-13]As a student I want to be put in a waiting list when no seats are available in the required lecture' , () => {
-})
+
+  it('Student gets reservation', () =>
+{  clearDatabase();
+      
+      //(CourseId,Name,Description,Year,Semester,Teacher)
+      const courseData = [1,"data science","We study a lot of data science","2020",1,"John Smith"];
+
+      addCourse(courseData);
+      
+      //(StudentCourseId,CourseId,StudentId)
+      var studentcourseData = [1,1,1];
+
+      addStudentCourse(studentcourseData);
+
+      studentcourseData = [2,1,3];
+      addStudentCourse(studentcourseData);
+      new Date().toLocaleDateString(
+        'en-gb',
+        {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        }
+      );
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate()+1);
+      const tomorrowstring = tomorrow.toISOString().slice(0,2);
+
+      const deadline = new Date(today);
+      deadline.setDate(deadline.getDate() + 5);
+
+      const deadlinestring = deadline.toISOString().slice(0,16);
+      
+
+
+        
+      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 2, 0, 1, 1, "Mon",  "8:30-11:30"];
+
+      addLecture(lectureData);
+
+      cy.visit("http://localhost:3000/");
+      studentLogin(1);
+      cy.contains(courseData[2]).click();
+      cy.contains(courseData[5]); //click();
+      cy.get('.btn').should('have.text', 'Book').click();
+      cy.get('Button').contains('Yes').click();
+      cy.get('Button').contains('Ok').click();
+      //Logout
+      cy.get('#collasible-nav-dropdown > span').click();
+      cy.get('.dropdown-item').click();
+      studentLogin(2);
+      cy.get('h3').should('have.text', 'data science').click();
+      cy.get('tbody > tr > :nth-child(4)').should('have.text','0');
+      cy.get('.btn').should('have.text','Reserve').click();
+      cy.get('.react-confirm-alert-body > h1').should('have.text','Warning');
+      cy.get('.react-confirm-alert-button-group > :nth-child(1)').should('have.text', 'Yes').click();
+      cy.get('.custom-ui-warning > :nth-child(3)').should('have.text','you\'re now in the waiting list.');
+      cy.get('.custom-ui-warning > button').should('have.text','Ok').click();
+      cy.get('.btn').should('have.text','Waiting list');
+}
+
+ )}
+)
 
 describe('[LSBT1-14]As a student in the waiting list I want to be added to the list of students booked when someone cancels their booking so that I can attend the lecture' , () => {
 })
