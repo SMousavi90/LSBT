@@ -10,7 +10,7 @@ const APIURL = "api";
 
 const studentLogin = (number) => {
     cy.visit('http://localhost:3000/');
-    cy.url().should('contain' , 'http://localhost:3000/login');
+    //cy.url().should('contain' , 'http://localhost:3000/login');
     cy.contains('Username').click().type('student'+number);
     cy.contains('Password').click().type('pass').type('{enter}');
     cy.location('href').should('eq','http://localhost:3000/');
@@ -405,8 +405,8 @@ describe('[LSBT1-13]As a student I want to be put in a waiting list when no seat
       
 
 
-        
-      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 2, 0, 1, 1, "Mon",  "8:30-11:30"];
+      //(CourseId, Schedule,BookingDeadline, NotificationDeadline, EndTime,Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time)
+      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring + 1 , 1, 0, 2, 0, 1, 1, "Mon",  "8:30-11:30"];
 
       addLecture(lectureData);
 
@@ -435,6 +435,17 @@ describe('[LSBT1-13]As a student I want to be put in a waiting list when no seat
 )
 
 describe('[LSBT1-14]As a student in the waiting list I want to be added to the list of students booked when someone cancels their booking so that I can attend the lecture' , () => {
+
+  it('Student cancels lecture booking -> student in waiting list gets the spot', () => {
+    //Logout
+    cy.get('#collasible-nav-dropdown > span').click();
+    cy.get('.dropdown-item').click();
+    studentLogin(1);
+  })
+
+
+
+
 })
 
 describe('[LSBT1-15]As a student I want to get notified when I am taken from the waiting list so that I can attend the lecture' , () => {
