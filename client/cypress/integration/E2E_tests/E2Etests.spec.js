@@ -1,4 +1,4 @@
-import API from '../../../src/API/API';
+const moment = require("moment");
 
 const APIURL = "api";
 
@@ -61,33 +61,64 @@ const professorLogin = () => {
             
 //             //addLecture()
 
-const courseData = [1,"data science","We study a lot of data science","2020","Scott"];
 
-function addCourse(){
+
+function addCourse(courseData){
   cy.request({
     method: 'POST',
-    url: APIURL + '/addcourse/',
+    url: "http://localhost:3000/" + APIURL + '/addcourse/',
     headers: {
       "Content-type": "application/json",
     },
     body: JSON.stringify({ data: courseData }),
       
     
-  })
-  .then((resp) => {
-    window.localStorage.setItem('jwt', resp.body.user.token)
-  })
+  }).then(
+    (response) => {
+      expect(response.status).to.eq(200);
+      console.log(response);
+    }
+  )
+  // .then((resp) => {
+  //   window.localStorage.setItem('jwt', resp.body.user.token)
+  // })
 }
+
+
+function addLecture(lectureData){
+  cy.request({
+    method: 'POST',
+    url: "http://localhost:3000/" + APIURL + '/addlecture/',
+    headers: {
+      "Content-type": "application/json",
+    },
+    body: JSON.stringify({ data: lectureData }),
+      
+    
+  }).then(
+    (response) => {
+      expect(response.status).to.eq(200);
+      console.log(response);
+    }
+  )
+
+
+}
+
+
 
 
 function clearDatabase(){
   cy.request({
     method: 'DELETE',
-    url: APIURL + '/cleardatabase/',
+    url:"http://localhost:3000/" + APIURL + '/cleardatabase/',
     
-  }).then((resp) => {
-    window.localStorage.setItem('jwt', resp.body.user.token)
-  })
+  }).then(
+    (response) => {
+      expect(response.status).to.eq(200);
+      console.log(response);
+    }
+  )
 }
 
 
@@ -95,15 +126,62 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
 
   
     it('Student login', () => {
-        studentLogin();
-        cy.wait(500);
+      
+      clearDatabase();
+      
+      const courseData = [1,"data science","We study a lot of data science","2020","Scott"];
 
-        clearDatabase();
-        addCourse();
+      addCourse(courseData);
+      
+      new Date().toLocaleDateString(
+        'en-gb',
+        {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        }
+      );
+      const today = new Date();
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate()+1);
+      const tomorrowstring = tomorrow.toLocaleDateString(
+        'it-IT',
+        {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        }
+      ) + " " +  tomorrow.toLocaleTimeString('it-It');
 
-        cy.contains('Economia e finanza').click();
-        cy.contains('Joe Simone'); //click();
-        cy.get('Button').contains('Book').click();
+      const deadline = new Date(today);
+      deadline.setDate(deadline.getDate() + 5);
+
+      const deadlinestring = deadline.toLocaleDateString(
+        'it-IT',
+        {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric'
+        }
+      ) + " " +  deadline.toLocaleTimeString('it-It');
+
+      // (CourseId, Schedule,
+      // BookingDeadline, NotificationDeadline, EndTime,
+      // Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time)
+
+
+        console.log(tomorrowstring);
+        console.log(deadlinestring);
+        console.log(new Date(tomorrowstring));
+      const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 1, 0, 1, 120, "Mon",  "8:30-11:30"];
+         
+      addLecture(lectureData);
+      
+      cy.visit("http://localhost:3000/");
+      studentLogin();
+      cy.contains(courseData[2]).click();
+      //cy.contains(courseData[5]); //click();
+      //   cy.get('Button').contains('Book').click();
     })
 
     
@@ -114,9 +192,9 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
 
 describe('[LSBT1-2]As a teacher I want to get notified of the number of students attending my next lecture so that I am informed' , () => {
 
-  it('Professor Login', () => {
-    professorLogin();
-  })
+  // it('Professor Login', () => {
+  //   professorLogin();
+  // })
 
 
 })

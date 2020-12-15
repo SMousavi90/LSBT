@@ -75,7 +75,8 @@ app.post(BASEURI + '/logout', (req, res) => {
 app.post(BASEURI + '/addcourse/', (req, res) => {
     dao.addCourse(req.body.data)
         .then(() => {
-            res.status(200);
+            console.log("Server resolved");
+            res.status(200).end();
         })
         .catch((err) => {
             res.status(500).json({
@@ -84,6 +85,18 @@ app.post(BASEURI + '/addcourse/', (req, res) => {
         });
 });
 
+app.post(BASEURI + '/addlecture/', (req, res) => {
+    dao.addLecture(req.body.data)
+        .then(() => {
+            console.log("Server resolved");
+            res.status(200).end();
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
 app.delete(BASEURI + '/cleardatabase/', (req, res) => {
     dao.clearDatabase()
         .then((result) => res.status(200).end())
