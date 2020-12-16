@@ -1208,7 +1208,7 @@ exports.getContactTracingReport = function (userId) {
     (SELECT LectureId, Schedule
     from StudentFinalBooking 
     where StudentId=?
-    and Presence=1 and Schedule between date(DATETIME('now') , '-14 day') and DATETIME('now')) PositiveList
+    and Presence=1 and Schedule <= DATETIME('now') and Schedule >= date(DATETIME('now') , '-14 day')) PositiveList
     left join 
     (select b.LectureId, StudentId,St.Name || ' ' || st.LastName as StudentName, st.Email, t.Name || ' ' || t.LastName as TeacherName
     from StudentFinalBooking  B inner join user St 
