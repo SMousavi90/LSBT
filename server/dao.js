@@ -1204,7 +1204,7 @@ exports.getPositiveStudents = function (userId, name, lastName) {
 
 exports.getContactTracingReport = function (userId) {
   return new Promise((resolve, reject) => {
-    const sql = `select Contlist.StudentId, ContList.StudentName, ContList.Email, ContList.TeacherName from  
+    const sql = `select distinct Contlist.StudentId, ContList.StudentName, ContList.Email, ContList.TeacherName from  
     (SELECT LectureId, Schedule
     from StudentFinalBooking 
     where StudentId=?
