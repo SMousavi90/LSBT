@@ -1074,7 +1074,7 @@ exports.importCSVData = function (data, type) {
                     [
                       element.Code,
                       moment(d).format("yyyy-MM-DD") + " " + startTime, // Schedule
-                      moment(d).add(-1, "d").format("yyyy-MM-DD") + startTime, // BookingDeadline
+                      moment(d).add(-1, "d").format("yyyy-MM-DD") + " " + startTime, // BookingDeadline
                       moment(d).format("yyyy-MM-DD"), // NotificationDeadline
                       moment(d).format("yyyy-MM-DD") + " " + endTime, // EndTime
                       1,
