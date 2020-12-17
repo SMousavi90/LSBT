@@ -89,14 +89,24 @@ describe("check Courses", () => {
   });
 
   test("test getStudentCurrentCourses", () => {
-    return dao.getStudentCurrentCourses(1010).then((data) => {
-      expect(data).toEqual(undefined);
+    
+    return dao.getStudentCurrentCourses(5).then((data) => {
+      expect(data).toHaveLength(1);
     });
   });
+
+  test("test getAllCourses", () => {
+
+    return dao.getAllCourse().then((data) => {
+      expect(data.length > 0);
+    });
+  });
+
 });
 
 describe("check BookingAndHistory", () => {
   beforeAll(() => {
+    clearBooking();
     clearLectures();
     initLectures();
     initCourses();
@@ -136,6 +146,17 @@ describe("check BookingAndHistory", () => {
     return dao.getBookingDetails(1, 4).then((data) => {
       expect(data.length > 0);
     });
+  });
+  test("test getBookCountByCourseID", () => {
+    return dao.getBookCountByCourseID("W", "2020-10-01","2020-12-01","XY0422").then((data) => {
+      expect(data.length > 0);
+    });
+  });
+  test("test manageQueueReservation", () => {
+    // debugger
+    // return dao.manageQueueReservation(1).then((data) => {
+    //   expect(data.length > 0);
+    // });
   });
 });
 
@@ -271,30 +292,27 @@ describe("----", () => {
     return clearBooking();
   });
 
-  test("test getAllCourses", () => {
-    
-  });
-  test("test getBookCountByCourseID", () => {
+  
+  
+ 
+  test("test getDateOfDay", () => {
     
   });
   test("test getPositiveStudents", () => {
     
   });
+  
   test("test getContactTracingReport", () => {
     
   });
   test("test importCSVData", () => {
     
   });
-  test("test manageQueueReservation", () => {
-    
-  });
+ 
   test("test importCSVData", () => {
     
   });
-  test("test getDateOfDay", () => {
-    
-  });
+ 
   
 
 });
@@ -334,7 +352,7 @@ initLectures = () => {
 clearLectures = () => {
   return new Promise((resolve, reject) => {
     const sql = `DELETE FROM Lecture
-   WHERE CourseId = 'XY0422'
+   WHERE CourseId = 'XY0422' or LectureId = 1
     `;
 
     db.run(sql, (err, rows) => {
@@ -433,7 +451,7 @@ initBooking = () => {
      2,
      3,
      "2020-11-25 15:20" 
-    )
+    ); 
    `;
 
     db.run(sql, (err, rows) => {
@@ -450,7 +468,7 @@ initBooking = () => {
 clearBooking = () => {
   return new Promise((resolve, reject) => {
     const sql = `DELETE FROM Booking
-   WHERE BookingId >= 100 or StudentId = 4
+   WHERE BookingId >= 100 or StudentId in (2,4)
     `;
 
     db.run(sql, (err, rows) => {

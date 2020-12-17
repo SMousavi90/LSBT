@@ -684,7 +684,7 @@ exports.getBookCountByCourseID = function (
   endDate,
   courseId
 ) {
-  console.log(period, userId, startDate, endDate, courseId);
+  
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {

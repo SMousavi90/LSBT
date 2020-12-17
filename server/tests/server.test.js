@@ -282,7 +282,7 @@ initLectures = () => {
   };
 
   initBooking = () => {
-    debugger;
+    
     return new Promise((resolve, reject) => {
       const sql = `INSERT INTO Booking
      (BookingId,
@@ -296,9 +296,8 @@ initLectures = () => {
        "2020-11-30 15:20"
       )
      `;
-  
       db.run(sql, (err, rows) => {
-        debugger;
+        
         if (err) {
           reject(err);
           return;
@@ -312,7 +311,7 @@ initLectures = () => {
   clearBooking = () => {
     return new Promise((resolve, reject) => {
       const sql = `DELETE FROM Booking
-     WHERE BookingId = 101
+      WHERE BookingId >= 100 or StudentId in (2,4)
       `;
   
       db.run(sql, (err, rows) => {
