@@ -32,6 +32,19 @@ class OfficerDashboard extends React.Component {
         data.append('file', this.state.selectedFile);
         let importType = this.state.selectedType;
         data.append('importType', importType);
+        if (this.state.selectedFile === null) {
+            confirmAlert({
+                customUI: ({ onClose }) => {
+                    return (
+                        <div className='custom-ui-danger'>
+                            <h1></h1>
+                            <p>The file is not selected</p>
+                            <button onClick={onClose}>Ok</button>
+                        </div>
+                    );
+                }
+            });
+        } else {
         API.uploadDataCSV(data)
             .then((data) => {
                 confirmAlert({
@@ -60,6 +73,7 @@ class OfficerDashboard extends React.Component {
                     }
                 });
             });
+        }
     }
 
     onEntityTypeChange = (ev) => {

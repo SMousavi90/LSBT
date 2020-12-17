@@ -425,7 +425,7 @@ exports.manageQueueReservation = function (lectureId) {
               }
             });
           }
-        }else{
+        } else {
           resolve(null);
         }
       }
@@ -867,220 +867,321 @@ exports.importCSVData = function (data, type) {
   return new Promise((resolve, reject) => {
     if (type === "Students") {
       data.forEach((element) => {
-        // let birthDate = moment(element.Birthday).format("yyyy-MM-DD");
-        let sql = `insert into user 
-        (UserId,Name,LastName,Username,Password,Email,RolId,City,SSN,Birthday)
-        values (?,?,?,?,
-        '$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,1,?,?,?)
-       `;
-        db.run(
-          sql,
-          [
-            element.Id,
-            element.Name,
-            element.Surname,
-            element.SSN,
-            element.OfficialEmail,
-            element.City,
-            element.SSN,
-            element.Birthday,
-          ],
-          (rows, err) => {
+        if (element.Id !== null &&
+          element.Name !== null &&
+          element.Surname !== null &&
+          element.SSN !== null &&
+          element.OfficialEmail !== null &&
+          element.City !== null &&
+          element.SSN !== null &&
+          element.Birthday !== null) {
+
+          let sqlExist = `select UserId from User where UserId = ?`;
+          db.all(sqlExist, [element.Id], (err, rows) => {
             if (err) {
               reject(err);
-            } else resolve(true);
-          }
-        );
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into user 
+                (UserId,Name,LastName,Username,Password,Email,RolId,City,SSN,Birthday)
+                values (?,?,?,?,
+                '$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,1,?,?,?)
+              `;
+                db.run(
+                  sql,
+                  [
+                    element.Id,
+                    element.Name,
+                    element.Surname,
+                    element.SSN,
+                    element.OfficialEmail,
+                    element.City,
+                    element.SSN,
+                    element.Birthday,
+                  ],
+                  (rows, err) => {
+                    if (err) {
+                      reject(err);
+                    } else resolve(true);
+                  }
+                );
+              }
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
       });
     } else if (type === "Professors") {
       data.forEach((element) => {
-        let sql = `insert into user (Name,LastName,Username,Password,Email,RolId,SSN,Number)
-        values (?,?,?,'$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,2,?,?)
-       `;
-        db.run(
-          sql,
-          [
-            element.GivenName,
-            element.Surname,
-            element.SSN,
-            element.OfficialEmail,
-            element.SSN,
-            element.Number,
-          ],
-          (rows, err) => {
+        if (element.GivenName !== null &&
+          element.Surname !== null &&
+          element.SSN !== null &&
+          element.OfficialEmail !== null &&
+          element.SSN !== null &&
+          element.Number !== null) {
+
+
+          let sqlExist = `select * from User where Number = ?`;
+          db.all(sqlExist, [element.Number], (err, rows) => {
             if (err) {
               reject(err);
-            } else resolve(true);
-          }
-        );
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into user (Name,LastName,Username,Password,Email,RolId,SSN,Number)
+                values (?,?,?,'$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,2,?,?)
+              `;
+                db.run(
+                  sql,
+                  [
+                    element.GivenName,
+                    element.Surname,
+                    element.SSN,
+                    element.OfficialEmail,
+                    element.SSN,
+                    element.Number,
+                  ],
+                  (rows, err) => {
+                    if (err) {
+                      reject(err);
+                    } else resolve(true);
+                  }
+                );
+              }
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
       });
     } else if (type === "Courses") {
       data.forEach((element) => {
-        let sql = `insert into Course (CourseId,name,Description,Year,Semester,Teacher)
-        values (?,?,?,?,?,?)
-       `;
-        db.run(
-          sql,
-          [
-            element.Code,
-            element.Course,
-            element.Course,
-            element.Year,
-            element.Semester,
-            element.Teacher,
-          ],
-          (rows, err) => {
+        if (
+          element.Code !== undefined &&
+          element.Course !== undefined &&
+          element.Course !== undefined &&
+          element.Year !== undefined &&
+          element.Semester !== undefined &&
+          element.Teacher !== undefined
+        ) {
+
+          let sqlExist = `select CourseId from Course where CourseId = ?`;
+          db.all(sqlExist, [element.Code], (err, rows) => {
             if (err) {
               reject(err);
-            } else resolve(true);
-          }
-        );
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into Course (CourseId,name,Description,Year,Semester,Teacher)
+                values (?,?,?,?,?,?)
+              `;
+                db.run(
+                  sql,
+                  [
+                    element.Code,
+                    element.Course,
+                    element.Course,
+                    element.Year,
+                    element.Semester,
+                    element.Teacher,
+                  ],
+                  (rows, err) => {
+                    if (err) {
+                      reject(err);
+                    } else resolve(true);
+                  }
+                );
+              }
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
       });
+
     } else if (type === "Enrollment") {
       data.forEach((element) => {
-        let sql = `insert into StudentCourse(CourseId,StudentId)
-        values (?,?)
-       `;
-        db.run(sql, [element.Code, element.Student], (rows, err) => {
-          if (err) {
-            reject(err);
-          } else resolve(true);
-        });
+        if (
+          element.Code !== undefined &&
+          element.Student !== undefined
+        ) {
+
+          let sqlExist = `select * from StudentCourse where CourseId = ? and StudentId = ?`;
+          db.all(sqlExist, [element.Code, element.Student], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into StudentCourse(CourseId,StudentId)
+                values (?,?)
+              `;
+                db.run(sql, [element.Code, element.Student], (rows, err) => {
+                  if (err) {
+                    reject(err);
+                  } else resolve(true);
+                });
+              }
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
       });
     } else if (type === "Schedule") {
       data.forEach((element) => {
-        const getUserIdSql = `select UserId from user where Number=(select Teacher from Course where CourseId=?)`;
-        db.all(getUserIdSql, [element.Code], (err, rows) => {
-          if (err) reject(err);
-          else if (rows.length === 0) resolve(undefined);
-          else {
-            let userId = rows[0].UserId;
+        if (
+          element.Code !== undefined &&
+          element.Room !== undefined &&
+          element.Seats !== undefined &&
+          element.Day !== undefined &&
+          element.Time !== undefined
+        ) {
 
-            const getCourseYearSemester = `select Year, Semester from Course where CourseId=?`;
-            db.all(getCourseYearSemester, [element.Code], (err, rows) => {
-              if (err) reject(err);
-              else if (rows.length === 0) resolve(undefined);
-              else {
-                let year = rows[0].Year;
-                let semester = rows[0].Semester;
-                let dates = [];
-                // todo: check if the current date is the first semester or the second semester
-                if (semester === "1") {
-                  // find dates between October 1st to Jan 15th
-                  let startDate = moment(`${moment().format("YYYY")}-10-01`);
-                  let endDate = moment(
-                    `${moment().add(1, "Y").format("YYYY")}-01-15`
-                  );
-                  switch (element.Day) {
-                    case "Mon":
-                      dates = getDateOfDay(startDate, endDate, 1);
-                      break;
-                    case "Tue":
-                      dates = getDateOfDay(startDate, endDate, 2);
-                      break;
-                    case "Wed":
-                      dates = getDateOfDay(startDate, endDate, 3);
-                      break;
-                    case "Thu":
-                      dates = getDateOfDay(startDate, endDate, 4);
-                      break;
-                    case "Fri":
-                      dates = getDateOfDay(startDate, endDate, 5);
-                      break;
-                    default:
-                      break;
-                  }
-                } else {
-                  // it is second semester lecture and the date is between March 1st to Jun 15th
-                  let startDate = moment(
-                    `${moment().add(1, "Y").format("YYYY")}-03-01`
-                  );
-                  let endDate = moment(`${moment().format("YYYY")}-06-15`);
-                  switch (element.Day) {
-                    case "Mon":
-                      dates = getDateOfDay(startDate, endDate, 1);
-                      break;
-                    case "Tue":
-                      dates = getDateOfDay(startDate, endDate, 2);
-                      break;
-                    case "Wed":
-                      dates = getDateOfDay(startDate, endDate, 3);
-                      break;
-                    case "Thu":
-                      dates = getDateOfDay(startDate, endDate, 4);
-                      break;
-                    case "Fri":
-                      dates = getDateOfDay(startDate, endDate, 5);
-                      break;
-                    default:
-                      break;
-                  }
-                }
+          const getUserIdSql = `select UserId from user where Number=(select Teacher from Course where CourseId=?)`;
+          db.all(getUserIdSql, [element.Code], (err, rows) => {
+            if (err) reject(err);
+            else if (rows.length === 0) resolve(undefined);
+            else {
+              let userId = rows[0].UserId;
 
-                let sql = `insert into Lecture (CourseId, Schedule,
+              const getCourseYearSemester = `select Year, Semester from Course where CourseId=?`;
+              db.all(getCourseYearSemester, [element.Code], (err, rows) => {
+                if (err) reject(err);
+                else if (rows.length === 0) resolve(undefined);
+                else {
+                  let year = rows[0].Year;
+                  let semester = rows[0].Semester;
+                  let dates = [];
+                  // todo: check if the current date is the first semester or the second semester
+                  if (semester === "1") {
+                    // find dates between October 1st to Jan 15th
+                    let startDate = moment(`${moment().format("YYYY")}-10-01`);
+                    let endDate = moment(
+                      `${moment().add(1, "Y").format("YYYY")}-01-15`
+                    );
+                    switch (element.Day) {
+                      case "Mon":
+                        dates = getDateOfDay(startDate, endDate, 1);
+                        break;
+                      case "Tue":
+                        dates = getDateOfDay(startDate, endDate, 2);
+                        break;
+                      case "Wed":
+                        dates = getDateOfDay(startDate, endDate, 3);
+                        break;
+                      case "Thu":
+                        dates = getDateOfDay(startDate, endDate, 4);
+                        break;
+                      case "Fri":
+                        dates = getDateOfDay(startDate, endDate, 5);
+                        break;
+                      default:
+                        break;
+                    }
+                  } else {
+                    // it is second semester lecture and the date is between March 1st to Jun 15th
+                    let startDate = moment(
+                      `${moment().add(1, "Y").format("YYYY")}-03-01`
+                    );
+                    let endDate = moment(`${moment().format("YYYY")}-06-15`);
+                    switch (element.Day) {
+                      case "Mon":
+                        dates = getDateOfDay(startDate, endDate, 1);
+                        break;
+                      case "Tue":
+                        dates = getDateOfDay(startDate, endDate, 2);
+                        break;
+                      case "Wed":
+                        dates = getDateOfDay(startDate, endDate, 3);
+                        break;
+                      case "Thu":
+                        dates = getDateOfDay(startDate, endDate, 4);
+                        break;
+                      case "Fri":
+                        dates = getDateOfDay(startDate, endDate, 5);
+                        break;
+                      default:
+                        break;
+                    }
+                  }
+
+                  let sql = `insert into Lecture (CourseId, Schedule,
                   BookingDeadline, NotificationDeadline, EndTime,
                   Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
                 `;
-                dates.forEach((d) => {
-                  let startTime = "";
-                  let endTime = "";
-                  if (element.Time.includes("-")) {
-                    let hour = element.Time.split("-")[0].split(":")[0];
-                    let minute = element.Time.split("-")[0].split(":")[1];
-                    if (hour < 10 && hour != "00") hour = "0" + hour;
-                    if (minute < 10 && minute != "00") minute = "0" + minute;
+                  dates.forEach((d) => {
+                    let startTime = "";
+                    let endTime = "";
+                    if (element.Time.includes("-")) {
+                      let hour = element.Time.split("-")[0].split(":")[0];
+                      let minute = element.Time.split("-")[0].split(":")[1];
+                      if (hour < 10 && hour != "00") hour = "0" + hour;
+                      if (minute < 10 && minute != "00") minute = "0" + minute;
 
-                    let ehour = element.Time.split("-")[1].split(":")[0];
-                    let eminute = element.Time.split("-")[1].split(":")[1];
-                    if (ehour < 10 && ehour != "00") ehour = "0" + ehour;
-                    if (eminute < 10 && eminute != "00")
-                      eminute = "0" + eminute;
+                      let ehour = element.Time.split("-")[1].split(":")[0];
+                      let eminute = element.Time.split("-")[1].split(":")[1];
+                      if (ehour < 10 && ehour != "00") ehour = "0" + ehour;
+                      if (eminute < 10 && eminute != "00")
+                        eminute = "0" + eminute;
 
-                    startTime = hour + ":" + minute;
-                    endTime = ehour + ":" + eminute;
-                  } else {
-                    let hour = element.Time.split(":")[0];
-                    let minute = element.Time.split(":")[1];
-                    if (hour < 10 && hour != "00") hour = "0" + hour;
-                    if (minute < 10 && minute != "00") minute = "0" + minute;
+                      startTime = hour + ":" + minute;
+                      endTime = ehour + ":" + eminute;
+                    } else {
+                      let hour = element.Time.split(":")[0];
+                      let minute = element.Time.split(":")[1];
+                      if (hour < 10 && hour != "00") hour = "0" + hour;
+                      if (minute < 10 && minute != "00") minute = "0" + minute;
 
-                    let ehour = element.Time.split(":")[2];
-                    let eminute = element.Time.split(":")[3];
-                    if (ehour < 10 && ehour != "00") ehour = "0" + ehour;
-                    if (eminute < 10 && eminute != "00")
-                      eminute = "0" + eminute;
+                      let ehour = element.Time.split(":")[2];
+                      let eminute = element.Time.split(":")[3];
+                      if (ehour < 10 && ehour != "00") ehour = "0" + ehour;
+                      if (eminute < 10 && eminute != "00")
+                        eminute = "0" + eminute;
 
-                    startTime = hour + ":" + minute;
-                    endTime = ehour + ":" + eminute;
-                  }
-                  db.run(
-                    sql,
-                    [
-                      element.Code,
-                      moment(d).format("yyyy-MM-DD") + " " + startTime, // Schedule
-                      moment(d).add(-1, "d").format("yyyy-MM-DD") + " " + startTime, // BookingDeadline
-                      moment(d).format("yyyy-MM-DD"), // NotificationDeadline
-                      moment(d).format("yyyy-MM-DD") + " " + endTime, // EndTime
-                      1,
-                      0,
-                      userId,
-                      0,
-                      element.Room,
-                      element.Seats,
-                      element.Day,
-                      element.Time,
-                    ],
-                    (rows, err) => {
+                      startTime = hour + ":" + minute;
+                      endTime = ehour + ":" + eminute;
+                    }
+
+                    let sqlExist = `select * from Lecture where CourseId = ? 
+                    and TeacherId = ? and Schedule = ?`;
+                    db.all(sqlExist, [element.Code, userId, moment(d).format("yyyy-MM-DD") + " " + startTime], (err, rows) => {
                       if (err) {
                         reject(err);
-                      } else resolve(true);
-                    }
-                  );
-                });
-              }
-            });
-          }
-        });
+                      } else {
+                        if (rows.length == 0) {
+                          db.run(
+                            sql,
+                            [
+                              element.Code,
+                              moment(d).format("yyyy-MM-DD") + " " + startTime, // Schedule
+                              moment(d).add(-1, "d").format("yyyy-MM-DD") + " " + startTime, // BookingDeadline
+                              moment(d).format("yyyy-MM-DD"), // NotificationDeadline
+                              moment(d).format("yyyy-MM-DD") + " " + endTime, // EndTime
+                              1,
+                              0,
+                              userId,
+                              0,
+                              element.Room,
+                              element.Seats,
+                              element.Day,
+                              element.Time,
+                            ],
+                            (rows, err) => {
+                              if (err) {
+                                reject(err);
+                              } else resolve(true);
+                            }
+                          );
+                        }
+                      }
+                    });
+                  });
+                }
+              });
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
       });
     }
   });
@@ -1093,63 +1194,64 @@ exports.clearDatabase = function () {
       reject("ClearProductionDB");
     }
 
-    
-     const sql =
+
+    const sql =
       "DELETE from Course";
     //  const sql =
     //   "DELETE from user where UserId>23; DELETE from Course; DELETE from Class; DELETE from StudentCourse; DELETE from Lecture; DELETE from Booking; DELETE from TeacherNotification;";
-      //console.log("Clearing database");
-      db.run(sql, (err) => {
-        if (err) {
-          console.log("DB failed clearing database");
-          console.log(err);
-          reject(err);
-          
-        } else resolve(null);
-      });
-    
-      const sqlLecture =
-      "DELETE from Lecture"; 
-      db.run(sqlLecture, (err) => {
-        if (err) {
-          console.log("DB failed clearing database");
-          console.log(err);
-          reject(err);
-          
-        } else resolve(null);
-      });
-      console.log("CANCEL booking");
-      const sqlBooking =
-      "DELETE from Booking"; 
-      db.run(sqlBooking, (err) => {
-        if (err) {
-          console.log("DB failed clearing database");
-          console.log(err);
-          reject(err);
-          
-        } else resolve(null);
-      });
+    //console.log("Clearing database");
+    db.run(sql, (err) => {
+      if (err) {
+        console.log("DB failed clearing database");
+        console.log(err);
+        reject(err);
 
+      } else resolve(null);
     });
-  };
-  
-  exports.addCourse = function (data) {
-    return new Promise((resolve, reject) => {
-      if (process.env.npm_config_test !== "true") {
-        console.log("Tried clearing production database");
-        reject("ClearProductionDB");
-      }
-      
-      let sql = `insert into Course (CourseId,Name,Description,Year,Semester,Teacher) values (?, ?, ?, ?, ?, ?)                  
+
+    const sqlLecture =
+      "DELETE from Lecture";
+    db.run(sqlLecture, (err) => {
+      if (err) {
+        console.log("DB failed clearing database");
+        console.log(err);
+        reject(err);
+
+      } else resolve(null);
+    });
+    console.log("CANCEL booking");
+    const sqlBooking =
+      "DELETE from Booking";
+    db.run(sqlBooking, (err) => {
+      if (err) {
+        console.log("DB failed clearing database");
+        console.log(err);
+        reject(err);
+
+      } else resolve(null);
+    });
+
+  });
+};
+
+exports.addCourse = function (data) {
+  return new Promise((resolve, reject) => {
+    if (process.env.npm_config_test !== "true") {
+      console.log("Tried clearing production database");
+      reject("ClearProductionDB");
+    }
+
+    let sql = `insert into Course (CourseId,Name,Description,Year,Semester,Teacher) values (?, ?, ?, ?, ?, ?)                  
       `;
-      db.run(sql, [...data], (err) => {
-        if (err) {
+    db.run(sql, [...data], (err) => {
+      if (err) {
         console.log(err);
         console.log("DB failed adding course");
         reject(err);
       } else {
         console.log("DAO resolved");
-        resolve(null);}
+        resolve(null);
+      }
     });
   });
 };

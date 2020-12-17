@@ -84,10 +84,10 @@ app.use(
 
 //to handle each UnauthorizedError
 app.use(function (err, req, res, next) { //used when i call isAuthenticated (client side) and the user is not authenticated
-    
-        if (err.name === 'UnauthorizedError') {
+
+    if (err.name === 'UnauthorizedError') {
         res.status(401).json(authErrorObj);
-    } 
+    }
 });
 
 //get a user info (used by client to reauthenticate itself - getting its user info)
@@ -384,29 +384,37 @@ app.post(BASEURI + '/uploadDataCSV', (req, res) => {
             console.log(err);
             return res.end("Error uploading file.");
         } else {
-            req.files.forEach(function (f) {
-                fs.rename(f.path,
-                    "upload/" + req.body.importType + ".csv", function (err) {
-                        if (err) console.log('ERROR: ' + err);
-                    });
+            let f = req.files[0];
+            fs.rename(f.path,
+                "upload/" + req.body.importType + ".csv", function (err) {
+                    if (err) console.log('ERROR: ' + err);
+                });
 
-                f.filename = req.body.importType + ".csv";
-                f.path = "upload/" + f.filename;
-            });
-            makeCSVArray(req.files[0], req.body.importType);
-            res.end("File has been uploaded");
+            f.filename = req.body.importType + ".csv";
+            f.path = "upload/" + f.filename;
+            setTimeout(function() {
+                makeCSVArray(f, req.body.importType, res);
+            }, 2000)
         }
     });
 });
 
-makeCSVArray = (file, type) => {
+makeCSVArray = (file, type, res) => {
     fs.readFile(file.path, async (err, data) => {
         if (err) {
             console.error(err)
             return
         }
         let csvData = await neatCsv(data);
-        dao.importCSVData(csvData, type);
+        dao.importCSVData(csvData, type)
+            .then((data) => {
+                res.end("File has been uploaded");
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    errors: [{ 'param': 'Server', 'msg': err }],
+                });
+            });
     })
 }
 
@@ -451,7 +459,7 @@ function insertNotification(lecture) {
 
     var mailOptions = {
         from: "politotestflight@gmail.com",
-        to: lecture.Email+",r.meydanshahi@gmail.com",
+        to: lecture.Email + ",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
@@ -479,7 +487,7 @@ function sendMailToStudent(book) {
 
     var mailOptions = {
         from: 'politotestflight@gmail.com',
-        to: book.Email+",r.meydanshahi@gmail.com",
+        to: book.Email + ",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
@@ -508,7 +516,7 @@ function sendCancelationMailToStudent(lecture) {
 
     var mailOptions = {
         from: 'politotestflight@gmail.com',
-        to: lecture.Emails_List+",r.meydanshahi@gmail.com",
+        to: lecture.Emails_List + ",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
