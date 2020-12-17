@@ -474,11 +474,10 @@ function setTimer(date, func, lecture) {
 
 function insertNotification(lecture) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -486,7 +485,7 @@ function insertNotification(lecture) {
     var body = `The lecture of the course ${lecture.CourseName} scheduled on ${lecture.Schedule} has been booked by ${lecture.nStudents} students.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
+        from: "politotestflight@gmail.com",
         to: lecture.Email,
         subject: subject,
         text: body
@@ -503,11 +502,10 @@ function insertNotification(lecture) {
 
 function sendMailToStudent(book) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -515,7 +513,7 @@ function sendMailToStudent(book) {
     var body = `Dear ${book.Name}, your booking for lecture of ${book.CourseName} scheduled on ${book.Schedule} has been confirmed.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
+        from: 'politotestflight@gmail.com',
         to: book.Email,
         subject: subject,
         text: body
