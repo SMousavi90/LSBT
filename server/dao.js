@@ -234,11 +234,11 @@ exports.getAvailableLectures = function (id, userId) {
     var currentDate = new Date(); // get current date
     var firstDay = new Date(
       currentDate.setDate(currentDate.getDate())
-    ).toISOString();
+    ).toISOString().slice(0, 10);
     var lastDay = new Date(
       currentDate.setDate(currentDate.getDate() + 14)
-    ).toISOString();
-
+    ).toISOString().slice(0, 10);
+    
     const sql = `select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
     U.Name || ' ' || U.LastName as TeacherName, 
     cr.Name, cr.Name as CourseName,case ava.FreeSeats when 0 then 0 else 1 end as BookButton,ava.FreeSeats,case when Reservetbl.Reserved=1 then 1 else 0 end as Reserved
@@ -259,10 +259,9 @@ exports.getAvailableLectures = function (id, userId) {
       And BookingDeadline between ? and ?
     And sc.StudentId = ?
         `;
-
     db.all(
       sql,
-      [userId, userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
+      [userId, userId, id, firstDay, lastDay, userId],
       (err, rows) => {
         if (err) {
           reject(err);
@@ -312,8 +311,8 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
                   );
                 } else {
                   // the class is full, the booking is not possible
-                  const sqlResBook = `insert into Booking(StudentId,LectureId,Reserved,ReserveDate)
-                  values(?,?,1,datetime('now','localtime'))`;
+                  const sqlResBook = `insert into Booking(StudentId,LectureId,BookDate)
+                  values(?,?,datetime('now','localtime'))`;
                   db.run(sqlResBook, [userId, lectureId], (err, rows) => {
                     if (err) reject(err);
                     else resolve(false);

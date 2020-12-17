@@ -167,7 +167,7 @@ app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
     dao.getStudentCurrentCourses(req.params.userId)
         .then((row) => {
             if (!row) {
-                res.status(404).send();
+                res.status(500).send();
             } else {
                 res.json(row);
             }
@@ -183,7 +183,7 @@ app.get('/api/getAvailableLectures/:courseId', (req, res) => {
     dao.getAvailableLectures(req.params.courseId, req.user.username)
         .then((row) => {
             if (!row) {
-                res.status(404).send();
+                res.status(500).send();
             } else {
                 res.json(row);
             }
