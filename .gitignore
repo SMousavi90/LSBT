@@ -12,4 +12,7 @@ server/.dockerignore
 server/test-report.xml
 client/.dockerignore
 server/db/PULSeBS_test_clear.db
+server/upload
+.DS_Store
+
 

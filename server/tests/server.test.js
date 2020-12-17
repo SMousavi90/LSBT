@@ -186,6 +186,51 @@ describe('cancelation rest APIs', function () {
 
 })
 
+
+describe('---', function () {
+
+  beforeAll(() => {
+      clearBooking();
+      clearLectures();  
+      initCourses();
+      initLectures();
+      return initBooking();
+      
+      
+    });
+    afterAll(() => {
+      clearBooking();
+      clearLectures();
+      return clearCourses();
+      
+      
+    });
+
+    it("logout", async () => {
+    });
+    it("bookLecture", async () => {
+    });
+    it("updatenotification", async () => {
+    });
+    it("cancelLecture", async () => {
+    });
+    it("getAllCourses", async () => {
+    });
+    it("getAttendanceStatistics", async () => {
+    });
+    it("getContactTracingReport", async () => {
+    });
+    it("getPositiveStudents", async () => {
+    });
+    it("uploadDataCSV", async () => {
+    });
+    
+    
+    
+    
+
+})
+
 ///getTeacherStats/:period/:userId/:startDate/:endDate/:courseId
 
 initLectures = () => {

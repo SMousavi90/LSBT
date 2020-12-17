@@ -258,6 +258,47 @@ describe("check Teacher Dashboard", () => {
   });
 });
 
+describe("----", () => {
+  beforeAll(() => {
+    clearLectures();
+    initLectures();
+    initCourses();
+    return initBooking();
+  });
+  afterAll(() => {
+    clearLectures();
+    clearCourses();
+    return clearBooking();
+  });
+
+  test("test getAllCourses", () => {
+    
+  });
+  test("test getBookCountByCourseID", () => {
+    
+  });
+  test("test getPositiveStudents", () => {
+    
+  });
+  test("test getContactTracingReport", () => {
+    
+  });
+  test("test importCSVData", () => {
+    
+  });
+  test("test manageQueueReservation", () => {
+    
+  });
+  test("test importCSVData", () => {
+    
+  });
+  test("test getDateOfDay", () => {
+    
+  });
+  
+
+});
+
 initLectures = () => {
   
   var day = moment().add(4, 'd').format("yyyy-MM-DD")+" 10:00"
