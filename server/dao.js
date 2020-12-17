@@ -425,6 +425,8 @@ exports.manageQueueReservation = function (lectureId) {
               }
             });
           }
+        }else{
+          resolve(null);
         }
       }
     });
@@ -1074,7 +1076,7 @@ exports.importCSVData = function (data, type) {
                     [
                       element.Code,
                       moment(d).format("yyyy-MM-DD") + " " + startTime, // Schedule
-                      moment(d).add(-1, "d").format("yyyy-MM-DD") + startTime, // BookingDeadline
+                      moment(d).add(-1, "d").format("yyyy-MM-DD") + " " + startTime, // BookingDeadline
                       moment(d).format("yyyy-MM-DD"), // NotificationDeadline
                       moment(d).format("yyyy-MM-DD") + " " + endTime, // EndTime
                       1,
@@ -1302,11 +1304,11 @@ exports.getPositiveStudents = function (userId, name, lastName) {
 
 exports.getContactTracingReport = function (userId) {
   return new Promise((resolve, reject) => {
-    const sql = `select Contlist.StudentId, ContList.StudentName, ContList.Email, ContList.TeacherName from  
+    const sql = `select distinct Contlist.StudentId, ContList.StudentName, ContList.Email, ContList.TeacherName from  
     (SELECT LectureId, Schedule
     from StudentFinalBooking 
     where StudentId=?
-    and Presence=1 and Schedule between date(DATETIME('now') , '-14 day') and DATETIME('now')) PositiveList
+    and Presence=1 and Schedule <= DATETIME('now') and Schedule >= date(DATETIME('now') , '-14 day')) PositiveList
     left join 
     (select b.LectureId, StudentId,St.Name || ' ' || st.LastName as StudentName, st.Email, t.Name || ' ' || t.LastName as TeacherName
     from StudentFinalBooking  B inner join user St 

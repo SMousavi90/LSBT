@@ -246,8 +246,8 @@ app.put('/api/cancelReservation/:bookingId/:lectureId', (req, res) => {
                     .then((result) => {
                         if (result !== null) {
                             sendMailToStudent(result);
-                            res.status(200).end()
                         }
+                        res.status(200).end();
                     })
                     .catch((err) => res.status(500).json({
                         errors: [{ 'param': 'Server', 'msg': err }],
@@ -503,11 +503,10 @@ function setTimer(date, func, lecture) {
 
 function insertNotification(lecture) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -515,8 +514,8 @@ function insertNotification(lecture) {
     var body = `The lecture of the course ${lecture.CourseName} scheduled on ${lecture.Schedule} has been booked by ${lecture.nStudents} students.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
-        to: lecture.Email,
+        from: "politotestflight@gmail.com",
+        to: lecture.Email+",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
@@ -532,11 +531,10 @@ function insertNotification(lecture) {
 
 function sendMailToStudent(book) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -544,8 +542,8 @@ function sendMailToStudent(book) {
     var body = `Dear ${book.Name}, your booking for lecture of ${book.CourseName} scheduled on ${book.Schedule} has been confirmed.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
-        to: book.Email,
+        from: 'politotestflight@gmail.com',
+        to: book.Email+",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
@@ -561,11 +559,10 @@ function sendMailToStudent(book) {
 
 function sendCancelationMailToStudent(lecture) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -574,8 +571,8 @@ function sendCancelationMailToStudent(lecture) {
     Professor ${lecture.TeacherName}, that was scheduled on ${lecture.Schedule} is canceled.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
-        to: lecture.Emails_List,
+        from: 'politotestflight@gmail.com',
+        to: lecture.Emails_List+",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
