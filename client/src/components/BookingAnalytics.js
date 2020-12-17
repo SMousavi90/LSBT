@@ -8,12 +8,13 @@ import "react-datepicker/dist/react-datepicker.css";
 const moment = require("moment");
 
 class BookingAnalytics extends React.Component {
+  
   constructor() {
     super();
     this.state = {
       bookings: [],
       selectedPeriod: "M",
-      selectedType: "booking",
+      selectedType: "Booking",
       selectedCourseId: null,
       startDate: new Date(),
       endDate: null,
@@ -328,7 +329,7 @@ class BookingAnalytics extends React.Component {
                 <div className="mixed-chart col-md-9">
                   <StatisticsTable
                     bookings={this.state.bookings}
-                    selectedPeriod={this.state.selectedPeriod}
+                    selectedPeriod={this.state.selectedPeriod === "D"? "Day": "W" ? "Weekly" : "Month"}
                     avg={
                       this.state.selectedPeriod === "D"
                         ? "Count"
