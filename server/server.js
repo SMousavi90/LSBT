@@ -532,11 +532,10 @@ function sendMailToStudent(book) {
 
 function sendCancelationMailToStudent(lecture) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -545,7 +544,7 @@ function sendCancelationMailToStudent(lecture) {
     Professor ${lecture.TeacherName}, that was scheduled on ${lecture.Schedule} is canceled.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
+        from: 'politotestflight@gmail.com',
         to: lecture.Emails_List,
         subject: subject,
         text: body
