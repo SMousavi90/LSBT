@@ -425,6 +425,8 @@ exports.manageQueueReservation = function (lectureId) {
               }
             });
           }
+        }else{
+          resolve(null);
         }
       }
     });

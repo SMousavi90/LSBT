@@ -217,8 +217,8 @@ app.put('/api/cancelReservation/:bookingId/:lectureId', (req, res) => {
                     .then((result) => {
                         if (result !== null) {
                             sendMailToStudent(result);
-                            res.status(200).end()
                         }
+                        res.status(200).end();
                     })
                     .catch((err) => res.status(500).json({
                         errors: [{ 'param': 'Server', 'msg': err }],
