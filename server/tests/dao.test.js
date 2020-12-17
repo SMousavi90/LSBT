@@ -279,7 +279,7 @@ describe("check Teacher Dashboard", () => {
   });
 });
 
-describe("----", () => {
+describe("check Contact tracing", () => {
   beforeAll(() => {
     clearLectures();
     initLectures();
@@ -292,30 +292,23 @@ describe("----", () => {
     return clearBooking();
   });
 
-  
-  
- 
-  test("test getDateOfDay", () => {
-    
-  });
   test("test getPositiveStudents", () => {
-    
+    return dao
+      .getPositiveStudents("", "", "")
+      .then((data) => {
+        expect(data.length > 0);
+      });
   });
   
   test("test getContactTracingReport", () => {
-    
+    return dao
+    .getContactTracingReport(1)
+    .then((data) => {
+      expect(data.length > 0);
+    });
   });
-  test("test importCSVData", () => {
-    
-  });
- 
-  test("test importCSVData", () => {
-    
-  });
- 
-  
-
 });
+
 
 initLectures = () => {
   
@@ -430,7 +423,6 @@ getUnbookableLectures = () => {
         reject(err);
         return;
       } else {
-        console.log(rows);
         resolve(rows);
       }
     });

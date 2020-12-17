@@ -559,7 +559,6 @@ exports.getTeacherStats = function (
   endDate,
   courseId
 ) {
-  console.log(period, userId, startDate, endDate, courseId);
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -664,12 +663,8 @@ exports.getAllCourse = function () {
   return new Promise((resolve, reject) => {
     const sql = `SELECT CourseID, Name, Description FROM Course c;`;
     db.all(sql, [], (err, rows) => {
-      console.log("ROW RA");
-      console.log(rows);
-      console.log(err);
       if (err) reject(err);
       else {
-        console.log(rows);
         resolve(rows);
       }
     });
@@ -685,7 +680,6 @@ exports.getBookCountByCourseID = function (
   endDate,
   courseId
 ) {
-  console.log(period, userId, startDate, endDate, courseId);
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -730,8 +724,6 @@ exports.getBookCountByCourseID = function (
     }
     if (courseId != "null" && courseId != "All") {
       db.all(sql, [startDate, endDate, courseId], (err, rows) => {
-        console.log(rows);
-        console.log(err);
         if (err) {
           reject(err);
         } else {
@@ -740,8 +732,6 @@ exports.getBookCountByCourseID = function (
       });
     } else {
       db.all(sql, [startDate, endDate], (err, rows) => {
-        console.log(rows);
-        console.log(err);
         if (err) {
           reject(err);
         } else {
@@ -754,7 +744,6 @@ exports.getBookCountByCourseID = function (
 //@Rmeidanshahi correct way
 //Booking statistics
 exports.getBookingStatistics = function (period, startDate, endDate) {
-  console.log(period, startDate, endDate);
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -783,8 +772,7 @@ exports.getBookingStatistics = function (period, startDate, endDate) {
             `;
     }
     db.all(sql, [startDate, endDate], (err, rows) => {
-      console.log(rows);
-      console.log(err);
+
       if (err) {
         reject(err);
       } else {
@@ -795,7 +783,6 @@ exports.getBookingStatistics = function (period, startDate, endDate) {
 };
 //Cancellation statistics
 exports.getCancellationStatistics = function (period, startDate, endDate) {
-  console.log(period, startDate, endDate);
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -822,8 +809,6 @@ exports.getCancellationStatistics = function (period, startDate, endDate) {
             `;
     }
     db.all(sql, [startDate, endDate], (err, rows) => {
-      console.log(rows);
-      console.log(err);
       if (err) {
         reject(err);
       } else {
@@ -834,7 +819,6 @@ exports.getCancellationStatistics = function (period, startDate, endDate) {
 };
 //Attendance
 exports.getAttendanceStatistics = function (period, startDate, endDate) {
-  console.log(period, startDate, endDate);
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -860,8 +844,6 @@ exports.getAttendanceStatistics = function (period, startDate, endDate) {
             `;
     }
     db.all(sql, [startDate, endDate], (err, rows) => {
-      console.log(rows);
-      console.log(err);
       if (err) {
         reject(err);
       } else {
