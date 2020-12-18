@@ -1187,6 +1187,18 @@ exports.importCSVData = function (data, type) {
   });
 };
 
+exports.getPositiveStudents = function (userId, name, lastName) {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "SELECT UserId, Name, LastName, Email FROM User where RolId = 1 and TestResult = 1 and UserId LIKE ? AND Name LIKE ? AND LastName LIKE ? ORDER BY LastName, Name";
+
+    db.all(sql, [userId + "%", name + "%", lastName + "%"], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+};
+
 exports.getContactTracingReport = function (userId) {
   return new Promise((resolve, reject) => {
     const sql = `select distinct Contlist.StudentId, ContList.StudentName, ContList.Email, ContList.TeacherName from  
