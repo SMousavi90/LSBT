@@ -399,7 +399,7 @@ app.post(BASEURI + '/uploadDataCSV', (req, res) => {
     });
 });
 
-makeCSVArray = (file, type, res) => {
+let makeCSVArray = (file, type, res) => {
     fs.readFile(file.path, async (err, data) => {
         if (err) {
             console.error(err)

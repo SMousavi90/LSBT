@@ -46,7 +46,7 @@ class OfficerDashboard extends React.Component {
             });
         } else {
         API.uploadDataCSV(data)
-            .then((data) => {
+            .then(() => {
                 confirmAlert({
                     customUI: ({ onClose }) => {
                         return (

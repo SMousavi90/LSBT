@@ -978,7 +978,7 @@ exports.importCSVData = function (data, type) {
               if (err) reject(err);
               else if (rows.length === 0) resolve(undefined);
               else {
-                let year = rows[0].Year;
+                
                 let semester = rows[0].Semester;
                 let dates = [];
                 // todo: check if the current date is the first semester or the second semester

@@ -1,7 +1,6 @@
 import React from "react";
 import { AuthContext } from "../auth/AuthContext";
 import API from "../API/API";
-import Button from "react-bootstrap/Button";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import MyCalendar from "./MyCalendar.js";
