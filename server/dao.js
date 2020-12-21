@@ -6,6 +6,7 @@ const BookingHistory = require("./Entities/BookingHistory");
 
 const sqlite = require("sqlite3");
 const bcrypt = require("bcrypt");
+const moment = require("moment");
 
 let db;
 
@@ -34,8 +35,9 @@ const createAvailableLectures = function (row) {
     row.CourseName,
     row.UserId,
     row.ClassId,
-    row.BookingId,
-    row.BookCanceled
+    row.BookButton,
+    row.FreeSeats,
+    row.Reserved
   );
 };
 
@@ -49,7 +51,8 @@ const createBookingHistory = function (row) {
     row.TeacherName,
     row.BookingId,
     row.BookingDeadline,
-    row.CourseId
+    row.CourseId,
+    row.LectureId
   );
 };
 
@@ -236,32 +239,38 @@ exports.getAvailableLectures = function (id, userId) {
       currentDate.setDate(currentDate.getDate() + 14)
     ).toISOString();
 
-    const sql = `Select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
-                        U.Name || ' ' || U.LastName as TeacherName, 
-                        cr.Name, cr.Name as CourseName
-                from Lecture L 
-                Inner join User U on U.UserId=L.TeacherId
-                inner join Course cr on cr.CourseId = L.CourseId
-                inner join StudentCourse sc on sc.CourseId = L.CourseId
-                where 
-                      LectureId not in(select LectureId from StudentFinalBooking where 
-                      StudentId=? and BookDate is not null and Canceled is null)
-                      and  l.CourseId=? and
-                      l.Bookable=1 and l.Canceled=0
-                      And BookingDeadline between ? and ?
-                      And sc.StudentId = ?
+
+    const sql = `select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
+    U.Name || ' ' || U.LastName as TeacherName, 
+    cr.Name, cr.Name as CourseName,case ava.FreeSeats when 0 then 0 else 1 end as BookButton,ava.FreeSeats,case when Reservetbl.Reserved=1 then 1 else 0 end as Reserved
+    from Lecture L 
+    Inner join User U on U.UserId=L.TeacherId
+    inner join Course cr on cr.CourseId = L.CourseId
+    inner join StudentCourse sc on sc.CourseId = L.CourseId
+    left join AvailableSeats ava on ava.LectureId=l.LectureId
+    left join (select LectureId,StudentId,Reserved from StudentFinalBooking where BookDate is null and Canceled is null and Reserved=1)Reservetbl
+    on Reservetbl.LectureId=l.LectureId 
+    and Reservetbl.StudentId=?
+    where 
+      l.LectureId not in(select LectureId from StudentFinalBooking where 
+    StudentId=?  and 
+    BookDate is not null and Canceled is null)
+    and  l.CourseId=? 
+    and   l.Bookable=1 and l.Canceled=0
+      And BookingDeadline between ? and ?
+    And sc.StudentId = ?
         `;
 
     db.all(
       sql,
-      [userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
+      [userId, userId, id, firstDay.slice(0, 10), lastDay.slice(0, 10), userId],
       (err, rows) => {
         if (err) {
           reject(err);
         } else if (rows.length === 0) {
           resolve(undefined);
         } else {
-        //   console.log(rows);
+          //   console.log(rows);
           let data = rows.map((row) => createAvailableLectures(row));
           resolve(data);
         }
@@ -293,17 +302,23 @@ exports.bookLecture = function (lectureId, userId, scheduleDate) {
               else {
                 let bookedCount = rows[0].BookedCount;
                 if (bookedCount < capacity) {
-                  const sqlBook = `Insert into Booking(StudentId, LectureId, BookDate, ReserveDate) Values (?, ?, ?, datetime('now','localtime'))`;
+                  const sqlBook = `Insert into Booking(StudentId, LectureId, BookDate) Values (?, ?,  datetime('now','localtime'))`;
                   db.run(
                     sqlBook,
-                    [userId, lectureId, scheduleDate],
+                    [userId, lectureId],
                     (err, rows) => {
                       if (err) reject(err);
                       else resolve(true);
                     }
                   );
                 } else {
-                  resolve(false); // the class is full, the booking is not possible
+                  // the class is full, the booking is not possible
+                  const sqlResBook = `insert into Booking(StudentId,LectureId,Reserved,ReserveDate)
+                  values(?,?,1,datetime('now','localtime'))`;
+                  db.run(sqlResBook, [userId, lectureId], (err, rows) => {
+                    if (err) reject(err);
+                    else resolve(false);
+                  });
                 }
               }
             });
@@ -344,14 +359,12 @@ exports.getBookingHistory = function (id) {
     and b.StudentId = ?`;
     db.all(sql, [id], (err, rows) => {
       if (err) {
-
         // console.log(err);
         reject(err);
       } else if (rows.length === 0) resolve(undefined);
       else {
         let res = rows.map((row) => createBookingHistory(row));
         resolve(res);
-
       }
     });
   });
@@ -367,10 +380,59 @@ exports.cancelReservation = function (id) {
     db.run(sql, [new Date().toISOString().slice(0, 10), id], (err) => {
       if (err) {
         reject(err);
-      } else resolve(null);
+      } else {
+        resolve(null);
+      }
     });
   });
 };
+
+exports.manageQueueReservation = function (lectureId) {
+  return new Promise((resolve, reject) => {
+    const sql = `select  StudentId from StudentFinalBooking where LectureId=? 
+        and BookDate is null and Canceled is null  and Reserved=1
+        and ReserveDate=(select min(ReserveDate)MinReserveDate 
+              from StudentFinalBooking
+              where ReserveDate is not null and LectureId=?
+              and BookDate is null and Canceled is null  and Reserved=1)
+        `;
+    db.all(sql, [lectureId, lectureId], (err, rows) => {
+      if (err) reject(err);
+      else {
+        if (rows != null && rows.length > 0) {
+          let newStudentId = rows[0].StudentId;
+          if (newStudentId) {
+            //if there's a waiting student
+            let sql = `update Booking set Reserved=null ,ReserveDate=null ,BookDate=datetime('now', 'localtime')
+                where StudentId=? and LectureId=?   
+                `;
+            db.run(sql, [newStudentId, lectureId], (err, rows) => {
+              if (err) {
+                reject(err);
+              } else {
+                let sqlEmail = `select b.Schedule,u.Name || ' ' || u.LastName as Name,c.Name as CourseName, u.Email
+                    from StudentFinalBooking b inner join Course c on c.CourseId=b.CourseId
+                    inner join user u on u.UserId=b.StudentId
+                    where b.StudentId=? and b.LectureId=?   
+                  `;
+                db.all(sqlEmail, [newStudentId, lectureId], (err, rows) => {
+                  if (err) {
+                    reject(err);
+                  } else {
+                    if (rows != null && rows.length > 0) resolve(rows[0]);
+                    else resolve(null);
+                  }
+                });
+              }
+            });
+          }
+        } else {
+          resolve(null);
+        }
+      }
+    });
+  });
+}
 
 /**
  * Get all lectures
@@ -446,7 +508,6 @@ exports.getCourseLectures = function (id, teacherId) {
   });
 };
 
-
 exports.getLectureStudents = function (id) {
   return new Promise((resolve, reject) => {
     const sql = `SELECT U.Name || " " || U.LastName as 'Name', B.BookDate FROM StudentFinalBooking B
@@ -460,7 +521,7 @@ exports.getLectureStudents = function (id) {
       } else {
         resolve(rows);
       }
-    }); 
+    });
   });
 };
 
@@ -492,8 +553,13 @@ exports.cancelLecture = function (lectureId) {
   });
 };
 
-exports.getTeacherStats = function (period, userId, startDate, endDate, courseId) {
-  console.log(period, userId, startDate, endDate, courseId);
+exports.getTeacherStats = function (
+  period,
+  userId,
+  startDate,
+  endDate,
+  courseId
+) {
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -558,7 +624,7 @@ exports.getTeacherStats = function (period, userId, startDate, endDate, courseId
       });
     }
   });
-}
+};
 
 exports.getStudentlistOfLecture = function (lectureId) {
   return new Promise((resolve, reject) => {
@@ -584,7 +650,7 @@ exports.getStudentlistOfLecture = function (lectureId) {
 exports.makeLectureOnline = function (lectureId) {
   return new Promise((resolve, reject) => {
     const sql = `UPDATE Lecture SET Bookable=0 WHERE LectureId = ?`;
-    db.run(sql, [lectureId], (rows,err) => {
+    db.run(sql, [lectureId], (rows, err) => {
       if (err) {
         reject(err);
       } else resolve(true);
@@ -598,12 +664,8 @@ exports.getAllCourse = function () {
   return new Promise((resolve, reject) => {
     const sql = `SELECT CourseID, Name, Description FROM Course c;`;
     db.all(sql, [], (err, rows) => {
-      console.log("ROW RA")
-      console.log(rows)
-      console.log(err)
       if (err) reject(err);
       else {
-        console.log(rows)
         resolve(rows);
       }
     });
@@ -613,8 +675,12 @@ exports.getAllCourse = function () {
  * Get All Stats for Manager
  */
 // Booking statistics:
-exports.getBookCountByCourseID = function (period, startDate, endDate, courseId) {
-  console.log(period, userId, startDate, endDate, courseId);
+exports.getBookCountByCourseID = function (
+  period,
+  startDate,
+  endDate,
+  courseId
+) {
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
@@ -659,8 +725,6 @@ exports.getBookCountByCourseID = function (period, startDate, endDate, courseId)
     }
     if (courseId != "null" && courseId != "All") {
       db.all(sql, [startDate, endDate, courseId], (err, rows) => {
-        console.log(rows)
-        console.log(err)
         if (err) {
           reject(err);
         } else {
@@ -669,8 +733,6 @@ exports.getBookCountByCourseID = function (period, startDate, endDate, courseId)
       });
     } else {
       db.all(sql, [startDate, endDate], (err, rows) => {
-        console.log(rows)
-        console.log(err)
         if (err) {
           reject(err);
         } else {
@@ -679,27 +741,26 @@ exports.getBookCountByCourseID = function (period, startDate, endDate, courseId)
       });
     }
   });
-}
-//@Rmeidanshahi correct way 
+};
+//@Rmeidanshahi correct way
 //Booking statistics
-exports.getBookingStatistics= function (period, startDate, endDate) {
-  console.log(period, startDate, endDate);
+exports.getBookingStatistics = function (period, startDate, endDate) {
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
-        sql = `select avg(BookCount) as avg,weekno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
+      sql = `select avg(BookCount) as avg,weekno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
         from BookCount inner join user u on u.UserId=BookCount.TeacherId
         where Schedule between @Starttime and @endtime
         group by weekno,CourseId,CourseName,u.Name,u.LastName 
         order by weekno`;
     } else if (period === "M") {
-        sql = `select avg(BookCount) as avg,monthno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
+      sql = `select avg(BookCount) as avg,monthno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
         from BookCount inner join user u on u.UserId=BookCount.TeacherId
         where Schedule between @Starttime and @endtime
         group by monthno,CourseId,CourseName,u.Name,u.LastName
         order by monthno`;
     } else {
-        sql = `select count(BookingId)BookCount,l.Schedule ,c.CourseId,c.Name as CorseName,
+      sql = `select count(BookingId)BookCount,l.Schedule ,c.CourseId,c.Name as CorseName,
         u.Name || ' ' || u.LastName as TeacherName
          ,strftime('%d',l.Schedule) as Dayno
          from StudentFinalBooking b inner join lecture l on b.LectureId=l.LectureId
@@ -711,38 +772,36 @@ exports.getBookingStatistics= function (period, startDate, endDate) {
         order by l.Schedule
             `;
     }
-      db.all(sql, [startDate, endDate], (err, rows) => {
-        console.log(rows)
-        console.log(err)
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
+    db.all(sql, [startDate, endDate], (err, rows) => {
+
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
   });
-}
+};
 //Cancellation statistics
-exports.getCancellationStatistics= function (period, startDate, endDate) {
-  console.log(period, startDate, endDate);
+exports.getCancellationStatistics = function (period, startDate, endDate) {
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
-        sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.weekno
+      sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.weekno
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
         and c.Schedule between @Starttime and @endtime
         group by c.Schedule,CourseName,TeacherName,c.weekno
         order by c.weekno`;
     } else if (period === "M") {
-        sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.monthno
+      sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.monthno
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
         and c.Schedule between @Starttime and @endtime
         group by c.Schedule,CourseName,TeacherName,c.monthno
         order by c.monthno`;
     } else {
-        sql = `select count(c.BookingId) CancelCounts,c.Dayno ,CourseName,TeacherName
+      sql = `select count(c.BookingId) CancelCounts,c.Dayno ,CourseName,TeacherName
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
         and c.Schedule between @Starttime and @endtime
@@ -750,52 +809,416 @@ exports.getCancellationStatistics= function (period, startDate, endDate) {
         order by c.Dayno
             `;
     }
-      db.all(sql, [startDate, endDate], (err, rows) => {
-        console.log(rows)
-        console.log(err)
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
+    db.all(sql, [startDate, endDate], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
   });
-}
+};
 //Attendance
-exports.getAttendanceStatistics= function (period, startDate, endDate) {
-  console.log(period, startDate, endDate);
+exports.getAttendanceStatistics = function (period, startDate, endDate) {
   return new Promise((resolve, reject) => {
     let sql = "";
     if (period === "W") {
-        sql = `select weekno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
+      sql = `select weekno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
         from StudentAttendance
         where Schedule BETWEEN @Starttime and @endtime
         group by weekno,CourseName, TeacherName 
         order by weekno
        `;
     } else if (period === "M") {
-        sql = `select monthno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
+      sql = `select monthno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
         from StudentAttendance
         where Schedule BETWEEN @Starttime and @endtime
         group by monthno,CourseName, TeacherName 
         order by monthno
        `;
     } else {
-        sql = `select BookCounts, PresenceCount,AbsenceCount
+      sql = `select BookCounts, PresenceCount,AbsenceCount
         ,Schedule, CourseName, TeacherName ,Dayno
         from StudentAttendance
         where Schedule BETWEEN @Starttime and @endtime
         order by Dayno
             `;
     }
-      db.all(sql, [startDate, endDate], (err, rows) => {
-        console.log(rows)
-        console.log(err)
-        if (err) {
-          reject(err);
+    db.all(sql, [startDate, endDate], (err, rows) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+};
+
+const getDateOfDay = (start, end, day) => {
+  var result = [];
+  var current = start.clone();
+
+  while (current.day(7 + day).isBefore(end)) {
+    result.push(current.clone());
+  }
+  return result;
+};
+
+exports.importCSVData = function (data, type) {
+  return new Promise((resolve, reject) => {
+    if (type === "Students") {
+      data.forEach((element) => {
+        if (element.Id !== null &&
+          element.Name !== null &&
+          element.Surname !== null &&
+          element.SSN !== null &&
+          element.OfficialEmail !== null &&
+          element.City !== null &&
+          element.SSN !== null &&
+          element.Birthday !== null) {
+
+          let sqlExist = `select UserId from User where UserId = ?`;
+          db.all(sqlExist, [element.Id], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into user 
+                (UserId,Name,LastName,Username,Password,Email,RolId,City,SSN,Birthday)
+                values (?,?,?,?,
+                '$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,1,?,?,?)
+              `;
+                db.run(
+                  sql,
+                  [
+                    element.Id,
+                    element.Name,
+                    element.Surname,
+                    element.SSN,
+                    element.OfficialEmail,
+                    element.City,
+                    element.SSN,
+                    element.Birthday,
+                  ],
+                  (rows, err) => {
+                    if (err) {
+                      reject(err);
+                    } else resolve(true);
+                  }
+                );
+              }
+            }
+          });
         } else {
-          resolve(rows);
+          reject("The selected file has no valid data!")
         }
       });
+    } else if (type === "Professors") {
+      data.forEach((element) => {
+        if (element.GivenName !== null &&
+          element.Surname !== null &&
+          element.SSN !== null &&
+          element.OfficialEmail !== null &&
+          element.SSN !== null &&
+          element.Number !== null) {
+
+
+          let sqlExist = `select * from User where Number = ?`;
+          db.all(sqlExist, [element.Number], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into user (Name,LastName,Username,Password,Email,RolId,SSN,Number)
+                values (?,?,?,'$2a$10$ZybXIO4gXxk9FvRdk9XsvuCg9Z5Od17BjcfyaA0nhgUmm.qxqo7Mu',?,2,?,?)
+              `;
+                db.run(
+                  sql,
+                  [
+                    element.GivenName,
+                    element.Surname,
+                    element.SSN,
+                    element.OfficialEmail,
+                    element.SSN,
+                    element.Number,
+                  ],
+                  (rows, err) => {
+                    if (err) {
+                      reject(err);
+                    } else resolve(true);
+                  }
+                );
+              }
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
+      });
+    } else if (type === "Courses") {
+      data.forEach((element) => {
+        if (
+          element.Code !== undefined &&
+          element.Course !== undefined &&
+          element.Course !== undefined &&
+          element.Year !== undefined &&
+          element.Semester !== undefined &&
+          element.Teacher !== undefined
+        ) {
+
+          let sqlExist = `select CourseId from Course where CourseId = ?`;
+          db.all(sqlExist, [element.Code], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into Course (CourseId,name,Description,Year,Semester,Teacher)
+                values (?,?,?,?,?,?)
+              `;
+                db.run(
+                  sql,
+                  [
+                    element.Code,
+                    element.Course,
+                    element.Course,
+                    element.Year,
+                    element.Semester,
+                    element.Teacher,
+                  ],
+                  (rows, err) => {
+                    if (err) {
+                      reject(err);
+                    } else resolve(true);
+                  }
+                );
+              }
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
+      });
+
+    } else if (type === "Enrollment") {
+      data.forEach((element) => {
+        if (
+          element.Code !== undefined &&
+          element.Student !== undefined
+        ) {
+
+          let sqlExist = `select * from StudentCourse where CourseId = ? and StudentId = ?`;
+          db.all(sqlExist, [element.Code, element.Student], (err, rows) => {
+            if (err) {
+              reject(err);
+            } else {
+              if (rows.length == 0) {
+                let sql = `insert into StudentCourse(CourseId,StudentId)
+                values (?,?)
+              `;
+                db.run(sql, [element.Code, element.Student], (rows, err) => {
+                  if (err) {
+                    reject(err);
+                  } else resolve(true);
+                });
+              }
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
+      });
+    } else if (type === "Schedule") {
+      data.forEach((element) => {
+        if (
+          element.Code !== undefined &&
+          element.Room !== undefined &&
+          element.Seats !== undefined &&
+          element.Day !== undefined &&
+          element.Time !== undefined
+        ) {
+
+          const getUserIdSql = `select UserId from user where Number=(select Teacher from Course where CourseId=?)`;
+          db.all(getUserIdSql, [element.Code], (err, rows) => {
+            if (err) reject(err);
+            else if (rows.length === 0) resolve(undefined);
+            else {
+              let userId = rows[0].UserId;
+
+              const getCourseYearSemester = `select Year, Semester from Course where CourseId=?`;
+              db.all(getCourseYearSemester, [element.Code], (err, rows) => {
+                if (err) reject(err);
+                else if (rows.length === 0) resolve(undefined);
+                else {
+                  
+                  let semester = rows[0].Semester;
+                  let dates = [];
+                  // todo: check if the current date is the first semester or the second semester
+                  if (semester === "1") {
+                    // find dates between October 1st to Jan 15th
+                    let startDate = moment(`${moment().format("YYYY")}-10-01`);
+                    let endDate = moment(
+                      `${moment().add(1, "Y").format("YYYY")}-01-15`
+                    );
+                    switch (element.Day) {
+                      case "Mon":
+                        dates = getDateOfDay(startDate, endDate, 1);
+                        break;
+                      case "Tue":
+                        dates = getDateOfDay(startDate, endDate, 2);
+                        break;
+                      case "Wed":
+                        dates = getDateOfDay(startDate, endDate, 3);
+                        break;
+                      case "Thu":
+                        dates = getDateOfDay(startDate, endDate, 4);
+                        break;
+                      case "Fri":
+                        dates = getDateOfDay(startDate, endDate, 5);
+                        break;
+                      default:
+                        break;
+                    }
+                  } else {
+                    // it is second semester lecture and the date is between March 1st to Jun 15th
+                    let startDate = moment(
+                      `${moment().add(1, "Y").format("YYYY")}-03-01`
+                    );
+                    let endDate = moment(`${moment().format("YYYY")}-06-15`);
+                    switch (element.Day) {
+                      case "Mon":
+                        dates = getDateOfDay(startDate, endDate, 1);
+                        break;
+                      case "Tue":
+                        dates = getDateOfDay(startDate, endDate, 2);
+                        break;
+                      case "Wed":
+                        dates = getDateOfDay(startDate, endDate, 3);
+                        break;
+                      case "Thu":
+                        dates = getDateOfDay(startDate, endDate, 4);
+                        break;
+                      case "Fri":
+                        dates = getDateOfDay(startDate, endDate, 5);
+                        break;
+                      default:
+                        break;
+                    }
+                  }
+
+                  let sql = `insert into Lecture (CourseId, Schedule,
+                  BookingDeadline, NotificationDeadline, EndTime,
+                  Bookable, Canceled, TeacherId, NotificationAdded, Room ,Seats, Day, Time) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)                  
+                `;
+                  dates.forEach((d) => {
+                    let startTime = "";
+                    let endTime = "";
+                    if (element.Time.includes("-")) {
+                      let hour = element.Time.split("-")[0].split(":")[0];
+                      let minute = element.Time.split("-")[0].split(":")[1];
+                      if (hour < 10 && hour != "00") hour = "0" + hour;
+                      if (minute < 10 && minute != "00") minute = "0" + minute;
+
+                      let ehour = element.Time.split("-")[1].split(":")[0];
+                      let eminute = element.Time.split("-")[1].split(":")[1];
+                      if (ehour < 10 && ehour != "00") ehour = "0" + ehour;
+                      if (eminute < 10 && eminute != "00")
+                        eminute = "0" + eminute;
+
+                      startTime = hour + ":" + minute;
+                      endTime = ehour + ":" + eminute;
+                    } else {
+                      let hour = element.Time.split(":")[0];
+                      let minute = element.Time.split(":")[1];
+                      if (hour < 10 && hour != "00") hour = "0" + hour;
+                      if (minute < 10 && minute != "00") minute = "0" + minute;
+
+                      let ehour = element.Time.split(":")[2];
+                      let eminute = element.Time.split(":")[3];
+                      if (ehour < 10 && ehour != "00") ehour = "0" + ehour;
+                      if (eminute < 10 && eminute != "00")
+                        eminute = "0" + eminute;
+
+                      startTime = hour + ":" + minute;
+                      endTime = ehour + ":" + eminute;
+                    }
+
+                    let sqlExist = `select * from Lecture where CourseId = ? 
+                    and TeacherId = ? and Schedule = ?`;
+                    db.all(sqlExist, [element.Code, userId, moment(d).format("yyyy-MM-DD") + " " + startTime], (err, rows) => {
+                      if (err) {
+                        reject(err);
+                      } else {
+                        if (rows.length == 0) {
+                          db.run(
+                            sql,
+                            [
+                              element.Code,
+                              moment(d).format("yyyy-MM-DD") + " " + startTime, // Schedule
+                              moment(d).add(-1, "d").format("yyyy-MM-DD") + " " + startTime, // BookingDeadline
+                              moment(d).format("yyyy-MM-DD"), // NotificationDeadline
+                              moment(d).format("yyyy-MM-DD") + " " + endTime, // EndTime
+                              1,
+                              0,
+                              userId,
+                              0,
+                              element.Room,
+                              element.Seats,
+                              element.Day,
+                              element.Time,
+                            ],
+                            (rows, err) => {
+                              if (err) {
+                                reject(err);
+                              } else resolve(true);
+                            }
+                          );
+                        }
+                      }
+                    });
+                  });
+                }
+              });
+            }
+          });
+        } else {
+          reject("The selected file has no valid data!")
+        }
+      });
+    }
   });
-}
+};
+
+exports.getPositiveStudents = function (userId, name, lastName) {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "SELECT UserId, Name, LastName, Email FROM User where RolId = 1 and TestResult = 1 and UserId LIKE ? AND Name LIKE ? AND LastName LIKE ? ORDER BY LastName, Name";
+
+    db.all(sql, [userId + "%", name + "%", lastName + "%"], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+};
+
+exports.getContactTracingReport = function (userId) {
+  return new Promise((resolve, reject) => {
+    const sql = `select distinct Contlist.StudentId, ContList.StudentName, ContList.Email, ContList.TeacherName from  
+    (SELECT LectureId, Schedule
+    from StudentFinalBooking 
+    where StudentId=?
+    and Presence=1 and Schedule <= DATETIME('now') and Schedule >= date(DATETIME('now') , '-14 day')) PositiveList
+    left join 
+    (select b.LectureId, StudentId,St.Name || ' ' || st.LastName as StudentName, st.Email, t.Name || ' ' || t.LastName as TeacherName
+    from StudentFinalBooking  B inner join user St 
+    on b.StudentId=St.UserId
+    inner join User T on t.UserId=b.TeacherId
+    where Presence=1 and StudentId<>?
+    )Contlist
+    on PositiveList.LectureId=Contlist.LectureId`;
+
+    db.all(sql, [userId, userId], (err, rows) => {
+      if (err) reject(err);
+      else resolve(rows);
+    });
+  });
+};

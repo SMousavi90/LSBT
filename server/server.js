@@ -15,14 +15,31 @@ const authErrorObj = { 'param': 'Server', 'msg': 'Authorization error' };
 
 const jwtSecret = "9SMivhSVEMs8KMz3nSvEsbnTBT4YkKaY4pnS957cDG7BID6Z7ZpxUC0jgnEqR0Zm";
 
+var multer = require('multer')
+var cors = require('cors');
+
 //dao.setDb("db/PULSeBS_test.db");
-dao.setDb("db/PULSeBS.db");
+//dao.setDb("db/PULSeBS_test_empty.db");
+
+//You activate the test database by running
+// npm start --test=true
+if (process.env.npm_config_test === "true") {
+    console.log("Test database activated");
+    dao.setDb("db/PULSeBS_test_clear.db");
+
+}
+else {
+    dao.setDb("db/PULSeBS.db");
+}
 
 let app = new express();
 
 app.use(morgan('dev')); //to print log as Standard Apache combined log output.
 app.use(express.json()); //method inbuilt in express to recognize the incoming Request Object as a JSON Object
 app.use(cookieParser());
+app.use(cors());
+var fs = require('fs');
+const neatCsv = require('neat-csv');
 
 const expireTime = 3600 * 24 * 7; //7 days
 
@@ -67,6 +84,7 @@ app.use(
 
 //to handle each UnauthorizedError
 app.use(function (err, req, res, next) { //used when i call isAuthenticated (client side) and the user is not authenticated
+
     if (err.name === 'UnauthorizedError') {
         res.status(401).json(authErrorObj);
     }
@@ -85,7 +103,7 @@ app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
     dao.getStudentCurrentCourses(req.params.userId)
         .then((row) => {
             if (!row) {
-                res.status(404).send();
+                res.status(500).send();
             } else {
                 res.json(row);
             }
@@ -97,31 +115,11 @@ app.get('/api/getStudentCurrentCourses/:userId', (req, res) => {
         });
 });
 
-/*app.get('/api/getStudentsPerLecturePerProfessor/:userId', (req, res) => {
-    dao.getStudentsPerLecturePerProfessor(req.params.userId)
-        .then((row) => {
-            if (!row) {
-                res.status(404).send();
-            } else {
-                console.log("Server:: ");
-                console.log(row);
-                res.json(row);
-            }
-        })
-        .catch((err) => {
-            res.status(500).json({
-                errors: [{ 'param': 'Server', 'msg': err }],
-            });
-        });
-
-});*/
-
-
 app.get('/api/getAvailableLectures/:courseId', (req, res) => {
     dao.getAvailableLectures(req.params.courseId, req.user.username)
         .then((row) => {
             if (!row) {
-                res.status(404).send();
+                res.status(500).send();
             } else {
                 res.json(row);
             }
@@ -136,18 +134,23 @@ app.get('/api/getAvailableLectures/:courseId', (req, res) => {
 app.post('/api/bookLecture', (req, res) => {
     dao.bookLecture(req.body.lectureId, req.body.userId, req.body.scheduleDate)
         .then((result) => {
-            
-            dao.getBookingDetails(req.body.lectureId, req.body.userId)
-                .then((book) => {
-                    sendMailToStudent(book);
-                    res.status(200).end();
-                })
-                .catch((err) => res.status(500).json({
-                    errors: [{ 'param': 'Server', 'msg': err }]
-                }));
+            if (result == true) {
+                dao.getBookingDetails(req.body.lectureId, req.body.userId)
+                    .then((book) => {
+                        sendMailToStudent(book);
+                        res.json({ reserved: true });
+                        // res.status(200).end();
+                    })
+                    .catch((err) => res.status(500).json({
+                        errors: [{ 'param': 'Server', 'msg': err }]
+                    }));
+            } else if (result == false) {
+                res.json({ reserved: false });
+                // res.status(200).end();
+            }
 
-          
-            
+
+
         })
         .catch((err) => res.status(500).json({
             errors: [{ 'param': 'Server', 'msg': err }]
@@ -171,9 +174,22 @@ app.get('/api/bookingHistory/:userId', (req, res) => {
 });
 
 //PUT /cancelReservation/<bookingId>
-app.put('/api/cancelReservation/:bookingId', (req, res) => {
-    dao.cancelReservation(req.params.bookingId)
-        .then((result) => res.status(200).end())
+app.put('/api/cancelReservation/:bookingId/:lectureId', (req, res) => {
+    dao.cancelReservation(req.params.bookingId, req.params.lectureId)
+        .then((result) => {
+            if (result == null) {
+                dao.manageQueueReservation(req.params.lectureId)
+                    .then((result) => {
+                        if (result !== null) {
+                            sendMailToStudent(result);
+                        }
+                        res.status(200).end();
+                    })
+                    .catch((err) => res.status(500).json({
+                        errors: [{ 'param': 'Server', 'msg': err }],
+                    }));
+            }
+        })
         .catch((err) => res.status(500).json({
             errors: [{ 'param': 'Server', 'msg': err }],
         }));
@@ -265,12 +281,13 @@ app.get(BASEURI + '/getTeacherStats/:period/:userId/:startDate/:endDate/:courseI
         .then((data) => {
             res.json(data);
         })
-    });
+});
 
 app.post(BASEURI + '/makelectureonline/:lectureId', (req, res) => {
     dao.makeLectureOnline(req.params.lectureId)
-    .then(() => {
-        res.status(200).end();})
+        .then(() => {
+            res.status(200).end();
+        })
         .catch((err) => {
             res.status(500).json({
                 errors: [{ 'param': 'Server', 'msg': err }],
@@ -323,18 +340,96 @@ app.get(BASEURI + '/getAttendanceStatistics/:period/:startDate/:endDate', (req, 
             });
         });
 });
+
+app.get(BASEURI + '/getContactTracingReport/:userId', (req, res) => {
+
+    dao.getContactTracingReport(req.params.userId)
+        .then((data) => {
+            res.json(data);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.get(BASEURI + '/getPositiveStudents', (req, res) => {
+
+    dao.getPositiveStudents(req.query.userId, req.query.name, req.query.lastName)
+        .then((data) => {
+            console.log(data);
+            res.json(data);
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
+
+app.post(BASEURI + '/uploadDataCSV', (req, res) => {
+    var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, 'upload')
+        },
+        filename: function (req, file, cb) {
+            cb(null, Date.now() + '-' + file.originalname)
+        }
+    })
+    var upload = multer({ storage: storage }).any();
+
+    upload(req, res, function (err) {
+        if (err) {
+            console.log(err);
+            return res.end("Error uploading file.");
+        } else {
+            let f = req.files[0];
+            fs.rename(f.path,
+                "upload/" + req.body.importType + ".csv", function (err) {
+                    if (err) console.log('ERROR: ' + err);
+                });
+
+            f.filename = req.body.importType + ".csv";
+            f.path = "upload/" + f.filename;
+            setTimeout(function() {
+                makeCSVArray(f, req.body.importType, res);
+            }, 2000)
+        }
+    });
+});
+
+let makeCSVArray = (file, type, res) => {
+    fs.readFile(file.path, async (err, data) => {
+        if (err) {
+            console.error(err)
+            return
+        }
+        let csvData = await neatCsv(data);
+        dao.importCSVData(csvData, type)
+            .then((data) => {
+                res.end("File has been uploaded");
+            })
+            .catch((err) => {
+                res.status(500).json({
+                    errors: [{ 'param': 'Server', 'msg': err }],
+                });
+            });
+    })
+}
+
 module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);
 
     //send mail to teachers once a course deadline expires
-    dao.getAllLectures()
+    /*dao.getAllLectures()
         .then((res) => {
 
             res.forEach(function (e) {
                 setTimer(e.BookingDeadline, insertNotification, e);
             });
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log(err));*/
 });
 
 function setTimer(date, func, lecture) {
@@ -352,11 +447,10 @@ function setTimer(date, func, lecture) {
 
 function insertNotification(lecture) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -364,8 +458,8 @@ function insertNotification(lecture) {
     var body = `The lecture of the course ${lecture.CourseName} scheduled on ${lecture.Schedule} has been booked by ${lecture.nStudents} students.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
-        to: lecture.Email,
+        from: "politotestflight@gmail.com",
+        to: lecture.Email + ",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
@@ -381,11 +475,10 @@ function insertNotification(lecture) {
 
 function sendMailToStudent(book) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -393,8 +486,8 @@ function sendMailToStudent(book) {
     var body = `Dear ${book.Name}, your booking for lecture of ${book.CourseName} scheduled on ${book.Schedule} has been confirmed.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
-        to: book.Email,
+        from: 'politotestflight@gmail.com',
+        to: book.Email + ",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
@@ -410,11 +503,10 @@ function sendMailToStudent(book) {
 
 function sendCancelationMailToStudent(lecture) {
     var transporter = nodemailer.createTransport({
-        host: "smtp.mailtrap.io",
-        port: 2525,
+        service: "gmail",
         auth: {
-            user: "d0cee37bf32ad9",
-            pass: "8b786f1dc70862"
+            user: "politotestflight@gmail.com",
+            pass: "testme123"
         }
     });
 
@@ -423,8 +515,8 @@ function sendCancelationMailToStudent(lecture) {
     Professor ${lecture.TeacherName}, that was scheduled on ${lecture.Schedule} is canceled.`;
 
     var mailOptions = {
-        from: 'no-reply@pulsebs.com',
-        to: lecture.Emails_List,
+        from: 'politotestflight@gmail.com',
+        to: lecture.Emails_List + ",r.meydanshahi@gmail.com",
         subject: subject,
         text: body
     };
@@ -437,3 +529,5 @@ function sendCancelationMailToStudent(lecture) {
         }
     });
 }
+
+

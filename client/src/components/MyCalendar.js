@@ -27,7 +27,7 @@ import moment from "moment";
 
 const MyCalendar = (props) => {
   
- 
+  
   return (
     <FullCalendar
       plugins={[momentPlugin, timeGridPlugin]}
@@ -41,7 +41,12 @@ const MyCalendar = (props) => {
       eventClick={function (info) {
         var eventObj = info.event;
         console.log(eventObj.id);
-        props.cancelBooking(eventObj.id);
+        var res = props.resHistory.filter((v) => {
+          return v.bookingId == info.event.id;
+        })[0];
+        var lectureId = res.lectureId;
+
+        props.cancelBooking(eventObj.id,lectureId);
       }}
       eventDidMount={function (info) {
         // console.log(info.event.id);
@@ -52,14 +57,19 @@ const MyCalendar = (props) => {
         })[0];
         var teacherName = res.teacherName;
         var classNumber = res.classNumber;
+        var bookable = res.bookable;
 
+        
+        info.el.firstElementChild.firstElementChild.firstElementChild.nextElementSibling.firstElementChild.setAttribute("style","font-size:20px" )
+        info.el.firstElementChild.firstElementChild.firstElementChild.setAttribute("style","font-size:15px" )
+        
         info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
           "beforeend",
-          `<div> ${classNumber} <\div>`
+          `<div style="font-size:20px">${classNumber}<\div>`
         );
         info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
           "beforeend",
-          `<div> ${teacherName} <\div>`
+          `<div style="font-size:20px">${teacherName} <\div>`
         );
         
         
@@ -67,8 +77,17 @@ const MyCalendar = (props) => {
         {
           info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
             "beforeend",
-            `<div style="color:yellow"><b> Booking deadline expired!</b><\div>`
+            `<div style="color:white, font-size:15px"><b> Booking deadline expired!</b><\div>`
           );
+        }
+
+        if(bookable==0)
+        {
+          info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
+            "beforeend",
+            `<div style="color:white, font-size:15px><b> This lecture is now online!</b><\div>`
+          );
+
         }
 
         info.el.firstElementChild.firstElementChild.children[1].insertAdjacentHTML(
@@ -79,6 +98,15 @@ const MyCalendar = (props) => {
         
       }}
       eventTimeFormat={
+        // like '14:30:00'
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
+          meridiem: false,
+        }
+      }
+      slotLabelFormat={
         // like '14:30:00'
         {
           hour: "2-digit",

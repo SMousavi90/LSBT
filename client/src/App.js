@@ -8,6 +8,8 @@ import { AuthContext } from './auth/AuthContext';
 import NotificationTable from './components/NotificationTable.js';
 import AllBooking from './components/AllBooking';
 import BookingAnalytics from './components/BookingAnalytics';
+import OfficerDashboard from './components/OfficerDashboard';
+import ContactTracingDashboard from './components/ContactTracingDashboard';
 
 import {
   BrowserRouter as Router,
@@ -111,17 +113,30 @@ class App extends React.Component {
                 <Container className="login-container">
                   <h2>Login</h2>
                   <LoginForm onLogin={this.login} loginError={this.state.loginError} logged={this.state.user} ></LoginForm>
-
                 </Container>
               </Route>
-              <Route path="/analytics">
-                <Container className="custom-container col-md-12">
+              <Route path="/analytics" render={() => {
+                if (this.state.user === null || this.state.role !== "4")
+                  return <Redirect to="/"></Redirect>
+                return <Container className="custom-container col-md-12">
+                  <Row>
+                    <BookingAnalytics Username={this.state.name} />
+                  </Row>
+                </Container>
+              }}>
+              </Route>
+              <Route path="/tracingreport" render={() => {
+                if (this.state.user === null || this.state.role !== "4")
+                  return <Redirect to="/"></Redirect>
+                return <Container className="custom-container col-md-12">
                   <Row>
                     <Col sm={12}>
-                      <BookingAnalytics Username={this.state.name}/>
+                      <ContactTracingDashboard username={this.state.name} />
                     </Col>
                   </Row>
                 </Container>
+              }}>
+
               </Route>
               <Route path="/BookingHistory">
                 <Container className="custom-container col-md-12">
@@ -142,13 +157,19 @@ class App extends React.Component {
                         <BookingBody name={this.state.name}></BookingBody>
                       </Row>
                     </Container>
-                  } else if (this.state.role === "4"){
+                  } else if (this.state.role === "4") {
                     return <Container className="custom-container col-md-12">
-                    <Row>
-                    <BookingAnalytics Username={this.state.name}/>
-                    </Row>
-                  </Container>
-                  } 
+                      <Row>
+                        <BookingAnalytics Username={this.state.name} />
+                      </Row>
+                    </Container>
+                  } else if (this.state.role === "3") { // Support officer
+                    return <Container className="custom-container col-md-12">
+                      <Row>
+                        <OfficerDashboard name={this.state.name}></OfficerDashboard>
+                      </Row>
+                    </Container>
+                  }
                   else {
                     return <Container className="custom-container">
                       <Row>

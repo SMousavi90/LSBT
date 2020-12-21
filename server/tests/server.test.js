@@ -3,6 +3,7 @@ const supertest = require('supertest');
 const request = supertest(app);
 const dao = require('../dao.js');
 const sqlite = require("sqlite3");
+let moment = require("moment")
 
 let session;
 
@@ -27,11 +28,12 @@ describe('server rest APIs', function () {
     beforeAll(() => {
         clearBooking();
         clearLectures();
-        initLectures();
-        return initBooking();
+        initCourses();
+        return initLectures();
+        
       });
       afterAll(() => {
-        clearBooking();
+        clearCourses()
         return clearLectures();
       });
 
@@ -43,6 +45,7 @@ describe('server rest APIs', function () {
     });
 
     it('getStudentCurrentCourses', async () => {
+        
         const response = await request
             .get('/api/getStudentCurrentCourses/1')
             .set('Cookie', session)
@@ -50,8 +53,9 @@ describe('server rest APIs', function () {
     });
 
     it('getAvailableLectures', async () => {
+      
         const response = await request
-            .get('/api/getAvailableLectures/4')
+            .get('/api/getAvailableLectures/XY0422')
             .send({ userId: '1' })
             .set('Accept', 'application/json')
             .set('Cookie', session)
@@ -100,13 +104,6 @@ describe('server rest APIs', function () {
       expect(response.status).toBe(200);
   });
 
-  it("cancelReservation", async () => {
-    const response = await request
-      .put("/api/cancelReservation/1")
-      .set("Cookie", session);
-    expect(response.status).toBe(200);
-  });
-
   it("getTeacherStats #1", async () => {
     const response = await request
       .get("/api/getTeacherStats/M/2/2020-11-01/2020-12-01/4")
@@ -134,14 +131,7 @@ describe('server rest APIs', function () {
     expect(response.status).toBe(200);
   });
 
-  it("bookLecture", async () => {
-    const response = await request
-      .post("/api/bookLecture")
-      .send({ "lectureId": "2", "userId": "4", "scheduleDate": "2020-12-30 15:20" })
-      .set("Accept", "application/json")
-      .set("Cookie", session);
-    expect(response.status).toBe(200);
-  });
+ 
 
   it("getBookingStatistics ", async () => {
     const response = await request
@@ -166,39 +156,118 @@ describe('server rest APIs', function () {
 
 });
 
+
+describe('cancelation rest APIs', function () {
+
+  beforeAll(() => {
+      clearBooking();
+      clearLectures();  
+      initCourses();
+      initLectures();
+      return initBooking();
+      
+      
+    });
+    afterAll(() => {
+      clearBooking();
+      clearLectures();
+      return clearCourses();
+      
+      
+    });
+
+    it("cancelReservation", async () => {
+      debugger;
+      const response = await request
+        .put("/api/cancelReservation/101/1")
+        .set("Cookie", session);
+      expect(response.status).toBe(200);
+    });
+
+})
+
+
+describe('---', function () {
+
+  beforeAll(() => {
+      clearBooking();
+      clearLectures();  
+      initCourses();
+      initLectures();
+      return initBooking();
+      
+      
+    });
+    afterAll(() => {
+      clearBooking();
+      clearLectures();
+      return clearCourses();
+      
+      
+    });
+
+    it("logout", async () => {
+    });
+    it("bookLecture", async () => {
+    });
+    it("updatenotification", async () => {
+    });
+    it("cancelLecture", async () => {
+    });
+    it("getAllCourses", async () => {
+    });
+    it("getAttendanceStatistics", async () => {
+    });
+    it("getContactTracingReport", async () => {
+    });
+    it("getPositiveStudents", async () => {
+    });
+    it("uploadDataCSV", async () => {
+    });
+    
+    
+    
+    
+
+})
+
 ///getTeacherStats/:period/:userId/:startDate/:endDate/:courseId
 
 initLectures = () => {
-    return new Promise((resolve, reject) => {
-      const sql = `INSERT INTO Lecture
-     (CourseId,
-     Schedule,
-     ClassId,
-     BookingDeadline,
-     NotificationDeadline,
-     Bookable,
-     LectureId,
-     Canceled,
-     TeacherId,
-     NotificationAdded)
-     VALUES (2,"2021-01-30 10:00", 2,"2020-12-30 15:20", date("now"), 1, 1, 0, 2, 0)
-      `;
+  var day = moment().add(4, 'd').format("yyyy-MM-DD")+" 10:00"
+  var deadline = moment().add(3, 'd').format("yyyy-MM-DD")+" 10:00"
   
-      db.run(sql, (err, rows) => {
-        if (err) {
-          reject(err);
-          return;
-        } else {
-          resolve();
-        }
-      });
+  return new Promise((resolve, reject) => {
+    const sql = `INSERT INTO Lecture
+   (CourseId,
+   Schedule,
+   Room,
+   BookingDeadline,
+   NotificationDeadline,
+   Bookable,
+   LectureId,
+   Canceled,
+   TeacherId,
+   NotificationAdded)
+   VALUES ('XY0422','${day}', 1, '${deadline}', date("now"), 1, 1, 0, 2, 0)
+    `;
+  
+    
+    db.run(sql, (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      } else {
+        resolve();
+      }
     });
+  });
   };
   
   clearLectures = () => {
     return new Promise((resolve, reject) => {
       const sql = `DELETE FROM Lecture
-     WHERE CourseId = 2
+     WHERE CourseId = 'XY0422'
       `;
   
       db.run(sql, (err, rows) => {
@@ -213,6 +282,7 @@ initLectures = () => {
   };
 
   initBooking = () => {
+    
     return new Promise((resolve, reject) => {
       const sql = `INSERT INTO Booking
      (BookingId,
@@ -223,11 +293,11 @@ initLectures = () => {
        101,
        1,
        1,
-       "2020-11-30 15:20" 
+       "2020-11-30 15:20"
       )
      `;
-  
       db.run(sql, (err, rows) => {
+        
         if (err) {
           reject(err);
           return;
@@ -241,7 +311,7 @@ initLectures = () => {
   clearBooking = () => {
     return new Promise((resolve, reject) => {
       const sql = `DELETE FROM Booking
-     WHERE BookingId = 101
+      WHERE BookingId >= 100 or StudentId in (2,4)
       `;
   
       db.run(sql, (err, rows) => {
@@ -254,3 +324,42 @@ initLectures = () => {
       });
     });
   };
+
+initCourses = () => {
+  return new Promise((resolve, reject) => {
+    const sql = `INSERT INTO StudentCourse
+   (StudentCourseId,
+   CourseId,
+   StudentId)
+   VALUES (100, 'XY0422', 1),
+   (101, 'XY0422', 4),
+   (102, 'XY0422', 5);
+   `;
+
+    db.run(sql, (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+clearCourses = () => {
+  return new Promise((resolve, reject) => {
+    const sql = `DELETE FROM StudentCourse
+   WHERE StudentCourseId in (100,101,102)
+    `;
+
+    db.run(sql, (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      } else {
+        resolve();
+      }
+    });
+  });
+};

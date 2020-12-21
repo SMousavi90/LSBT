@@ -1,11 +1,11 @@
 import React from "react";
 import { AuthContext } from "../auth/AuthContext";
 import API from "../API/API";
-import Button from "react-bootstrap/Button";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import MyCalendar from "./MyCalendar.js";
 import moment from "moment";
+
 
 class BookingHistory extends React.Component {
   constructor(props) {
@@ -31,8 +31,8 @@ class BookingHistory extends React.Component {
       });
   }
 
-  cancelReservation = (id) => {
-    API.cancelReservation(id)
+  cancelReservation = (id,lectureId) => {
+    API.cancelReservation(id, lectureId)
       .then(() => {
         API.getBookingHistory(this.state.authUser.userId)
           .then((r) => {
@@ -47,14 +47,14 @@ class BookingHistory extends React.Component {
       });
   };
 
-  cancelReservationConfirm = (id) => {
+  cancelReservationConfirm = (id,lectureId) => {
     confirmAlert({
       title: "Warning",
       message: `Do you want to cancel the reservation for this lecture?`,
       buttons: [
         {
           label: "Yes",
-          onClick: () => this.cancelReservation(id),
+          onClick: () => this.cancelReservation(id,lectureId),
         },
         {
           label: "No",
@@ -64,49 +64,55 @@ class BookingHistory extends React.Component {
     });
   };
 
-  createBookingHistory = (r) => {
-    return (
-      <tr>
-        <td>{r.courseName}</td>
-        <td>{r.teacherName}</td>
-        <td>{r.bookDate}</td>
-        <td>{r.bookingDeadline}</td>
-        <td>{r.reserved == null ? "No" : "Yes"}</td>
-        <td>
-          {r.canceled == null ? (
-            "No"
-          ) : (
-            <div>
-              <span>You canceled at: </span>
-              <span className="badge badge-danger">{r.cancelDate}</span>
-            </div>
-          )}
-        </td>
-        <td>{r.presence == null ? "N/A" : "Yes"}</td>
-        <td>{r.reserveDate == null ? "N/A" : r.reserveDate}</td>
-        <td>
-          {
-            //
-            r.canceled === null ? (
-              <Button
-                variant="danger"
-                className="ml-2"
-                type="button"
-                onClick={() => this.cancelReservationConfirm(r.bookingId)}
-              >
-                Cancel
-              </Button>
-            ) : (
-              ""
-            )
-          }
-        </td>
-      </tr>
-    );
-  };
+  // createBookingHistory = (r) => {
+  //   console.log(r)
+  //   return (
+  //     <tr>
+  //       <td>{r.courseName}</td>
+  //       <td>{r.teacherName}</td>
+  //       <td>{r.bookDate}</td>
+  //       <td>{r.bookingDeadline}</td>
+  //       <td>{r.reserved == null ? "No" : "Yes"}</td>
+  //       <td>
+  //         {r.canceled == null ? (
+  //           "No"
+  //         ) : (
+  //           <div>
+  //             <span>You canceled at: </span>
+  //             <span className="badge badge-danger">{r.cancelDate}</span>
+  //           </div>
+  //         )}
+  //       </td>
+  //       <td>{r.presence == null ? "N/A" : "Yes"}</td>
+  //       <td>{r.reserveDate == null ? "N/A" : r.reserveDate}</td>
+  //       <td>
+  //         {
+  //           //
+  //           r.canceled === null ? (
+  //             <Button
+  //               variant="danger"
+  //               className="ml-2"
+  //               type="button"
+  //               onClick={() => this.cancelReservationConfirm(r.bookingId)}
+  //             >
+  //               Cancel
+  //             </Button>
+  //           ) : (
+  //             ""
+  //           )
+  //         }
+  //       </td>
+  //     </tr>
+  //   );
+  // };
   render() {
     console.log(this.state.resHistory)
-    var color = ["#ff6600", "#00cc66", "#0099cc","#006666", "#0066cc"]
+
+  
+    var color = ["#b71c1c", "#4A148C", "#1A237E","#01579B", "#004D40", "#33691E", "#F57F17", "#E65100", "#37474F"];
+    var courseIds = this.state.resHistory.map((res)=>(res.courseId)); 
+    courseIds = [... new Set(courseIds)]
+    var courseColors = courseIds.map((id, index)=>({courseId:id, color:color[index] }))
     
     return (
       <AuthContext.Consumer>
@@ -118,7 +124,7 @@ class BookingHistory extends React.Component {
               start: moment(res.schedule).toDate(),
               end: moment(res.endTime).toDate(),
               allDay: false,
-              color: color[res.courseId-1]
+              color: Object(courseColors.filter((col)=> {return col.courseId == res.courseId})[0])['color']
             }))}
             cancelBooking = {this.cancelReservationConfirm}
             resHistory = {this.state.resHistory}

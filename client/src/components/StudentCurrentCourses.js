@@ -9,18 +9,28 @@ class StudentCurrentCourses extends React.Component {
 
     createCourses = (c) => {
         return (
-            <button className="card mb-4 shadow-sm btn btn-lg btn-outline-primary" onClick={(ev) => this.props.onGetAvailableLectures(`${c.courseId}`, ev)}>
-                <div className="card-header">
+            /* <button className="card mb-4 shadow-sm btn btn-lg btn-outline-primary" onClick={(ev) => this.props.onGetAvailableLectures(`${c.courseId}`, ev)}>
+                {/* <div className="card-header">
                     <h4 className="my-0 font-weight-normal">{c.name}</h4>
-                </div>
-                <div className="card-body d-flex flex-column" style={{backgroundColor: '#cecece'}}>
-                    <ul className="list-unstyled mt-3 mb-4">
-                        <li style={{color: '#000'}}>{c.desc}</li>
-                    </ul>
-                    {/* <button id={btnName} type="button" className="btn btn-lg btn-block btn-outline-primary mt-auto"
-                        onClick={(ev) => this.props.onGetAvailableLectures(`${c.courseId}`, ev)}>Select</button> */}
-                </div>
-            </button>
+                </div> */
+
+            // <div class="card" style={{height: "150px"}} onClick={(ev) => this.props.onGetAvailableLectures(`${c.courseId}`, ev)}>
+            //     <div class="card-body" style={{textAlign: "center"}}>
+            //         <h5 class="card-title" style={{minHeight: "68px"}}>{c.name}</h5>
+            //         <a href="#" class="btn btn-primary btn-block" onClick={(ev) => this.props.onGetAvailableLectures(`${c.courseId}`, ev)}>Select lecture</a>
+            //     </div>
+            // </div>
+            <div class="container">
+                <a class="card1" href="#" style={{textDecoration: "none"}} onClick={(ev) => this.props.onGetAvailableLectures(`${c.courseId}`, ev)}>
+                    <h3>{c.name}</h3>
+                    <p class="small">{c.desc}</p>
+                    <div class="go-corner" href="#">
+                        <div class="go-arrow">
+                            →
+                        </div>
+                    </div>
+                </a>
+            </div >
         );
     }
     render() {
