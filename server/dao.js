@@ -239,6 +239,7 @@ exports.getAvailableLectures = function (id, userId) {
       currentDate.setDate(currentDate.getDate() + 14)
     ).toISOString();
 
+
     const sql = `select BookingDeadline,U.UserId, l.Room as ClassId, L.LectureId, Schedule, l.Room as ClassNumber,
     U.Name || ' ' || U.LastName as TeacherName, 
     cr.Name, cr.Name as CourseName,case ava.FreeSeats when 0 then 0 else 1 end as BookButton,ava.FreeSeats,case when Reservetbl.Reserved=1 then 1 else 0 end as Reserved
