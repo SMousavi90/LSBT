@@ -263,8 +263,8 @@ class BookingAnalytics extends React.Component {
         {(context) => (
           <div className="container col-md-12">
             <div
-              className="jumbotron p-4 p-md-5 text-white rounded"
-              style={{ backgroundColor: "rgb(74, 77, 85)" }}
+              className="jumbotron p-4 p-md-2 text-white rounded"
+              style={{ backgroundColor: "rgb(182, 93, 16)", opacity: "60%" }}
             >
               <div className="col-md-6 px-0">
                 <h1 className="display-4 font-italic">
