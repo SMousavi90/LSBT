@@ -26,8 +26,8 @@ let db = new sqlite.Database("db/PULSeBS_test.db", (err) => {
 describe('server rest APIs', function () {
 
     beforeAll(() => {
-        clearBooking();
-        clearLectures();
+        // clearBooking();
+        // clearLectures();
         initCourses();
         return initLectures();
         
@@ -160,8 +160,8 @@ describe('server rest APIs', function () {
 describe('cancelation rest APIs', function () {
 
   beforeAll(() => {
-      clearBooking();
-      clearLectures();  
+      // clearBooking();
+      // clearLectures();  
       initCourses();
       initLectures();
       return initBooking();
@@ -190,8 +190,8 @@ describe('cancelation rest APIs', function () {
 describe('---', function () {
 
   beforeAll(() => {
-      clearBooking();
-      clearLectures();  
+      // clearBooking();
+      // clearLectures();  
       initCourses();
       initLectures();
       return initBooking();

@@ -16,6 +16,13 @@ sonar-scanner \
   -Dsonar.javascript.lcov.reportPaths=./server/coverage/lcov.info \
   -Dsonar.testExecutionReportPaths=./server/test-report.xml
 
+____________________
+Jest Debugger 
+
+Place a debugger; statement in any of your tests, and then, in your project's directory, run:
+node --inspect-brk node_modules/.bin/jest --runInBand
+
+To debug in Google Chrome (or any Chromium-based browser), open your browser and go to chrome://inspect and click on "Open Dedicated DevTools for Node", which will give you a list of available node instances you can connect to. Click on the address displayed in the terminal (usually something like localhost:9229) after running the above command, and you will be able to debug Jest using Chrome's DevTools.
 
 
 

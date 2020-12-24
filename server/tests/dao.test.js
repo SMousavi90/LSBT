@@ -106,8 +106,9 @@ describe("check Courses", () => {
 
 describe("check BookingAndHistory", () => {
   beforeAll(() => {
-    clearBooking();
-    clearLectures();
+    // clearBooking();
+    // clearLectures();
+    // clearCourses();
     initLectures();
     initCourses();
     return initBooking();
@@ -118,21 +119,9 @@ describe("check BookingAndHistory", () => {
     return clearBooking();
   });
 
-  test("test bookLecture", () => {
-    return dao.bookLecture(1, 4, "2020-12-30 15:20").then((data) => {
-      expect(data).not.toEqual(undefined);
-    });
-  });
-
   test("test bookLecture false", () => {
     return dao.bookLecture(1, 5, "2020-12-30 15:20").then((data) => {
       expect(data).not.toEqual(undefined);
-    });
-  });
-
-  test("test bookingHistory", () => {
-    return dao.getBookingHistory(4).then((data) => {
-      expect(data.length > 0);
     });
   });
 
@@ -142,11 +131,7 @@ describe("check BookingAndHistory", () => {
     });
   });
 
-  test("test getBookingDetails", () => {
-    return dao.getBookingDetails(1, 4).then((data) => {
-      expect(data.length > 0);
-    });
-  });
+ 
   test("test getBookCountByCourseID", () => {
     return dao.getBookCountByCourseID("W", "2020-10-01","2020-12-01","XY0422").then((data) => {
       expect(data.length > 0);
@@ -158,6 +143,40 @@ describe("check BookingAndHistory", () => {
     //   expect(data.length > 0);
     // });
   });
+});
+describe("check BookingAndHistory", () => {
+  beforeAll(() => {
+    // clearBooking();
+    // clearLectures();
+    initLectures();
+    initCourses();
+    return initBooking();
+  });
+  afterAll(() => {
+    clearLectures();
+    clearCourses();
+    return clearBooking();
+  });
+
+  test("test bookLecture", () => {
+    debugger;
+    return dao.bookLecture(1, 4, "2020-12-30 15:20").then((data) => {
+      expect(data).not.toEqual(undefined);
+    });
+  });
+
+  test("test bookingHistory", () => {
+    debugger;
+    return dao.getBookingHistory(4).then((data) => {
+      expect(data.length > 0);
+    });
+  });
+  test("test getBookingDetails", () => {
+    return dao.getBookingDetails(1, 4).then((data) => {
+      expect(data.length > 0);
+    });
+  });
+
 });
 
 describe("check Teacher Dashboard", () => {
@@ -325,8 +344,9 @@ initLectures = () => {
    LectureId,
    Canceled,
    TeacherId,
+   Seats,
    NotificationAdded)
-   VALUES ('XY0422','${day}', 1, '${deadline}', date("now"), 1, 1, 0, 2, 0)
+   VALUES ('XY0422','${day}', 1, '${deadline}', date("now"), 1, 1, 0, 2, 120,0)
     `;
   
 
