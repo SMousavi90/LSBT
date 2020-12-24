@@ -30,7 +30,7 @@ var cors = require('cors');
 if (process.env.npm_config_test === "true") {
     console.log("Test database activated");
     dao.setDb("db/PULSeBS_test_clear.db");
-    }
+}
 else {
     dao.setDb("db/PULSeBS.db");
 }
@@ -395,14 +395,23 @@ app.post(BASEURI + '/uploadDataCSV', (req, res) => {
 
             f.filename = req.body.importType + ".csv";
             f.path = "upload/" + f.filename;
-            setTimeout(function() {
+            setTimeout(function () {
                 makeCSVArray(f, req.body.importType, res);
             }, 2000)
         }
     });
 });
 
-let makeCSVArray = (file, type, res) => {
+let makeCSVArray = async (file, type, res) => {
+    // var Iconv = require('iconv').Iconv,
+    //     fs = require("fs");
+
+    // var buffer = fs.readFileSync(file.path),
+    //     iconv = new Iconv('UTF-16', 'UTF-8//TRANSLIT//IGNORE');
+
+    // var result = iconv.convert(buffer.slice(96,180)).toString("utf-8");
+    // let csvData = await neatCsv(result);
+    // console.log(result);
     fs.readFile(file.path, async (err, data) => {
         if (err) {
             console.error(err)
@@ -418,8 +427,24 @@ let makeCSVArray = (file, type, res) => {
                     errors: [{ 'param': 'Server', 'msg': err }],
                 });
             });
-    })
+    });
 }
+
+app.get('/api/getPresenceHistory/:courseId/:startDate/:endDate', (req, res) => {
+    dao.getPresenceHistory(req.params.courseId, req.params.startDate, req.params.endDate, req.user.username)
+        .then((row) => {
+            if (!row) {
+                res.status(500).send();
+            } else {
+                res.json(row);
+            }
+        })
+        .catch((err) => {
+            res.status(500).json({
+                errors: [{ 'param': 'Server', 'msg': err }],
+            });
+        });
+});
 
 module.exports = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}/`);

@@ -22,6 +22,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import BookingHistory from './components/BookingHistory.js';
+import PresenceHistory from './components/PresenceHistory.js';
 
 
 class App extends React.Component {
@@ -106,6 +107,13 @@ class App extends React.Component {
                 <Container className="custom-container col-md-12">
                   <Row>
                     <AllBooking Username={this.state.name} />
+                  </Row>
+                </Container>
+              </Route>
+              <Route path="/presencehistory">
+                <Container className="custom-container col-md-12">
+                  <Row>
+                    <PresenceHistory Username={this.state.name} />
                   </Row>
                 </Container>
               </Route>

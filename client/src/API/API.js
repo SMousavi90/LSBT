@@ -540,4 +540,18 @@ async function getContactTracingReport(userId) {
   }
 }
 
-export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics, uploadDataCSV, clearDatabase, addCourse, getPositiveStudents, getContactTracingReport };
+async function getPresenceHistory(courseId, startDate, endDate) {
+  let url = "/getPresenceHistory";
+  const queryParams = "/" + courseId + "/" + startDate + "/" + endDate;
+  url += queryParams;
+  const response = await fetch(APIURL + url);
+  const json = await response.json();
+  if (response.ok) {
+    return json;
+  } else {
+    let err = { status: response.status, errObj: json };
+    throw err;
+  }
+}
+
+export default { isAuthenticated, login, logout, getStudentCurrentCourses, getAvailableLectures, bookLecture, getBookingHistory, cancelReservation, getNotification, updateNotificationStatus, getStudentsPerLecturePerProfessor, getTeacherCourses, getCourseLectures, getLectureStudents, cancelLecture, makeLectureOnline, getTeacherStats, getAllCourses, getBookingStatistics, getCancellationStatistics, getAttendanceStatistics, uploadDataCSV, clearDatabase, addCourse, getPositiveStudents, getContactTracingReport, getPresenceHistory };

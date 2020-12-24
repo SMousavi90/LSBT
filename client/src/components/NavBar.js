@@ -30,6 +30,7 @@ function NavBar(props) {
               <FontAwesomeIcon icon={faBell} style={props.notifications.find((n)=>{return n.SentStatus==0})?{ 'color': '#79daad' }:null}/>
             </Link>
             <Link to="/allbookings" className="nav-link">All Bookings</Link>
+            <Link to="/presencehistory" className="nav-link">Presence History</Link>
           </>):''}
 
       </Nav>

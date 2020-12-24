@@ -89,7 +89,7 @@ class OfficerDashboard extends React.Component {
                 style={{ backgroundColor: "rgb(182, 93, 16)", opacity: "60%" }}
                 >
                     <div className="col-md-6 px-0">
-                        <h1 className="display-4 font-italic"><h2>Welcome, {this.props.name}</h2></h1>
+                        <h4 className="display-4 font-italic"><h5>Welcome, {this.props.name}</h5></h4>
                         <p className="lead my-3">To import the data, please use the uploader below:</p>
                     </div>
                 </div>
