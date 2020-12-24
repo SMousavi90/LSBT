@@ -1,5 +1,7 @@
 "use strict"; //strict mode - prevent using undeclared variables
 
+
+
 const StudentCourse = require("./Entities/StudentCourse");
 const LecturesSchedule = require("./Entities/LecturesSchedule");
 const BookingHistory = require("./Entities/BookingHistory");

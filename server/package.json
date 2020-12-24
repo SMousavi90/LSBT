@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest --coverage",
     "start": "node server.js",
+    "start-test": "node support_server.js",
     "cypress:open": "cypress open"
   },
   "author": "",

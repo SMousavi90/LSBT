@@ -23,11 +23,14 @@ var cors = require('cors');
 
 //You activate the test database by running
 // npm start --test=true
+
+
+
+
 if (process.env.npm_config_test === "true") {
     console.log("Test database activated");
     dao.setDb("db/PULSeBS_test_clear.db");
-
-}
+    }
 else {
     dao.setDb("db/PULSeBS.db");
 }

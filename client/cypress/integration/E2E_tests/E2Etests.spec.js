@@ -169,9 +169,8 @@ describe('[LSBT1-1]As a student I want to book a seat for one of my lectures so 
       
 
 
-        console.log(tomorrowstring);
-        console.log(deadlinestring);
-        console.log(new Date(tomorrowstring));
+        
+       
       const lectureData = [1,tomorrowstring, deadlinestring, deadlinestring, tomorrowstring , 1, 0, 2, 0, 1, 120, "Mon",  "8:30-11:30"];
          
       addLecture(lectureData);
@@ -334,6 +333,7 @@ describe('[LSBT1-3]As a teacher I want to access the list of students booked for
 })
 
 describe('[LSBT1-4]As a student I want to get an email confirmation of my booking so that I am informed' , () => {
+
 })
 
 describe('[LSBT1-5]As a student I want to cancel my booking so that I am free' , () => {
