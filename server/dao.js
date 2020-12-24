@@ -562,7 +562,7 @@ exports.getTeacherStats = function (
 ) {
   return new Promise((resolve, reject) => {
     let sql = "";
-    if (period === "W") {
+    if (period === "Weekly") {
       if (courseId != "null" && courseId != "All")
         sql = `select avg(BookCount) as avg, row_number() over(order by weekno) as weekno
       from BookCount
@@ -575,7 +575,7 @@ exports.getTeacherStats = function (
       where Schedule between ? and ?
       and TeacherId = ?
       group by weekNo`;
-    } else if (period === "M") {
+    } else if (period === "Monthly") {
       if (courseId != "null" && courseId != "All")
         sql = `select avg(BookCount) as avg, monthno
       from BookCount
@@ -683,7 +683,7 @@ exports.getBookCountByCourseID = function (
 ) {
   return new Promise((resolve, reject) => {
     let sql = "";
-    if (period === "W") {
+    if (period === "Weekly") {
       if (courseId != "null" && courseId != "All")
         sql = `select avg(BookCount) as avg, row_number() over(order by weekno) as weekno
       from BookCount
@@ -695,7 +695,7 @@ exports.getBookCountByCourseID = function (
       from BookCount
       where Schedule between ? and ?
       group by weekNo`;
-    } else if (period === "M") {
+    } else if (period === "Monthly") {
       if (courseId != "null" && courseId != "All")
         sql = `select avg(BookCount) as avg, monthno
       from BookCount
@@ -747,13 +747,13 @@ exports.getBookCountByCourseID = function (
 exports.getBookingStatistics = function (period, startDate, endDate) {
   return new Promise((resolve, reject) => {
     let sql = "";
-    if (period === "W") {
+    if (period === "Weekly") {
       sql = `select avg(BookCount) as avg,weekno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
         from BookCount inner join user u on u.UserId=BookCount.TeacherId
         where Schedule between @Starttime and @endtime
         group by weekno,CourseId,CourseName,u.Name,u.LastName 
         order by weekno`;
-    } else if (period === "M") {
+    } else if (period === "Monthly") {
       sql = `select avg(BookCount) as avg,monthno,CourseId,CourseName,u.Name || ' ' || u.LastName as TeacherName
         from BookCount inner join user u on u.UserId=BookCount.TeacherId
         where Schedule between @Starttime and @endtime
@@ -786,14 +786,14 @@ exports.getBookingStatistics = function (period, startDate, endDate) {
 exports.getCancellationStatistics = function (period, startDate, endDate) {
   return new Promise((resolve, reject) => {
     let sql = "";
-    if (period === "W") {
+    if (period === "Weekly") {
       sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.weekno
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
         and c.Schedule between @Starttime and @endtime
         group by c.Schedule,CourseName,TeacherName,c.weekno
         order by c.weekno`;
-    } else if (period === "M") {
+    } else if (period === "Monthly") {
       sql = `select count(c.BookingId) CancelCounts,c.Schedule,CourseName,TeacherName,c.monthno
         from StudentCancel C left join Studentbook B on c.LectureId=b.LectureId and b.StudentId=c.StudentId
         where b.StudentId is NULL
@@ -822,14 +822,14 @@ exports.getCancellationStatistics = function (period, startDate, endDate) {
 exports.getAttendanceStatistics = function (period, startDate, endDate) {
   return new Promise((resolve, reject) => {
     let sql = "";
-    if (period === "W") {
+    if (period === "Weekly") {
       sql = `select weekno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
         from StudentAttendance
         where Schedule BETWEEN @Starttime and @endtime
         group by weekno,CourseName, TeacherName 
         order by weekno
        `;
-    } else if (period === "M") {
+    } else if (period === "Monthly") {
       sql = `select monthno,CourseName, TeacherName,sum(BookCounts) as BookCounts, sum(PresenceCount) as PresenceCount, sum(AbsenceCount) as AbsenceCount
         from StudentAttendance
         where Schedule BETWEEN @Starttime and @endtime

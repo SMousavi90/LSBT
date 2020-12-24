@@ -344,11 +344,11 @@ async function getTeacherStats(period, userId, startDate, endDate, courseId) {
   if (response.ok) {
     return json.map((row) => {
       let r = null;
-      if (period === "W") {
+      if (period === "Weekly") {
         r = { avg: row.avg.toFixed(2), no: row.weekno };
         return r;
       }
-      else if (period === "M") {
+      else if (period === "Monthly") {
         r = { avg: row.avg.toFixed(2), no: row.monthno };
         return r;
       }
@@ -405,11 +405,11 @@ async function getBookingStatistics(period, startDate, endDate) {
   if (response.ok) {
     return json.map((row) => {
       let r = null;
-      if (period === "W") {
+      if (period === "Weekly") {
         r = { avg: row.avg.toFixed(2), no: row.weekno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }
-      else if (period === "M") {
+      else if (period === "Monthly") {
         r = { avg: row.avg.toFixed(2), no: row.monthno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }
@@ -436,11 +436,11 @@ async function getCancellationStatistics(period, startDate, endDate) {
   if (response.ok) {
     return json.map((row) => {
       let r = null;
-      if (period === "W") {
+      if (period === "Weekly") {
         r = { avg: row.CancelCounts, no: row.weekno, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }
-      else if (period === "M") {
+      else if (period === "Monthly") {
         r = { avg: row.CancelCounts, no: row.monthno, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }
@@ -466,11 +466,11 @@ async function getAttendanceStatistics(period, startDate, endDate) {
   if (response.ok) {
     return json.map((row) => {
       let r = null;
-      if (period === "W") {
+      if (period === "Weekly") {
         r = { avg: row.PresenceCount, no: row.weekno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }
-      else if (period === "M") {
+      else if (period === "Monthly") {
         r = { avg: row.PresenceCount, no: row.monthno, CourseId: row.CourseId, CourseName: row.CourseName, TeacherName: row.TeacherName };
         return r;
       }

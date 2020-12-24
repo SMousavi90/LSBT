@@ -13,7 +13,7 @@ class BookingAnalytics extends React.Component {
     super();
     this.state = {
       bookings: [],
-      selectedPeriod: "M",
+      selectedPeriod: "Monthly",
       selectedType: "Booking",
       selectedCourseId: null,
       startDate: new Date(),
@@ -115,10 +115,10 @@ class BookingAnalytics extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({
-      startDate: new Date("2020-11-01"),
-      endDate: new Date("2020-11-30"),
-    });
+    // this.setState({
+    //   startDate: new Date("2020-11-01"),
+    //   endDate: new Date("2020-11-30"),
+    // });
 
     this.onTypeClick("Booking");
   }
@@ -226,14 +226,14 @@ class BookingAnalytics extends React.Component {
   //     });
   // };
 
-  onPeriodChange = (ev) => {
+  onPeriodChange = async (ev) => {
     // let startDate = moment(this.state.startDate).format("yyyy-MM-DD");
     // let endDate = moment(this.state.endDate).format("yyyy-MM-DD");
     let period = "";
     if (ev === undefined) period = this.state.selectedPeriod;
     else {
       period = ev.target.value;
-      this.setState({ selectedPeriod: period });
+      await this.setState({ selectedPeriod: period });
     }
     switch (this.state.selectedType) {
       case "Booking": {
@@ -286,11 +286,11 @@ class BookingAnalytics extends React.Component {
                       this.onPeriodChange(x);
                     }}
                   >
-                    <option value="W">Weekly</option>
-                    <option value="M" selected>
+                    <option value="Weekly">Weekly</option>
+                    <option value="Monthly" selected>
                       Monthly
                     </option>
-                    <option value="D">Daily</option>
+                    <option value="Daily">Daily</option>
                   </select>
                 </div>
                 <div className="col-md-10">
@@ -329,9 +329,9 @@ class BookingAnalytics extends React.Component {
                 <div className="mixed-chart col-md-9">
                   <StatisticsTable
                     bookings={this.state.bookings}
-                    selectedPeriod={this.state.selectedPeriod === "D"? "Day": "W" ? "Weekly" : "Month"}
+                    selectedPeriod={this.state.selectedPeriod}
                     avg={
-                      this.state.selectedPeriod === "D"
+                      this.state.selectedPeriod === "Daily"
                         ? "Count"
                         : "Average"
                     }

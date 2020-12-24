@@ -133,25 +133,25 @@ describe("check BookingAndHistory", () => {
 
  
   test("test getBookCountByCourseID W", () => {
-    return dao.getBookCountByCourseID("W", "2020-10-01","2020-12-01","XY0422").then((data) => {
+    return dao.getBookCountByCourseID("Weekly", "2020-10-01","2020-12-01","XY0422").then((data) => {
       expect(data.length > 0);
     });
   });
 
   test("test getBookCountByCourseID M", () => {
-    return dao.getBookCountByCourseID("M", "2020-10-01","2020-12-01","XY0422").then((data) => {
+    return dao.getBookCountByCourseID("Monthly", "2020-10-01","2020-12-01","XY0422").then((data) => {
       expect(data.length > 0);
     });
   });
 
   test("test getBookCountByCourseID D", () => {
-    return dao.getBookCountByCourseID("D", "2020-10-01","2020-12-01","XY0422").then((data) => {
+    return dao.getBookCountByCourseID("Daily", "2020-10-01","2020-12-01","XY0422").then((data) => {
       expect(data.length > 0);
     });
   });
 
   test("test getBookCountByCourseID all courses", () => {
-    return dao.getBookCountByCourseID("D", "2020-10-01","2020-12-01","All").then((data) => {
+    return dao.getBookCountByCourseID("Daily", "2020-10-01","2020-12-01","All").then((data) => {
       expect(data.length > 0);
     });
   });
@@ -255,7 +255,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getTeacherStats1", () => {
     return dao
-      .getTeacherStats("M", 8, "2020-12-01", "2020-12-18", "null")
+      .getTeacherStats("Monthly", 8, "2020-12-01", "2020-12-18", "null")
       .then((data) => {
         expect(data.length > 0);
       });
@@ -263,7 +263,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getTeacherStats2", () => {
     return dao
-      .getTeacherStats("W", 8, "2020-12-01", "2020-12-18", "All")
+      .getTeacherStats("Weekly", 8, "2020-12-01", "2020-12-18", "All")
       .then((data) => {
         expect(data.length > 0);
       });
@@ -271,7 +271,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getTeacherStats5", () => {
     return dao
-      .getTeacherStats("W", 8, "2020-12-01", "2020-12-18", 4)
+      .getTeacherStats("Weekly", 8, "2020-12-01", "2020-12-18", 4)
       .then((data) => {
         expect(data.length > 0);
       });
@@ -279,7 +279,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getTeacherStats3", () => {
     return dao
-      .getTeacherStats("D", 8, "2020-12-01", "2020-12-18", "All")
+      .getTeacherStats("Daily", 8, "2020-12-01", "2020-12-18", "All")
       .then((data) => {
         expect(data.length > 0);
       });
@@ -287,7 +287,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getTeacherStats4", () => {
     return dao
-      .getTeacherStats("D", 8, "2020-12-01", "2020-12-18", 4)
+      .getTeacherStats("Daily", 8, "2020-12-01", "2020-12-18", 4)
       .then((data) => {
         expect(data.length > 0);
       });
@@ -295,7 +295,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getBookingStatistics", () => {
     return dao
-      .getBookingStatistics("W", "2020-12-01", "2020-12-18")
+      .getBookingStatistics("Weekly", "2020-12-01", "2020-12-18")
       .then((data) => {
         expect(data.length > 0);
       });
@@ -303,7 +303,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getCancellationStatistics", () => {
     return dao
-      .getCancellationStatistics("D", "2020-12-01", "2020-12-18")
+      .getCancellationStatistics("Daily", "2020-12-01", "2020-12-18")
       .then((data) => {
         expect(data.length > 0);
       });
@@ -311,14 +311,14 @@ describe("check Teacher Dashboard", () => {
 
   test("test getAttendanceStatistics", () => {
     return dao
-      .getAttendanceStatistics("D", "2020-12-01", "2020-12-18")
+      .getAttendanceStatistics("Daily", "2020-12-01", "2020-12-18")
       .then((data) => {
         expect(data.length > 0);
       });
   });
   test("test getAttendanceStatistics W", () => {
     return dao
-      .getAttendanceStatistics("W", "2020-12-01", "2020-12-18")
+      .getAttendanceStatistics("Weekly", "2020-12-01", "2020-12-18")
       .then((data) => {
         expect(data.length > 0);
       });
@@ -326,7 +326,7 @@ describe("check Teacher Dashboard", () => {
 
   test("test getAttendanceStatistics D", () => {
     return dao
-      .getAttendanceStatistics("D", "2020-12-01", "2020-12-18")
+      .getAttendanceStatistics("Daily", "2020-12-01", "2020-12-18")
       .then((data) => {
         expect(data.length > 0);
       });
