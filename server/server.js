@@ -214,7 +214,7 @@ app.get(BASEURI + '/teacher/:userId/notification', (req, res) => {
 app.put(BASEURI + '/teacher/:userId/updatenotification', (req, res) => {
 
     dao.updateNotification(req.params.userId)
-        .then(() => { res.status(200); })
+        .then(() => { res.status(200).end(); })
         .catch(() => res.status(500).json({ 'error': 'error while updating notification' }));
 });
 

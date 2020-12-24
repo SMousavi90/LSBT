@@ -120,7 +120,7 @@ describe("check BookingAndHistory", () => {
   });
 
   test("test bookLecture false", () => {
-    return dao.bookLecture(1, 5, "2020-12-30 15:20").then((data) => {
+    return dao.bookLecture(2, 5, "2020-12-30 15:20").then((data) => {
       expect(data).not.toEqual(undefined);
     });
   });
@@ -132,16 +132,36 @@ describe("check BookingAndHistory", () => {
   });
 
  
-  test("test getBookCountByCourseID", () => {
+  test("test getBookCountByCourseID W", () => {
     return dao.getBookCountByCourseID("W", "2020-10-01","2020-12-01","XY0422").then((data) => {
       expect(data.length > 0);
     });
   });
+
+  test("test getBookCountByCourseID M", () => {
+    return dao.getBookCountByCourseID("M", "2020-10-01","2020-12-01","XY0422").then((data) => {
+      expect(data.length > 0);
+    });
+  });
+
+  test("test getBookCountByCourseID D", () => {
+    return dao.getBookCountByCourseID("D", "2020-10-01","2020-12-01","XY0422").then((data) => {
+      expect(data.length > 0);
+    });
+  });
+
+  test("test getBookCountByCourseID all courses", () => {
+    return dao.getBookCountByCourseID("D", "2020-10-01","2020-12-01","All").then((data) => {
+      expect(data.length > 0);
+    });
+  });
+  
+
   test("test manageQueueReservation", () => {
     // debugger
-    // return dao.manageQueueReservation(1).then((data) => {
-    //   expect(data.length > 0);
-    // });
+    return dao.manageQueueReservation(2).then((data) => {
+      expect(data.length > 0);
+    });
   });
 });
 describe("check BookingAndHistory", () => {
@@ -159,14 +179,14 @@ describe("check BookingAndHistory", () => {
   });
 
   test("test bookLecture", () => {
-    debugger;
+    
     return dao.bookLecture(1, 4, "2020-12-30 15:20").then((data) => {
       expect(data).not.toEqual(undefined);
     });
   });
 
   test("test bookingHistory", () => {
-    debugger;
+    
     return dao.getBookingHistory(4).then((data) => {
       expect(data.length > 0);
     });
@@ -296,6 +316,21 @@ describe("check Teacher Dashboard", () => {
         expect(data.length > 0);
       });
   });
+  test("test getAttendanceStatistics W", () => {
+    return dao
+      .getAttendanceStatistics("W", "2020-12-01", "2020-12-18")
+      .then((data) => {
+        expect(data.length > 0);
+      });
+  });
+
+  test("test getAttendanceStatistics D", () => {
+    return dao
+      .getAttendanceStatistics("D", "2020-12-01", "2020-12-18")
+      .then((data) => {
+        expect(data.length > 0);
+      });
+  });
 });
 
 describe("check Contact tracing", () => {
@@ -346,7 +381,7 @@ initLectures = () => {
    TeacherId,
    Seats,
    NotificationAdded)
-   VALUES ('XY0422','${day}', 1, '${deadline}', date("now"), 1, 1, 0, 2, 120,0)
+   VALUES ('XY0422','${day}', 1, '${deadline}', date("now"), 1, 1, 0, 2, 120,0),('XY0422','${day}', 1, '${deadline}', date("now"), 1, 2, 0, 2, 0,0)
     `;
   
 
